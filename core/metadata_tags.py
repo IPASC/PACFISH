@@ -8,6 +8,7 @@ class MetadataDeviceTags():
     NUMBER_OF_ILLUMINATORS = "num_illuminators"
     NUMBER_OF_DETECTORS = "num_detectors"
     ILLUMINATION_ELEMENT = "illumination_element"
+    ILLUMINATOR_POSITION = "illuminator_position"
 
     #TODO continue .....
 
@@ -20,6 +21,8 @@ class MetadataBinaryTags():
     DATA_TYPE = "data_type"
     DIMENSIONALITY = "dimensionality"
     SIZES = "sizes"
+
+    # TODO continue .....
 
 
 class MetadataAcquisitionTags():
