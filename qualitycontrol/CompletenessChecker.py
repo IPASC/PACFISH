@@ -28,6 +28,15 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+
 class CompletenessChecker:
     def __init__(self):
         print("TODO")
+
+    def check_meta_data(self, binary_meta_data: dict):
+        # TODO
+        pass
+
+    def check_meta_data_device(self, device_meta_data: dict):
+        # TODO
+        pass

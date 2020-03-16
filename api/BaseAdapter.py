@@ -31,7 +31,7 @@
 from abc import ABC, abstractmethod
 from core.PAData import PAData
 from qualitycontrol.ConsistencyChecker import ConsistencyChecker
-from core.metadata_tags import MetadataBinaryTags, MetaDatum
+from core.metadata_tags import MetadataTags, MetaDatum
 import numpy as np
 
 
@@ -48,19 +48,19 @@ class BaseAdapter(ABC):
         """
         pass
 
-    def generate_meta_data_binary(self) -> dict:
+    def generate_meta_data(self) -> dict:
         """
 
         :return:
         """
-        meta_data_binary_dictionary = dict()
+        meta_data_dictionary = dict()
 
-        for metadata_binary_tag in MetadataBinaryTags:
-            target_value = self.set_metadata_binary_value(metadata_binary_tag)
-            self.consistency_checker.check_meta_datum_binary(metadata_binary_tag, target_value)
-            meta_data_binary_dictionary[metadata_binary_tag] = target_value
+        for metadata_tag in MetadataTags:
+            target_value = self.set_metadata_value(metadata_tag)
+            self.consistency_checker.check_meta_datum(metadata_tag, target_value)
+            meta_data_dictionary[metadata_tag] = target_value
 
-        return meta_data_binary_dictionary
+        return meta_data_dictionary
 
     @abstractmethod
     def generate_meta_data_device(self) -> dict:
@@ -77,13 +77,9 @@ class BaseAdapter(ABC):
         self.consistency_checker.check_binary(binary_data)
         pa_data.binary_time_series_data = binary_data
 
-        binary_data = self.generate_binary_data()
-        self.consistency_checker.check_binary(binary_data)
-        pa_data.binary_time_series_data = binary_data
-
-        meta_data_binary = self.generate_meta_data_binary()
-        self.consistency_checker.check_meta_data_binary(meta_data_binary)
-        pa_data.meta_data_binary = meta_data_binary
+        meta_data = self.generate_meta_data()
+        self.consistency_checker.check_meta_data(meta_data)
+        pa_data.meta_data = meta_data
 
         meta_data_device = self.generate_meta_data_device()
         self.consistency_checker.check_meta_data_device(meta_data_device)
@@ -92,9 +88,12 @@ class BaseAdapter(ABC):
         return pa_data
 
     @abstractmethod
-    def set_metadata_binary_value(self, metadata_tag: MetaDatum) -> object:
+    def set_metadata_value(self, metadata_tag: MetaDatum) -> object:
         """
-        TODO documentation
+
+        This method must be implemented to yield appropriate data for all MetaDatum elements in the
+        MetadataTags class.
+
         :param metadata_tag:
         :return:
         """

@@ -36,12 +36,11 @@ class ConsistencyChecker:
     def __init__(self):
         print("TODO")
 
-    # TODO
     def check_binary(self, binary_data):
         # TODO
         pass
 
-    def check_meta_data_binary(self, binary_meta_data: dict):
+    def check_meta_data(self, binary_meta_data: dict):
         # TODO
         pass
 
@@ -49,6 +48,6 @@ class ConsistencyChecker:
         # TODO
         pass
 
-    def check_meta_datum_binary(self, meta_datum: MetaDatum, value: object):
+    def check_meta_datum(self, meta_datum: MetaDatum, value: object):
         # TODO
         pass

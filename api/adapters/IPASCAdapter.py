@@ -27,20 +27,22 @@
 # CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+import numpy as np
 
 from api import BaseAdapter
+from core.metadata_tags import MetaDatum
 
 
-class IPASCApadter(BaseAdapter):
+class IPASCAdapter(BaseAdapter):
+
+    def generate_binary_data(self) -> np.ndarray:
+        pass
+
+    def generate_meta_data_device(self) -> dict:
+        pass
+
+    def set_metadata_value(self, metadata_tag: MetaDatum) -> object:
+        pass
 
     def __init__(self):
         super().__init__()
-
-    def set_binary_dimensionality(self):
-        pass
-
-    def generate_meta_data_device(self):
-        pass
-
-    def generate_binary_data(self):
-        pass

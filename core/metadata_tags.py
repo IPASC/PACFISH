@@ -108,11 +108,10 @@ class MetadataDeviceTags:
     ANGULAR_RESPONSE = MetaDatum("angular_response", False, np.ndarray, Units.DIMENSIONLESS_UNIT)
 
 
-class MetadataBinaryTags:
+class MetadataTags:
     """
     Binary time series data meta data tags
     """
-
     UUID = MetaDatum("uuid", True, str)
     ENCODING = MetaDatum("encoding", True, str)
     COMPRESSION = MetaDatum("compression", True, str)
@@ -120,13 +119,6 @@ class MetadataBinaryTags:
     DATA_TYPE = MetaDatum("data_type", True, str)
     DIMENSIONALITY = MetaDatum("dimensionality", True, str)
     SIZES = MetaDatum("sizes", True, np.ndarray, Units.DIMENSIONLESS_UNIT)
-
-
-class MetadataAcquisitionTags:
-    """
-    Binary time series data meta data tags
-    """
-
     PULSE_LASER_ENERGY = MetaDatum("pulse_laser_energy", False, np.ndarray, Units.JOULES)
     FRAME_ACQUISITION_TIMESTAMPS = MetaDatum("frame_acquisition_timestamps", False, np.ndarray, Units.SECONDS)
     ACQUISITION_OPTICAL_WAVELENGTHS = MetaDatum("acquisition_optical_wavelengths", False, np.ndarray, Units.METERS)
