@@ -31,62 +31,71 @@
 from abc import ABC, abstractmethod
 from core.PAData import PAData
 from qualitycontrol.ConsistencyChecker import ConsistencyChecker
-from core.metadata_tags import MetadataBinaryTags
+from core.metadata_tags import MetadataBinaryTags, MetaDatum
+import numpy as np
 
 
 class BaseAdapter(ABC):
 
+    def __init__(self):
+        self.consistency_checker = ConsistencyChecker()
+
     @abstractmethod
-    def generate_binary_data(self):
+    def generate_binary_data(self) -> np.ndarray:
         """
         #TODO very detailed decription of how the binary meta data dump should be organized.
         :return: numpy array
         """
         pass
 
-    def generate_meta_data_binary(self):
+    def generate_meta_data_binary(self) -> dict:
+        """
+
+        :return:
+        """
         meta_data_binary_dictionary = dict()
 
-        meta_data_binary_dictionary[MetadataBinaryTags.DIMENSIONALITY] = self.set_binary_dimensionality()
-
-        # ... TODO add all
+        for metadata_binary_tag in MetadataBinaryTags:
+            target_value = self.set_metadata_binary_value(metadata_binary_tag)
+            self.consistency_checker.check_meta_datum_binary(metadata_binary_tag, target_value)
+            meta_data_binary_dictionary[metadata_binary_tag] = target_value
 
         return meta_data_binary_dictionary
 
     @abstractmethod
-    def generate_meta_data_device(self):
+    def generate_meta_data_device(self) -> dict:
         """
         # TODO this method can be implemented using the DeviceMetaDataCreator
         :return:
         """
         pass
 
-    def generate_pa_data(self):
-        consistency_checker = ConsistencyChecker()
+    def generate_pa_data(self) -> PAData:
         pa_data = PAData()
 
         binary_data = self.generate_binary_data()
-        consistency_checker.check_binary(binary_data)
+        self.consistency_checker.check_binary(binary_data)
         pa_data.binary_time_series_data = binary_data
 
         binary_data = self.generate_binary_data()
-        consistency_checker.check_binary(binary_data)
+        self.consistency_checker.check_binary(binary_data)
         pa_data.binary_time_series_data = binary_data
 
         meta_data_binary = self.generate_meta_data_binary()
-        consistency_checker.check_meta_data_binary(meta_data_binary)
+        self.consistency_checker.check_meta_data_binary(meta_data_binary)
         pa_data.meta_data_binary = meta_data_binary
 
         meta_data_device = self.generate_meta_data_device()
-        consistency_checker.check_meta_data_device(meta_data_device)
+        self.consistency_checker.check_meta_data_device(meta_data_device)
         pa_data.meta_data_device = meta_data_device
 
         return pa_data
 
     @abstractmethod
-    def set_binary_dimensionality(self):
+    def set_metadata_binary_value(self, metadata_tag: MetaDatum) -> object:
         """
-        # TODO very detailed description of what this value should look like
+        TODO documentation
+        :param metadata_tag:
         :return:
         """
         pass

@@ -77,7 +77,6 @@ class MetaDatum:
         self.dtype = dtype
 
 
-
 class MetadataDeviceTags:
     """
     This class defines the naming conventions of the
