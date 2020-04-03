@@ -28,6 +28,7 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import os
 from unittest.case import TestCase
 from core.metadata_tags import MetadataTags
 from core.metadata_tags import MetadataDeviceTags
@@ -58,5 +59,15 @@ class MetaDataTest(TestCase):
 
     def test_completenes_checker(self):
         dictionary = self.create_complete_metadata_dictionary()
-        self.completeness_checker.check_meta_data(dictionary, True, "")
+        assert self.completeness_checker.check_meta_data(dictionary, True, "")
 
+        dictionary[MetadataTags.UUID] = None
+        assert not self.completeness_checker.check_meta_data(dictionary)
+
+        dictionary = self.create_complete_metadata_dictionary()
+        assert self.completeness_checker.check_meta_data(dictionary)
+
+        dictionary.pop(MetadataTags.UUID)
+        assert not self.completeness_checker.check_meta_data(dictionary)
+
+        os.remove(self.completeness_checker.save_file_name)

@@ -34,7 +34,7 @@ from core import MetadataTags, MetaDatum
 class CompletenessChecker:
 
     def __init__(self):
-        print("TODO")
+        self.save_file_name = "logfile.md"
 
     def check_meta_data(self, meta_data_dictionary: dict, verbose: bool = False,
                         log_file_path: str = None) -> bool:
@@ -73,7 +73,7 @@ class CompletenessChecker:
         log_string += "##Individual fields\n\n"
         for metadatum in MetadataTags:
             meta_data_is_complete = True
-            
+
             if metadatum not in meta_data_dictionary:
                 log_string += "* missing entry \"" + metadatum.info.tag + "\"\n"
                 log_string += "  * metadatum not found in dictionary\n\n"
@@ -109,7 +109,7 @@ class CompletenessChecker:
             print(log_string)
 
         if log_file_path is not None:
-            with open(log_file_path + "logfile.md", "w") as log_file_handle:
+            with open(log_file_path + self.save_file_name, "w") as log_file_handle:
                 log_file_handle.writelines(log_string)
 
         return incompletenes_count == 0
