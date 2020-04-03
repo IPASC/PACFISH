@@ -28,4 +28,6 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from core.metadata_tags import MetadataBinaryTags, MetadataDeviceTags, MetadataAcquisitionTags
+from core.metadata_tags import MetaDatum
+from core.metadata_tags import MetadataTags
+from core.metadata_tags import MetadataDeviceTags

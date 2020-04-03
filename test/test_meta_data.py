@@ -28,32 +28,35 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+from unittest.case import TestCase
+from core.metadata_tags import MetadataTags
+from core.metadata_tags import MetadataDeviceTags
+from qualitycontrol.CompletenessChecker import CompletenessChecker
 import numpy as np
-import uuid
 
-from core.metadata_tags import MetaDatum
+class MetaDataTest(TestCase):
 
-print("GENERIC TESTING AREA")
+    def setUp(self):
+        self.completeness_checker = CompletenessChecker()
+        print("setUp")
 
-from api import BaseAdapter
+    def tearDown(self):
+        print("tearDown")
 
+    def create_complete_metadata_dictionary(self):
+        dictionary = dict()
 
-class DeviceSpecificAdapter(BaseAdapter):
+        for metadatum in MetadataTags:
+            if issubclass(metadatum.info.dtype, str):
+                dictionary[metadatum] = "Test"
+            elif issubclass(metadatum.info.dtype, np.ndarray):
+                dictionary[metadatum] = np.ones(120)
+            elif issubclass(metadatum.info.dtype, float):
+                dictionary[metadatum] = 17.42
 
-    def generate_binary_data(self) -> np.ndarray:
-        # IMPLEMENTATION HERE
-        pass
+        return dictionary
 
-    def generate_meta_data_device(self) -> dict:
-        # IMPLEMENTATION HERE
-        pass
+    def test_completenes_checker(self):
+        dictionary = self.create_complete_metadata_dictionary()
+        self.completeness_checker.check_meta_data(dictionary, True, "")
 
-    def set_metadata_value(self, metadata_tag: MetaDatum) -> object:
-        # IMPLEMENTATION HERE
-        pass
-
-    def uuid(self):
-        return uuid.uuid4()
-
-    def encoding(self):
-        return "raw"

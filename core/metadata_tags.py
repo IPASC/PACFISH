@@ -29,6 +29,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import numpy as np
+from enum import Enum
 
 
 class Units:
@@ -77,12 +78,16 @@ class MetaDatum:
         self.dtype = dtype
 
 
-class MetadataDeviceTags:
+class MetadataDeviceTags(Enum):
     """
     This class defines the naming conventions of the
     """
+
+    def __init__(self, metadatum: MetaDatum):
+        self.info = metadatum
+
     # General purpose fields
-    UUID = MetaDatum("uuid", True, str)
+    UUID = MetaDatum("uuid", True, str),
     FIELD_OF_VIEW = MetaDatum("field_of_view", False, np.ndarray, Units.METERS)
     NUMBER_OF_ILLUMINATORS = MetaDatum("num_illuminators", False, int, Units.DIMENSIONLESS_UNIT)
     NUMBER_OF_DETECTORS = MetaDatum("num_detectors", False, int, Units.DIMENSIONLESS_UNIT)
@@ -108,10 +113,14 @@ class MetadataDeviceTags:
     ANGULAR_RESPONSE = MetaDatum("angular_response", False, np.ndarray, Units.DIMENSIONLESS_UNIT)
 
 
-class MetadataTags:
+class MetadataTags(Enum):
     """
     Binary time series data meta data tags
     """
+
+    def __init__(self, metadatum: MetaDatum):
+        self.info = metadatum
+
     UUID = MetaDatum("uuid", True, str)
     ENCODING = MetaDatum("encoding", True, str)
     COMPRESSION = MetaDatum("compression", True, str)
