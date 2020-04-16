@@ -28,32 +28,68 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+# display method update
+
+from core.metadata_tags import MetadataTags.names
+
 class DeviceMetaDataCreator():
-    """
-    TODO: Write a mockup for the helper class that will facilitate the creation of a device meta data dictionary
-    """
     def __init__(self):
-        print("TODO")
+        self.device_dict = {'general':{},'illuminators':{},'detectors':{}} 
 
-    def add_illuminator(self, illuminator):
-        """
-        TODO
-        :param illuminator:
-        :return:
-        """
-        pass
+    def set_general_information(self,UUID:int,x1,x2,x3)
+        self.device_dict['general']['UUID']=UUID
+        self.device_dict['general']['field_of_view']=[x1,x2,x3]
+        
+        class IlluminationElementCreator()
+            def __init__(self, ID):
+                self.device_dict['illuminators']['illumination_element']={}
 
-    def add_detector(self, detector):
-        """
+            def add_illuminator_position(self,ID, x1,x2,x3):
+                self.device_dict['illuminators']['illuminator_position']=[x1,x2,x3]
 
-        :param detector:
-        :return:
-        """
-        pass
+            def add_illuminator_orientation(self,ID, r1,r2,r3):
+                self.device_dict['illuminators']['illuminator_orientation']=[r1,r2,r3]
 
-    def get_meta_datra_dictionary(self):
-        """
+            def add_illuminator_shape(self,ID,val):
+                self.device_dict['illuminators']['illuminator_shape']=val
 
-        :return:
-        """
-        pass
+            def add_wavelength_range(self,ID, lamda_min, lamda_max, lamda_accuracy):
+                self.device_dict['illuminators']['wavelength_range']=[lamda_min, lamda_max, lamda_accuracy]
+
+            def add_laser_energy_profile(self,ID,val):
+                self.device_dict['illuminators']['laser_energy_profile']=val
+
+            def add_laser_stability_profile(self,ID,val):
+                self.device_dict['illuminators']['laser_stability_profile']=val
+
+            def add_pulse_width(self,ID,val):
+                self.device_dict['illuminators']['pulse_width']=val
+
+            def add_beam_intensity_profile(self,ID,val):
+                self.device_dict['illuminators']['beam_intensity_profile']=val
+
+            def add_beam_divergence_angles(self,ID,val):
+                self.device_dict['illuminators']['beam_divergence_angles']=val
+                
+        class DetectionElementCreator()
+            def __init__(self):
+                self.device_dict['detectors']['detection_element']={}
+
+            def add_detector_position(self,ID,x1,x2,x3):
+                self.device_dict['detectors']['detector_position']=[x1,x2,x3]
+
+            def add_detector_orientation(self,ID,r1,r2,r3):
+                self.device_dict['detectors']['detector_orientation']=[r1,r2,r3]
+
+            def add_detector_size(self,ID,x1,x2,x3):
+                self.device_dict['detectors']['detector_size']=[x1,x2,x3]
+
+            def add_frequency_response(self,ID,val):
+                self.device_dict['detectors']['frequency_response']=val
+
+            def add_angular_response(self,ID,val):
+                self.device_dict['detectors']['angular_response']=val
+                                 
+#display dictionary, number of detectors, number of illuminators
+    def display(self):
+        return self.device_dict, len(self.device_dict['detectors']), len(self.device_dict['illuminators'])
