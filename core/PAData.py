@@ -28,11 +28,30 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+import numpy as np
+
 
 class PAData:
+    """
+    TODO: Detailed documentation
+    """
+    def __init__(self, time_series_data: np.ndarray = None,
+                 meta_data: dict = None,
+                 meta_data_device: dict = None):
+        """
+        TODO: Detailed documentation
 
-    def __init__(self):
+        :param time_series_data:
+        :param meta_data:
+        :param meta_data_device:
+        """
 
-        self.binary_time_series_data = None
-        self.meta_data = dict()
-        self.meta_data_device = dict()
+        if meta_data is None:
+            meta_data = dict()
+
+        if meta_data_device is None:
+            meta_data_device = dict()
+
+        self.binary_time_series_data = time_series_data
+        self.meta_data = meta_data
+        self.meta_data_device = meta_data_device
