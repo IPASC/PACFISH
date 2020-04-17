@@ -28,68 +28,109 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-# display method update
+from core.metadata_tags import MetadataDeviceTags
+import copy
 
-from core.metadata_tags import MetadataTags.names
 
-class DeviceMetaDataCreator():
+class IlluminationElementCreator(object):
     def __init__(self):
-        self.device_dict = {'general':{},'illuminators':{},'detectors':{}} 
+        self.illuminator_element_dict = dict()
 
-    def set_general_information(self,UUID:int,x1,x2,x3)
-        self.device_dict['general']['UUID']=UUID
-        self.device_dict['general']['field_of_view']=[x1,x2,x3]
-        
-        class IlluminationElementCreator()
-            def __init__(self, ID):
-                self.device_dict['illuminators']['illumination_element']={}
+    def set_illuminator_position(self, x1, x2, x3):
+        self.illuminator_element_dict[MetadataDeviceTags.ILLUMINATOR_POSITION.info.tag] = [x1, x2, x3]
 
-            def add_illuminator_position(self,ID, x1,x2,x3):
-                self.device_dict['illuminators']['illuminator_position']=[x1,x2,x3]
+    def set_illuminator_orientation(self, r1, r2, r3):
+        self.illuminator_element_dict[MetadataDeviceTags.ILLUMINATOR_ORIENTATION.info.tag] = [r1, r2, r3]
 
-            def add_illuminator_orientation(self,ID, r1,r2,r3):
-                self.device_dict['illuminators']['illuminator_orientation']=[r1,r2,r3]
+    def set_illuminator_shape(self, val):
+        self.illuminator_element_dict[MetadataDeviceTags.ILLUMINATOR_SHAPE.info.tag] = val
 
-            def add_illuminator_shape(self,ID,val):
-                self.device_dict['illuminators']['illuminator_shape']=val
+    def set_wavelength_range(self, lamda_min, lamda_max, lamda_accuracy):
+        self.illuminator_element_dict[MetadataDeviceTags.WAVELENGTH_RANGE.info.tag] = [
+            lamda_min, lamda_max, lamda_accuracy]
 
-            def add_wavelength_range(self,ID, lamda_min, lamda_max, lamda_accuracy):
-                self.device_dict['illuminators']['wavelength_range']=[lamda_min, lamda_max, lamda_accuracy]
+    def set_laser_energy_profile(self, val):
+        self.illuminator_element_dict[MetadataDeviceTags.LASER_ENERGY_PROFILE.info.tag] = val
 
-            def add_laser_energy_profile(self,ID,val):
-                self.device_dict['illuminators']['laser_energy_profile']=val
+    def set_laser_stability_profile(self, val):
+        self.illuminator_element_dict[MetadataDeviceTags.LASER_STABILITY_PROFILE.info.tag] = val
 
-            def add_laser_stability_profile(self,ID,val):
-                self.device_dict['illuminators']['laser_stability_profile']=val
+    def set_pulse_width(self, val):
+        """
 
-            def add_pulse_width(self,ID,val):
-                self.device_dict['illuminators']['pulse_width']=val
+        :param val: a floating point value in the units of MetadataDeviceTags.PULSE_WIDTH.info.unit.
+        :return:
+        """
+        self.illuminator_element_dict[MetadataDeviceTags.PULSE_WIDTH.info.tag] = val
 
-            def add_beam_intensity_profile(self,ID,val):
-                self.device_dict['illuminators']['beam_intensity_profile']=val
+    def set_beam_intensity_profile(self, val):
+        self.illuminator_element_dict[MetadataDeviceTags.BEAM_INTENSITY_PROFILE.info.tag] = val
 
-            def add_beam_divergence_angles(self,ID,val):
-                self.device_dict['illuminators']['beam_divergence_angles']=val
-                
-        class DetectionElementCreator()
-            def __init__(self):
-                self.device_dict['detectors']['detection_element']={}
+    def set_beam_divergence_angles(self, angle):
+        self.illuminator_element_dict[MetadataDeviceTags.BEAM_DIVERGENCE_ANGLES.info.tag] = angle
 
-            def add_detector_position(self,ID,x1,x2,x3):
-                self.device_dict['detectors']['detector_position']=[x1,x2,x3]
+    def get_dictionary(self):
+        return copy.deepcopy(self.illuminator_element_dict)
 
-            def add_detector_orientation(self,ID,r1,r2,r3):
-                self.device_dict['detectors']['detector_orientation']=[r1,r2,r3]
 
-            def add_detector_size(self,ID,x1,x2,x3):
-                self.device_dict['detectors']['detector_size']=[x1,x2,x3]
+class DetectionElementCreator(object):
+    def __init__(self):
+        self.detection_element_dict = dict()
 
-            def add_frequency_response(self,ID,val):
-                self.device_dict['detectors']['frequency_response']=val
+    def set_detector_position(self, x1, x2, x3):
+        self.detection_element_dict[MetadataDeviceTags.DETECTOR_POSITION.info.tag] = [x1, x2, x3]
 
-            def add_angular_response(self,ID,val):
-                self.device_dict['detectors']['angular_response']=val
-                                 
-#display dictionary, number of detectors, number of illuminators
-    def display(self):
-        return self.device_dict, len(self.device_dict['detectors']), len(self.device_dict['illuminators'])
+    def set_detector_orientation(self, r1, r2, r3):
+        self.detection_element_dict[MetadataDeviceTags.DETECTOR_ORIENTATION.info.tag] = [r1, r2, r3]
+
+    def set_detector_size(self, x1, x2, x3):
+        self.detection_element_dict[MetadataDeviceTags.DETECTOR_SIZE.info.tag] = [x1, x2, x3]
+
+    def set_frequency_response(self, val):
+        """
+
+        :param val: a two element list [frequency, response] frequency and response are also lists where
+                    len(frequency) == len(response)
+        :return:
+        """
+        self.detection_element_dict[MetadataDeviceTags.FREQUENCY_RESPONSE.info.tag] = val
+
+    def set_angular_response(self, val):
+        self.detection_element_dict[MetadataDeviceTags.ANGULAR_RESPONSE.info.tag] = val
+
+    def get_dictionary(self):
+        return copy.deepcopy(self.detection_element_dict)
+
+
+class DeviceMetaDataCreator(object):
+    def __init__(self):
+        self.device_dict = dict()
+        self.device_dict['general'] = dict()
+        self.device_dict['illuminators'] = dict()
+        self.device_dict['detectors'] = dict()
+
+    def set_general_information(self, uuid: str, fov: list):
+        """
+
+        :param uuid: is a string that uniquely identifies the photoacoustic device
+        :param fov: is a list of three float values that describe the extent of the field of view of the device in the
+                    x1, x2, and x3 direction (x1, x2, x3 is defined in TODO).
+        :return: void
+        """
+        self.device_dict['general']['UUID'] = uuid
+        self.device_dict['general']['field_of_view'] = fov
+
+    def add_detection_element(self, uid: str, detection_element: dict):
+        self.device_dict['detectors'][uid] = detection_element
+
+    def add_illumination_element(self, uid: str, illumination_element: dict):
+        self.device_dict['illuminators'][uid] = illumination_element
+
+    def finalize_device_meta_data(self):
+
+        self.device_dict['general'][MetadataDeviceTags.NUMBER_OF_DETECTORS.info.tag] = len(
+            self.device_dict['detectors'])
+        self.device_dict['general'][MetadataDeviceTags.NUMBER_OF_ILLUMINATORS.info.tag] = len(
+            self.device_dict['illuminators'])
+
+        return copy.deepcopy(self.device_dict)
