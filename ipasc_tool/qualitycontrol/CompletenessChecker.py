@@ -138,11 +138,11 @@ class CompletenessChecker:
         else:
             log_string += ("Found " + str(len(device_meta_data[MetadataDeviceTags.DETECTORS.info.tag])) +
                            " detection elements.\n\n")
-            for detector_dict in device_meta_data[MetadataDeviceTags.DETECTORS.info.tag].keys():
+            for detector_dict in device_meta_data[MetadataDeviceTags.DETECTORS.info.tag]:
                 log_string += ("Now analyzing detector element \"" +
                                detector_dict + "\"\n\n")
                 for detector_meta_datum in detection_tags:
-                    [log, count] = check_metadatum_from_dict(detector_dict,
+                    [log, count] = check_metadatum_from_dict(device_meta_data[MetadataDeviceTags.DETECTORS.info.tag][detector_dict],
                                                              detector_meta_datum)
                     log_string += log
                     incompletenes_count += count
@@ -152,7 +152,8 @@ class CompletenessChecker:
         illumination_tags = [MetadataDeviceTags.ILLUMINATOR_SHAPE, MetadataDeviceTags.ILLUMINATOR_ORIENTATION,
                              MetadataDeviceTags.ILLUMINATOR_POSITION, MetadataDeviceTags.WAVELENGTH_RANGE,
                              MetadataDeviceTags.LASER_ENERGY_PROFILE, MetadataDeviceTags.PULSE_WIDTH,
-                             MetadataDeviceTags.LASER_STABILITY_PROFILE]
+                             MetadataDeviceTags.LASER_STABILITY_PROFILE, MetadataDeviceTags.BEAM_INTENSITY_PROFILE,
+                             MetadataDeviceTags.BEAM_DIVERGENCE_ANGLES]
 
         if MetadataDeviceTags.ILLUMINATORS.info.tag not in device_meta_data:
             log_string += "Detection elements data is missing!\n\n"
@@ -160,11 +161,11 @@ class CompletenessChecker:
         else:
             log_string += ("Found " + str(len(device_meta_data[MetadataDeviceTags.ILLUMINATORS.info.tag])) +
                            " detection elements.\n\n")
-            for illuminator_dict in device_meta_data[MetadataDeviceTags.ILLUMINATORS.info.tag].keys():
+            for illuminator_dict in device_meta_data[MetadataDeviceTags.ILLUMINATORS.info.tag]:
                 log_string += ("Now analyzing illumination element \"" +
                                illuminator_dict + "\"\n\n")
                 for illuminator_meta_datum in illumination_tags:
-                    [log, count] = check_metadatum_from_dict(illuminator_dict,
+                    [log, count] = check_metadatum_from_dict(device_meta_data[MetadataDeviceTags.ILLUMINATORS.info.tag][illuminator_dict],
                                                              illuminator_meta_datum)
                     log_string += log
                     incompletenes_count += count
@@ -202,12 +203,12 @@ def check_metadatum_from_dict(dictionary: dict, metadatum: MetadataDeviceTags):
         log_string += "* missing entry \"" + metadatum.info.tag + "\"\n"
         log_string += "  * metadatum not found in dictionary\n\n"
         count += 1
-    elif dictionary[metadatum] is None:
+    elif dictionary[metadatum.info.tag] is None:
         log_string += "* missing entry \"" + metadatum.info.tag + "\"\n"
         log_string += "  * metadatum found in dictionary\n"
         log_string += "  * but the mapped field was None\n\n"
         count += 1
-    elif not isinstance(dictionary[metadatum], metadatum.info.dtype):
+    elif not isinstance(dictionary[metadatum.info.tag], metadatum.info.dtype):
         log_string += "* corrupt entry \"" + metadatum.info.tag + "\"\n"
         log_string += "  * metadatum found in dictionary\n"
         log_string += "  * and the mapped field was not None\n"
