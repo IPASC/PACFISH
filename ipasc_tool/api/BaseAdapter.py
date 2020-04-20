@@ -29,9 +29,9 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 from abc import ABC, abstractmethod
-from core.PAData import PAData
-from qualitycontrol.ConsistencyChecker import ConsistencyChecker
-from core.metadata_tags import MetadataTags, MetaDatum
+from ipasc_tool.core.PAData import PAData
+from ipasc_tool.qualitycontrol import ConsistencyChecker
+from ipasc_tool.core.metadata_tags import MetadataTags, MetaDatum
 import numpy as np
 
 

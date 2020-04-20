@@ -28,7 +28,7 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from core.metadata_tags import MetadataDeviceTags
+from ipasc_tool.core.metadata_tags import MetadataDeviceTags
 import copy
 
 
@@ -105,9 +105,9 @@ class DetectionElementCreator(object):
 class DeviceMetaDataCreator(object):
     def __init__(self):
         self.device_dict = dict()
-        self.device_dict['general'] = dict()
-        self.device_dict['illuminators'] = dict()
-        self.device_dict['detectors'] = dict()
+        self.device_dict[MetadataDeviceTags.GENERAL.info.tag] = dict()
+        self.device_dict[MetadataDeviceTags.ILLUMINATORS.info.tag] = dict()
+        self.device_dict[MetadataDeviceTags.DETECTORS.info.tag] = dict()
 
     def set_general_information(self, uuid: str, fov: list):
         """
@@ -117,20 +117,20 @@ class DeviceMetaDataCreator(object):
                     x1, x2, and x3 direction (x1, x2, x3 is defined in TODO).
         :return: void
         """
-        self.device_dict['general']['UUID'] = uuid
-        self.device_dict['general']['field_of_view'] = fov
+        self.device_dict[MetadataDeviceTags.GENERAL.info.tag]['UUID'] = uuid
+        self.device_dict[MetadataDeviceTags.GENERAL.info.tag]['field_of_view'] = fov
 
     def add_detection_element(self, uid: str, detection_element: dict):
-        self.device_dict['detectors'][uid] = detection_element
+        self.device_dict[MetadataDeviceTags.DETECTORS.info.tag][uid] = detection_element
 
     def add_illumination_element(self, uid: str, illumination_element: dict):
-        self.device_dict['illuminators'][uid] = illumination_element
+        self.device_dict[MetadataDeviceTags.ILLUMINATORS.info.tag][uid] = illumination_element
 
     def finalize_device_meta_data(self):
 
-        self.device_dict['general'][MetadataDeviceTags.NUMBER_OF_DETECTORS.info.tag] = len(
-            self.device_dict['detectors'])
-        self.device_dict['general'][MetadataDeviceTags.NUMBER_OF_ILLUMINATORS.info.tag] = len(
-            self.device_dict['illuminators'])
+        self.device_dict[MetadataDeviceTags.GENERAL.info.tag][MetadataDeviceTags.NUMBER_OF_DETECTORS.info.tag] = \
+            len(self.device_dict[MetadataDeviceTags.DETECTORS.info.tag])
+        self.device_dict[MetadataDeviceTags.GENERAL.info.tag][MetadataDeviceTags.NUMBER_OF_ILLUMINATORS.info.tag] = \
+            len(self.device_dict[MetadataDeviceTags.ILLUMINATORS.info.tag])
 
         return copy.deepcopy(self.device_dict)

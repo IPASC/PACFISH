@@ -30,9 +30,8 @@
 
 import os
 from unittest.case import TestCase
-from core.metadata_tags import MetadataTags
-from core.metadata_tags import MetadataDeviceTags
-from qualitycontrol.CompletenessChecker import CompletenessChecker
+from ipasc_tool.core.metadata_tags import MetadataTags
+from ipasc_tool.qualitycontrol import CompletenessChecker
 import numpy as np
 
 class MetaDataTest(TestCase):

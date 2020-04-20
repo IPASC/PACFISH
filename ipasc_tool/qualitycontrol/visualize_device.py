@@ -1,7 +1,7 @@
 import matplotlib.pylab as plt
 from matplotlib.patches import Rectangle
 import numpy as np
-from core.metadata_tags import MetadataDeviceTags
+from ipasc_tool.core.metadata_tags import MetadataDeviceTags
 
 
 def define_boundary_values(device_dictionary : dict):
@@ -135,7 +135,7 @@ if __name__ == "__main__":
 
 
     def create_random_detection_element():
-        detector_dict = {}
+        detector_dict = dict()
         detector_dict[MetadataDeviceTags.DETECTOR_POSITION.info.tag] = [np.random.random()*DIM_X,
                                                                         np.random.random()*DIM_Y,
                                                                         -np.random.random()*DIM_Z]

@@ -31,11 +31,11 @@
 import numpy as np
 import uuid
 
-from core.metadata_tags import MetaDatum
+from ipasc_tool.core.metadata_tags import MetaDatum
 
 print("GENERIC TESTING AREA")
 
-from api import BaseAdapter
+from ipasc_tool.api import BaseAdapter
 
 
 class DeviceSpecificAdapter(BaseAdapter):

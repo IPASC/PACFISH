@@ -28,26 +28,7 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from core.metadata_tags import MetaDatum
-
-
-class ConsistencyChecker:
-
-    def __init__(self):
-        print("TODO")
-
-    def check_binary(self, binary_data):
-        # TODO
-        pass
-
-    def check_meta_data(self, binary_meta_data: dict):
-        # TODO
-        pass
-
-    def check_meta_data_device(self, device_meta_data: dict):
-        # TODO
-        pass
-
-    def check_meta_datum(self, meta_datum: MetaDatum, value: object):
-        # TODO
-        pass
+from ipasc_tool.api.BaseAdapter import BaseAdapter
+from ipasc_tool.api.DeviceMetaDataCreator import DeviceMetaDataCreator
+from ipasc_tool.api.DeviceMetaDataCreator import DetectionElementCreator
+from ipasc_tool.api.DeviceMetaDataCreator import IlluminationElementCreator

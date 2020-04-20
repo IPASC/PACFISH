@@ -27,22 +27,27 @@
 # CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-import numpy as np
 
-from api import BaseAdapter
-from core.metadata_tags import MetaDatum
+from ipasc_tool.core.metadata_tags import MetaDatum
 
 
-class IPASCAdapter(BaseAdapter):
-
-    def generate_binary_data(self) -> np.ndarray:
-        pass
-
-    def generate_meta_data_device(self) -> dict:
-        pass
-
-    def set_metadata_value(self, metadata_tag: MetaDatum) -> object:
-        pass
+class ConsistencyChecker:
 
     def __init__(self):
-        super().__init__()
+        print("TODO")
+
+    def check_binary(self, binary_data):
+        # TODO
+        pass
+
+    def check_meta_data(self, binary_meta_data: dict):
+        # TODO
+        pass
+
+    def check_meta_data_device(self, device_meta_data: dict):
+        # TODO
+        pass
+
+    def check_meta_datum(self, meta_datum: MetaDatum, value: object):
+        # TODO
+        pass

@@ -28,4 +28,6 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from api.BaseAdapter import BaseAdapter
+from ipasc_tool.qualitycontrol.CompletenessChecker import CompletenessChecker
+from ipasc_tool.qualitycontrol.ConsistencyChecker import ConsistencyChecker
+from ipasc_tool.qualitycontrol.visualize_device import visualize_device

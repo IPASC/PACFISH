@@ -28,11 +28,11 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from api.DeviceMetaDataCreator import DeviceMetaDataCreator
-from api.DeviceMetaDataCreator import DetectionElementCreator
-from api.DeviceMetaDataCreator import IlluminationElementCreator
+from ipasc_tool.api import DeviceMetaDataCreator
+from ipasc_tool.api import DetectionElementCreator
+from ipasc_tool.api import IlluminationElementCreator
 
-from qualitycontrol.CompletenessChecker import CompletenessChecker
+from ipasc_tool.qualitycontrol import CompletenessChecker
 
 
 device_metadata_creator = DeviceMetaDataCreator()

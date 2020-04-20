@@ -87,7 +87,10 @@ class MetadataDeviceTags(Enum):
         self.info = metadatum
 
     # General purpose fields
-    UUID = MetaDatum("uuid", True, str),
+    UUID = MetaDatum("uuid", True, str)
+    GENERAL = MetaDatum("general", True, dict)
+    ILLUMINATORS = MetaDatum("illuminators", True, dict)
+    DETECTORS = MetaDatum("detectors", True, dict)
     FIELD_OF_VIEW = MetaDatum("field_of_view", False, np.ndarray, Units.METERS)
     NUMBER_OF_ILLUMINATORS = MetaDatum("num_illuminators", False, int, Units.DIMENSIONLESS_UNIT)
     NUMBER_OF_DETECTORS = MetaDatum("num_detectors", False, int, Units.DIMENSIONLESS_UNIT)
