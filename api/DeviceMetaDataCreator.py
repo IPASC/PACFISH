@@ -72,7 +72,7 @@ class IlluminationElementCreator(object):
         """
         self.illuminator_element_dict[MetadataDeviceTags.WAVELENGTH_RANGE.info.tag] = wl_range
 
-    def set_laser_energy_profile(self, energy_profile):
+    def set_laser_energy_profile(self, energy_profile:list):
         """
         :param enery_profile: a two element list [wavelengths, laser_energy] describing the laser energy profile.
                     Laser energy and wavelengths are also lists where len(laser_energy) == len(profile)
@@ -91,7 +91,7 @@ class IlluminationElementCreator(object):
         """
         self.illuminator_element_dict[MetadataDeviceTags.LASER_STABILITY_PROFILE.info.tag] = stability_profile
 
-    def set_pulse_width(self, pulse_width):
+    def set_pulse_width(self, pulse_width:float):
         """
         :param pulse_width: a floating point value describing the pulse width of the laser 
                     in the units of MetadataDeviceTags.PULSE_WIDTH.info.unit.
@@ -108,7 +108,7 @@ class IlluminationElementCreator(object):
         """
         self.illuminator_element_dict[MetadataDeviceTags.BEAM_INTENSITY_PROFILE.info.tag] = intensity_profile
 
-    def set_beam_divergence_angles(self, angle):
+    def set_beam_divergence_angles(self, angle:float):
         """
         :param angle: a value describing the opening angle of the laser beam from the illuminator shape with respect 
                     to the orientation vector. This angle is represented by the standard deviation of the beam divergence.
@@ -152,7 +152,7 @@ class DetectionElementCreator(object):
         """
         self.detection_element_dict[MetadataDeviceTags.DETECTOR_SIZE.info.tag] = size
 
-    def set_frequency_response(self, frequency_response):
+    def set_frequency_response(self, frequency_response:list):
         """
         :param frequency_response: a two element list [frequency, response] describing the frequency response of the detector.
                     Frequency and response are also lists where len(frequency) == len(response).
@@ -161,7 +161,7 @@ class DetectionElementCreator(object):
         """
         self.detection_element_dict[MetadataDeviceTags.FREQUENCY_RESPONSE.info.tag] = frequency_response
 
-    def set_angular_response(self, angular_response):
+    def set_angular_response(self, angular_response: list):
         """
         :param angular_response: a two element list [angles, response] describing the angular response of the detecor.
                     Angles and response are also lists where len(angles) == len(response).
