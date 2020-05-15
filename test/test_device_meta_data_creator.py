@@ -48,7 +48,7 @@ def create_random_testing_parameters():
 class DeviceMetaDataCreatorTest(TestCase):
 
     def setUp(self):
-        self.device_dict = DeviceMetaDataCreator()
+        self.device_dict_creator = DeviceMetaDataCreator()
         
         print("setUp")
 
@@ -56,11 +56,13 @@ class DeviceMetaDataCreatorTest(TestCase):
         print("tearDown")
         
         
-    def set_general_information(self): 
+    def test_set_general_information(self): 
         test_list=create_random_testing_parameters()['test_list']
         test_string=create_random_testing_parameters()['test_string']
         
-        set_general_information(self.device_dict,test_string,test_list)
+        
+        self.device_dict_creator.set_general_information(test_string,test_list)
+        device_dict=self.device_dict_creator
         assert device_dict[MetadataDeviceTags.GENERAL.info.tag]['UUID'] == test_string
         assert device_dict[MetadataDeviceTags.GENERAL.info.tag]['field_of_view'] == test_list
 
