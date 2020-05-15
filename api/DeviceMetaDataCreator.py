@@ -37,7 +37,7 @@ class IlluminationElementCreator(object):
         self.illuminator_element_dict = dict()
 
     def set_illuminator_position(self, illuminator_position:list):
-         """
+        """
         :param illuminator_position: is a list of three float values that describe the position of the illumination element in the
                     x1, x2, and x3 direction.
                     The units can be found in MetadataDeviceTags.ILLUMINATOR_POSITION.info.unit.
@@ -83,7 +83,7 @@ class IlluminationElementCreator(object):
         
 
     def set_laser_stability_profile(self, stability_profile:list):
-         """
+        """
         :param stability_profile: a two element list [wavelengths,laser_stability,] describing the laser stability profile.
                     Laser stability and wavelengths are also lists where len(stability_profile) == len(wavelengths).
                     The units can be found in MetadataDeviceTags.LASER_STABILITY_PROFILE.info.unit.
@@ -100,7 +100,7 @@ class IlluminationElementCreator(object):
         self.illuminator_element_dict[MetadataDeviceTags.PULSE_WIDTH.info.tag] = pulse_width
 
     def set_beam_intensity_profile(self, intensity_profile:list):
-         """
+        """
         :param intensity_profile: a two element list [wavelengths, intensity_profile] describing the beam itensity profile.
                     Wavelengths and intensity_profile are also lists where len(wavelengths) == len(intensity_profile)
                     The units can be found in MetadataDeviceTags.BEAM_INTENSITY_PROFILE.info.unit.
@@ -127,7 +127,7 @@ class DetectionElementCreator(object):
         self.detection_element_dict = dict()
 
     def set_detector_position(self, detector_position:list):
-         """
+        """
         :param detector_position: a list of three float values that describe the position of the detection element in the
                     x1, x2, and x3 direction.
                     The units can be found in MetadataDeviceTags.DETECTOR_POSITION.info.unit.
@@ -145,7 +145,7 @@ class DetectionElementCreator(object):
         self.detection_element_dict[MetadataDeviceTags.DETECTOR_ORIENTATION.info.tag] = orientation
 
     def set_detector_size(self, size:list):
-         """
+        """
         :param size: a three element list [x1, x2, x3] describing the extent of the detector size in x1, x2, and x3 direction.
                     The units can be found in MetadataDeviceTags.DETECTOR_SIZE.info.unit.
         :return: void
@@ -175,11 +175,15 @@ class DetectionElementCreator(object):
 
 
 class DeviceMetaDataCreator(object):
+
     def __init__(self):
+        self.GENERAL = "general"
+        self.ILLUMINATORS = "illuminators"
+        self.DETECTORS = "detectors"
         self.device_dict = dict()
-        self.device_dict['general'] = dict()
-        self.device_dict['illuminators'] = dict()
-        self.device_dict['detectors'] = dict()
+        self.device_dict[self.GENERAL] = dict()
+        self.device_dict[self.ILLUMINATORS] = dict()
+        self.device_dict[self.DETECTORS] = dict()
 
     def set_general_information(self, uuid: str, fov: list):
         """
@@ -188,16 +192,16 @@ class DeviceMetaDataCreator(object):
                     x1, x2, and x3 direction (x1, x2, x3 is defined in TODO).
         :return: void
         """
-        self.device_dict['general']['UUID'] = uuid
-        self.device_dict['general']['field_of_view'] = fov
+        self.device_dict[self.GENERAL][MetadataDeviceTags.UUID.info.tag] = uuid
+        self.device_dict[self.GENERAL][MetadataDeviceTags.FIELD_OF_VIEW.info.tag] = fov
 
     def add_detection_element(self, uid: str, detection_element: dict):
-         """
+        """
         :param uid: is a string that uniquely identifies the detection element
         :param detection_element: is a dictionary for the detection element specific parameters
         :return: void
         """
-        self.device_dict['detectors'][uid] = detection_element
+        self.device_dict[self.DETECTORS][uid] = detection_element
 
     def add_illumination_element(self, uid: str, illumination_element: dict):
         """
@@ -205,13 +209,13 @@ class DeviceMetaDataCreator(object):
         :param illumination_element: is a dictionary for the illumination element specific parameters
         :return: void
         """
-        self.device_dict['illuminators'][uid] = illumination_element
+        self.device_dict[self.ILLUMINATORS][uid] = illumination_element
 
     def finalize_device_meta_data(self):
 
-        self.device_dict['general'][MetadataDeviceTags.NUMBER_OF_DETECTORS.info.tag] = len(
-            self.device_dict['detectors'])
-        self.device_dict['general'][MetadataDeviceTags.NUMBER_OF_ILLUMINATORS.info.tag] = len(
-            self.device_dict['illuminators'])
+        self.device_dict[self.GENERAL][MetadataDeviceTags.NUMBER_OF_DETECTORS.info.tag] = len(
+            self.device_dict[self.DETECTORS])
+        self.device_dict[self.GENERAL][MetadataDeviceTags.NUMBER_OF_ILLUMINATORS.info.tag] = len(
+            self.device_dict[self.ILLUMINATORS])
 
         return copy.deepcopy(self.device_dict)

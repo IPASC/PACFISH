@@ -31,18 +31,18 @@
 
 import os
 from unittest.case import TestCase
-from ipasc_tool.core import MetadataTags
-from ipasc_tool.core import MetadataDeviceTags
-from ipasc_tool.api import DeviceMetaDataCreator
+from core import MetadataTags
+from core import MetadataDeviceTags
+from api.DeviceMetaDataCreator import DeviceMetaDataCreator, IlluminationElementCreator
 import numpy as np
 
 
 def create_random_testing_parameters():
     test_float = np.random.random()
-    test_list = [(np.random.random(), np.random.random(); -np.random.random())]
-    test_string = str(np.random())
+    test_list = [np.random.random(), np.random.random(), -np.random.random()]
+    test_string = str(np.random.random())
     test_dict = dict()
-    return {'test_float': test_float, 'test_list': test_list ,'test_string': test_string,'test_dict': test_dict}'
+    return {'test_float': test_float, 'test_list': test_list, 'test_string': test_string, 'test_dict': test_dict}
 
 
 class DeviceMetaDataCreatorTest(TestCase):
@@ -55,125 +55,125 @@ class DeviceMetaDataCreatorTest(TestCase):
     def tearDown(self):
         print("tearDown")
         
-        
-    def test_set_general_information(self): 
-        test_list=create_random_testing_parameters()['test_list']
-        test_string=create_random_testing_parameters()['test_string']
-        
-        
-        self.device_dict_creator.set_general_information(test_string,test_list)
-        device_dict=self.device_dict_creator
-        assert device_dict[MetadataDeviceTags.GENERAL.info.tag]['UUID'] == test_string
-        assert device_dict[MetadataDeviceTags.GENERAL.info.tag]['field_of_view'] == test_list
+    def test_set_general_information(self):
+        test_list = create_random_testing_parameters()['test_list']
+        test_string = create_random_testing_parameters()['test_string']
 
-    def test_add_detection_element(self):
-        test_dict=create_random_testing_parameters()['test_dict']
-        
-        add_detection_element(self.device_dict, test_string, test_dict)
-        assert device_dict[MetadataDeviceTags.DETECTORS.info.tag][test_string] == test_dict
-        
-    def test_add_illumination_element(self):   
-        test_dict=create_random_testing_parameters()['test_dict']
-        
-        add_illumination_element(self.device_dict, test_string, test_dict)
-        assert device_dict[MetadataDeviceTags.ILLUMINATORS.info.tag][test_string] == test_dict
-        
-    def test_finalize_device_meta_data(self):
-        
-        assert self.detection_element_dict.finalize_device_meta_data(device_dict)
-        
-        os.remove(self.device_dict.save_file_name)
+        self.device_dict_creator.set_general_information(test_string, test_list)
+        device_dict = self.device_dict_creator.finalize_device_meta_data()
+
+        assert device_dict[self.device_dict_creator.GENERAL][MetadataDeviceTags.UUID.info.tag] == test_string
+        assert device_dict[self.device_dict_creator.GENERAL][MetadataDeviceTags.FIELD_OF_VIEW.info.tag] == test_list
+
+    # def test_add_detection_element(self):
+    #     test_dict=create_random_testing_parameters()['test_dict']
+    #
+    #     add_detection_element(self.device_dict, test_string, test_dict)
+    #     assert device_dict[MetadataDeviceTags.DETECTORS.info.tag][test_string] == test_dict
+    #
+    # def test_add_illumination_element(self):
+    #     test_dict=create_random_testing_parameters()['test_dict']
+    #
+    #     add_illumination_element(self.device_dict, test_string, test_dict)
+    #     assert device_dict[MetadataDeviceTags.ILLUMINATORS.info.tag][test_string] == test_dict
+    #
+    # def test_finalize_device_meta_data(self):
+    #
+    #     assert self.detection_element_dict.finalize_device_meta_data(device_dict)
+    #
+    #     os.remove(self.device_dict.save_file_name)
         
 
-    
 class IlluminationElementCreatorTest(TestCase):
 
     def setUp(self):
-        self.illuminator_element_dict = IlluminationElementCreator()
+        self.illuminator_creator = IlluminationElementCreator()
         print("setUp")
 
     def tearDown(self):
         print("tearDown")
 
     def test_set_illuminator_position(self):
-        test_list=create_random_testing_parameters()['test_list']
-        assert self.illuminator_element_dict.set_illuminator_position(self.illuminator_element_dict,test_list) == test_list
-            
-    def test_set_illuminator_shape(self):
-        test_list=create_random_testing_parameters()['test_list']
-        assert self.illuminator_element_dict.set_illuminator_shape(self.illuminator_element_dict,test_list) == test_list
-        
-            
-    def test_set_wavelength_range(self):
-        test_list=create_random_testing_parameters()['test_list']
-        assert self.illuminator_element_dict.set_wavelength_range(self.illuminator_element_dict, test_list)== test_list
-       
-    def test_set_laser_energy_profile(self):
-        test_list=create_random_testing_parameters()['test_list']
-        assert self.illuminator_element_dict.set_laser_energy_profile(self.illuminator_element_dict,test_list)== test_list
-        
-    def test_set_laser_stability_profile(self):
-        test_list=create_random_testing_parameters()['test_list']
-        assert self.illuminator_element_dict.set_laser_stability_profile(self.illuminator_element_dict, test_list)== test_list
-        
-            
-    def test_set_pulse_width(self):
-        test_list=create_random_testing_parameters()['test_list']
-        assert self.illuminator_element_dict.set_pulse_width(self.illuminator_element_dict,test_list)== test_list
-        
-            
-    def test_set_beam_intensity_profile(self):
-        test_float=create_random_testing_parameters()['test_float']
-        assert self.illuminator_element_dict.set_beam_intensity_profile(self.illuminator_element_dict,test_float)== test_float
-        
-            
-    def test_set_beam_divergence_angles(self):
-        test_float=create_random_testing_parameters()['test_float']
-        assert self.illuminator_element_dict.set_beam_divergence_angles(self.illuminator_element_dict,test_float)== test_float
-        
-            
-    def test_get_dictionary(self):
-        assert get_dictionary() ==
-    
-        os.remove(self.illuminator_element_dict.save_file_name)
-          
-        
-        
-class DetectionElementCreatorTest(TestCase):
+        test_list = create_random_testing_parameters()['test_list']
+        self.illuminator_creator.set_illuminator_position(test_list)
 
-    def setUp(self):
-        self.detection_element_dict = DetectionElementCreator()
-        print("setUp")
+        illumination_dict = self.illuminator_creator.get_dictionary()
 
-    def tearDown(self):
-        print("tearDown")
-            
-    def test_set_detector_position(self):
-        test_list=create_random_testing_parameters()['test_list']
-        assert self.detection_element_dict.set_detector_position(self.detection_element_dict,test_list) == test_list
-        
-            
-    def test_set_detector_orientation(self):
-        test_list=create_random_testing_parameters()['test_list']
-        assert self.detection_element_dict.set_detector_orientation(self.detection_element_dict,test_list) == test_list
-        
-
-    def test_set_detector_size(self):
-        test_list=create_random_testing_parameters()['test_list']
-        assert self.detection_element_dict.set_detector_size(self.detection_element_dict,test_list) == test_list
-        
-    
-    def test_frequency_response(self):
-        test_list=create_random_testing_parameters()['test_list']
-        assert self.detection_element_dict.set_frequency_response(self.detection_element_dict,test_list) == test_list
-        
- 
-    def test_set_angular_response(self):
-        test_list=create_random_testing_parameters()['test_list']
-        assert self.detection_element_dict.set_angular_response(self.detection_element_dict, test_list) == test_list
-        
-    def test_get_dictionary(self):
-        
-        assert get_dictionary()
-        
-        os.remove(self.detection_element_dict.save_file_name)
+        assert illumination_dict[MetadataDeviceTags.ILLUMINATOR_POSITION.info.tag] == test_list
+#
+#     def test_set_illuminator_shape(self):
+#         test_list=create_random_testing_parameters()['test_list']
+#         assert self.illuminator_element_dict.set_illuminator_shape(self.illuminator_element_dict,test_list) == test_list
+#
+#
+#     def test_set_wavelength_range(self):
+#         test_list=create_random_testing_parameters()['test_list']
+#         assert self.illuminator_element_dict.set_wavelength_range(self.illuminator_element_dict, test_list)== test_list
+#
+#     def test_set_laser_energy_profile(self):
+#         test_list=create_random_testing_parameters()['test_list']
+#         assert self.illuminator_element_dict.set_laser_energy_profile(self.illuminator_element_dict,test_list)== test_list
+#
+#     def test_set_laser_stability_profile(self):
+#         test_list=create_random_testing_parameters()['test_list']
+#         assert self.illuminator_element_dict.set_laser_stability_profile(self.illuminator_element_dict, test_list)== test_list
+#
+#     def test_set_pulse_width(self):
+#         test_list=create_random_testing_parameters()['test_list']
+#         assert self.illuminator_element_dict.set_pulse_width(self.illuminator_element_dict,test_list)== test_list
+#
+#     def test_set_beam_intensity_profile(self):
+#         test_float=create_random_testing_parameters()['test_float']
+#         assert self.illuminator_element_dict.set_beam_intensity_profile(self.illuminator_element_dict,test_float)== test_float
+#
+#
+#     def test_set_beam_divergence_angles(self):
+#         test_float=create_random_testing_parameters()['test_float']
+#         assert self.illuminator_element_dict.set_beam_divergence_angles(self.illuminator_element_dict,test_float)== test_float
+#
+#
+#     def test_get_dictionary(self):
+#         assert get_dictionary() ==
+#
+#         os.remove(self.illuminator_element_dict.save_file_name)
+#
+#
+#
+# class DetectionElementCreatorTest(TestCase):
+#
+#     def setUp(self):
+#         self.detection_element_dict = DetectionElementCreator()
+#         print("setUp")
+#
+#     def tearDown(self):
+#         print("tearDown")
+#
+#     def test_set_detector_position(self):
+#         test_list=create_random_testing_parameters()['test_list']
+#         assert self.detection_element_dict.set_detector_position(self.detection_element_dict,test_list) == test_list
+#
+#
+#     def test_set_detector_orientation(self):
+#         test_list=create_random_testing_parameters()['test_list']
+#         assert self.detection_element_dict.set_detector_orientation(self.detection_element_dict,test_list) == test_list
+#
+#
+#     def test_set_detector_size(self):
+#         test_list=create_random_testing_parameters()['test_list']
+#         assert self.detection_element_dict.set_detector_size(self.detection_element_dict,test_list) == test_list
+#
+#
+#     def test_frequency_response(self):
+#         test_list=create_random_testing_parameters()['test_list']
+#         assert self.detection_element_dict.set_frequency_response(self.detection_element_dict,test_list) == test_list
+#
+#
+#     def test_set_angular_response(self):
+#         test_list=create_random_testing_parameters()['test_list']
+#         assert self.detection_element_dict.set_angular_response(self.detection_element_dict, test_list) == test_list
+#
+#     def test_get_dictionary(self):
+#
+#         assert get_dictionary()
+#
+#         os.remove(self.detection_element_dict.save_file_name)
