@@ -44,7 +44,7 @@ def create_random_testing_parameters():
     test_string = str(np.random.random())
     test_dict = dict()
     test_array = np.random.random((1000,2))
-    return {'test_float': test_float, 'test_list': test_list, 'test_string': test_string, 'test_dict': test_dict}
+    return {'test_float': test_float, 'test_list': test_list, 'test_string': test_string, 'test_dict': test_dict, 'test_array': test_array}
 
 
 class DeviceMetaDataCreatorTest(TestCase):
@@ -81,7 +81,7 @@ class DeviceMetaDataCreatorTest(TestCase):
         device_dict = self.device_dict_creator.finalize_device_meta_data()
         assert device_dict[self.device_dict_creator.GENERAL][MetadataDeviceTags.ILLUMINATORS.info.tag][test_string] == test_dict
 
-        os.remove(self.device_dict.save_file_name)
+        os.remove(self.device_dict_creator.save_file_name)
 
 
 class IlluminationElementCreatorTest(TestCase):
@@ -140,7 +140,7 @@ class IlluminationElementCreatorTest(TestCase):
         self.illuminator_creator.set_beam_divergence_angle(test_float)
         illumination_dict = self.illuminator_creator.get_dictionary()
         assert illumination_dict[MetadataDeviceTags.BEAM_DIVERGENCE_ANGLES.info.tag] == test_float
-        os.remove(self.illuminator_element_dict.save_file_name)
+        os.remove(self.illuminator_creator.save_file_name)
 
 
 
@@ -188,5 +188,5 @@ class DetectionElementCreatorTest(TestCase):
         assert detection_dict[MetadataDeviceTags.ANGULAR_RESPONSE.info.tag]  == test_array
 
 
-        os.remove(self.detection_element_dict.save_file_name)
+        os.remove(self.detection_creator.save_file_name)
 
