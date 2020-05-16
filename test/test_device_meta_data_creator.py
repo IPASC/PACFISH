@@ -106,37 +106,37 @@ class IlluminationElementCreatorTest(TestCase):
         assert illumination_dict[MetadataDeviceTags.ILLUMINATOR_SHAPE.info.tag] == test_array
 
     def test_set_wavelength_range(self):
-        test_list=create_random_testing_parameters()['test_list']
+        test_list = create_random_testing_parameters()['test_list']
         self.illuminator_creator.set_wavelength_range(test_list)
         illumination_dict = self.illuminator_creator.get_dictionary()
         assert illumination_dict[MetadataDeviceTags.WAVELENGTH_RANGE.info.tag] == test_list
     
     def test_set_laser_energy_profile(self):
-        test_array=create_random_testing_parameters()['test_array']
+        test_array = create_random_testing_parameters()['test_array']
         self.illuminator_creator.set_laser_energy(test_array)
         illumination_dict = self.illuminator_creator.get_dictionary()
         assert illumination_dict[MetadataDeviceTags.LASER_ENERGY_PROFILE.info.tag] == test_array
     
     def test_set_laser_stability_profile(self):
-        test_array=create_random_testing_parameters()['test_array']
+        test_array = create_random_testing_parameters()['test_array']
         self.illuminator_creator.set_illuminator_shape(test_array)
         illumination_dict = self.laser_stability.get_dictionary()
         assert illumination_dict[MetadataDeviceTags.LASER_STABILTY_PROFILE.info.tag] == test_array
     
     def test_set_pulse_width(self):    
-        test_list=create_random_testing_parameters()['test_list']
+        test_list = create_random_testing_parameters()['test_list']
         self.illuminator_creator.set_pulse_width(test_list)
         illumination_dict = self.illuminator_creator.get_dictionary()
         assert illumination_dict[MetadataDeviceTags.PULSE_WIDTH.info.tag] == test_list 
 
     def test_set_beam_intensity_profile(self):
-        test_array=create_random_testing_parameters()['test_array']
+        test_array = create_random_testing_parameters()['test_array']
         self.illuminator_creator.set_beam_intensity_profile(test_array)
         illumination_dict = self.illuminator_creator.get_dictionary()
         assert illumination_dict[MetadataDeviceTags.BEAM_INTENSITY_PROFILE.info.tag] == test_array
     
     def test_set_beam_divergence_angles(self):
-        test_float=create_random_testing_parameters()['test_float']
+        test_float = create_random_testing_parameters()['test_float']
         self.illuminator_creator.set_beam_divergence_angle(test_float)
         illumination_dict = self.illuminator_creator.get_dictionary()
         assert illumination_dict[MetadataDeviceTags.BEAM_DIVERGENCE_ANGLES.info.tag] == test_float
