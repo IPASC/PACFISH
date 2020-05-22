@@ -28,9 +28,9 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from ipasc_tool.api import DeviceMetaDataCreator
-from ipasc_tool.api import DetectionElementCreator
-from ipasc_tool.api import IlluminationElementCreator
+from ipasc_tool.core import DeviceMetaDataCreator
+from ipasc_tool.core import DetectionElementCreator
+from ipasc_tool.core import IlluminationElementCreator
 
 from ipasc_tool.qualitycontrol import CompletenessChecker
 
@@ -46,8 +46,8 @@ device_metadata_creator.add_illumination_element("illuminator_1", illuminator)
 
 
 detection_element_creator = DetectionElementCreator()
-detection_element_creator.set_detector_position(0.3, 0.5, 0.2)
-detection_element_creator.set_detector_orientation(0.1, 0.1, 0.1)
+detection_element_creator.set_detector_position([0.3, 0.5, 0.2])
+detection_element_creator.set_detector_orientation([0.1, 0.1, 0.1])
 detector = detection_element_creator.get_dictionary()
 
 device_metadata_creator.add_detection_element("detector_1", detector)

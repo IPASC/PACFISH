@@ -31,3 +31,7 @@
 from ipasc_tool.core.metadata_tags import MetaDatum
 from ipasc_tool.core.metadata_tags import MetadataTags
 from ipasc_tool.core.metadata_tags import MetadataDeviceTags
+
+from ipasc_tool.core.DeviceMetaDataCreator import DeviceMetaDataCreator
+from ipasc_tool.core.DeviceMetaDataCreator import DetectionElementCreator
+from ipasc_tool.core.DeviceMetaDataCreator import IlluminationElementCreator
