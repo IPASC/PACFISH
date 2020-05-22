@@ -31,7 +31,6 @@
 from core.metadata_tags import MetadataDeviceTags
 import copy
 
-
 class IlluminationElementCreator(object):
     def __init__(self):
         self.illuminator_element_dict = dict()
@@ -74,14 +73,13 @@ class IlluminationElementCreator(object):
 
     def set_laser_energy_profile(self, energy_profile):
         """
-        :param enery_profile: a two element list [wavelengths, laser_energy] describing the laser energy profile.
+        :param energy_profile: a two element list [wavelengths, laser_energy] describing the laser energy profile.
                     Laser energy and wavelengths are also lists where len(laser_energy) == len(profile)
                     The units can be found in MetadataDeviceTags.LASER_ENERGY_PROFILE.info.unit.
         :return: void
         """
         self.illuminator_element_dict[MetadataDeviceTags.LASER_ENERGY_PROFILE.info.tag] = energy_profile
         
-
     def set_laser_stability_profile(self, stability_profile):
         """
         :param stability_profile: a two element list [wavelengths,laser_stability,] describing the laser stability profile.
@@ -144,7 +142,7 @@ class DetectionElementCreator(object):
         """
         self.detection_element_dict[MetadataDeviceTags.DETECTOR_ORIENTATION.info.tag] = orientation
 
-    def set_detector_size(self, size:list):
+    def set_detector_size(self, size: list):
         """
         :param size: a three element list [x1, x2, x3] describing the extent of the detector size in x1, x2, and x3 direction.
                     The units can be found in MetadataDeviceTags.DETECTOR_SIZE.info.unit.
