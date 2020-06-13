@@ -29,20 +29,114 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-def load_data(path):
-    """
-    TODO
-    :param path:
-    :return:
-    """
-    pass
+import h5py
+from ipasc_tool.core.PAData import PAData
 
 
-def write_data(path, data):
+def load_data(path: str):
     """
     TODO
-    :param path:
-    :param data:
+    :param path: Path to an hdf5 file containing PAData.
+    :return: PAData instance
+    """
+    pa_data = PAData()
+
+    def recursively_load_dictionaries(file, in_file_path):
+        """
+        TODO
+        :param file: instance of an hdf5 File object
+        :param in_file_path: Path inside the file object group structure
+        :return: Dictionary instance
+        """
+        print(file.type)
+        data = {}
+        for key, item in h5file[in_file_path].items():
+            if isinstance(item, h5py._hl.dataset.Dataset):
+                if item[()] is not None:
+                    data[key] = item[()]
+                else:
+                    data[key] = None
+            elif isinstance(item, h5py._hl.group.Group):
+                if key == "list":
+                    data = list()
+                    for listkey in sorted(item.keys()):
+                        if isinstance(item[listkey], h5py._hl.dataset.Dataset):
+                            data.append(item[listkey][()])
+                        elif isinstance(item[listkey], h5py._hl.group.Group):
+                            data.append(
+                                recursively_load_dictionaries(file, path + key + "/" + listkey + "/"))
+                else:
+                    data[key] = recursively_load_dictionaries(file, path + key + "/")
+        return data
+
+    with h5py.File(path, "r") as h5file:
+        pa_data.binary_time_series_data = h5file["/binary_time_series_data"][()]
+        pa_data.meta_data = recursively_load_dictionaries(h5file, "/meta_data/")
+        pa_data.meta_data_device = recursively_load_dictionaries(h5file, "/meta_data_device/")
+
+    return pa_data
+
+
+def write_data(path: str, pa_data: PAData):
+    """
+    TODO
+    :param path: Path to save an hdf5 file containing PAData.
+    :param pa_data: PAData instance
     :return:
     """
-    pass
+
+    def recursively_save_dictionaries(file, in_file_path, dictionary):
+        """
+        TODO
+        :param file: instance of an hdf5 File object
+        :param in_file_path: Path inside the file object group structure
+        :param dictionary: Dictionary instance to save
+        :return:
+        """
+
+        for key, item in dictionary.items():
+            if not isinstance(item, (list, dict, type(None))):
+
+                try:
+                    h5file[in_file_path + key] = item
+                except RuntimeError:
+                    del h5file[in_file_path + key]
+                    try:
+                        h5file[in_file_path + key] = item
+                    except RuntimeError as err:
+                        try:
+                            h5file[in_file_path + key] = item.__dict__
+                        except AttributeError:
+                            print(item, "of type", type(item), "could not be serialized!")
+                            raise err
+            elif item is None:
+                h5file[path + key] = "None"
+            elif isinstance(item, list):
+                list_dict = dict()
+                for i, list_item in enumerate(item):
+                    list_dict[str(i)] = list_item
+                recursively_save_dictionaries(file, path + key + "/list/", list_dict)
+            else:
+                recursively_save_dictionaries(file, path + key + "/", item)
+
+    with h5py.File(path, "w") as h5file:
+        h5file.create_dataset("binary_time_series_data", data=pa_data.binary_time_series_data)
+        recursively_save_dictionaries(h5file, "/meta_data/", pa_data.meta_data)
+        recursively_save_dictionaries(h5file, "/meta_data_device/", pa_data.meta_data_device)
+
+
+if __name__ == "__main__":
+    import numpy as np
+
+    pa_data = PAData(time_series_data=np.zeros([256, 2048]),
+                     meta_data={"test_int": 3, "test_float": 3.14, "test_string": "test", "test_list": [3, 5, 7]},
+                     meta_data_device={"test_np_array": np.zeros([1, 2]), "test_nested_dict": {"test": {"test": 1}}})
+    write_data("test.hdf5", pa_data)
+    test_data = load_data("test.hdf5")
+
+    for original, test in zip(pa_data.__dict__, test_data.__dict__):
+        assert original == test
+
+    print(test_data.binary_time_series_data)
+    print(test_data.meta_data_device)
+    print(test_data.meta_data)
