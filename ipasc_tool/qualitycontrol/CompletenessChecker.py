@@ -28,9 +28,8 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from ipasc_tool.core import MetadataTags
-from ipasc_tool.core import MetadataDeviceTags
-from ipasc_tool.core import MetaDatum
+from ipasc_tool import MetadataTags
+from ipasc_tool import MetadataDeviceTags
 
 
 class CompletenessChecker:

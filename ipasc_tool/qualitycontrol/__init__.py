@@ -30,4 +30,3 @@
 
 from ipasc_tool.qualitycontrol.CompletenessChecker import CompletenessChecker
 from ipasc_tool.qualitycontrol.ConsistencyChecker import ConsistencyChecker
-from ipasc_tool.qualitycontrol.visualize_device import visualize_device
