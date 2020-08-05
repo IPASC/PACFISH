@@ -39,7 +39,7 @@ import numpy as np
 class MetaDataTest(TestCase):
 
     def setUp(self):
-        self.completeness_checker = CompletenessChecker()
+        self.completeness_checker = CompletenessChecker(True, "")
         print("setUp")
 
     def tearDown(self):
@@ -47,15 +47,15 @@ class MetaDataTest(TestCase):
 
     def test_completenes_checker_device(self):
         device_dictionary = create_complete_device_metadata_dictionary()
-        assert self.completeness_checker.check_meta_data_device(device_dictionary, False, "")
+        assert self.completeness_checker.check_meta_data_device(device_dictionary)
 
         device_dictionary[MetadataDeviceTags.GENERAL.info.tag][MetadataDeviceTags.UUID.info.tag] = None
-        assert not self.completeness_checker.check_meta_data_device(device_dictionary, True, "")
+        assert not self.completeness_checker.check_meta_data_device(device_dictionary)
 
         device_dictionary = create_complete_device_metadata_dictionary()
-        assert self.completeness_checker.check_meta_data_device(device_dictionary, False, "")
+        assert self.completeness_checker.check_meta_data_device(device_dictionary)
 
         device_dictionary[MetadataDeviceTags.GENERAL.info.tag].pop(MetadataDeviceTags.UUID.info.tag)
-        assert not self.completeness_checker.check_meta_data_device(device_dictionary, False, "")
+        assert not self.completeness_checker.check_meta_data_device(device_dictionary)
 
         os.remove(self.completeness_checker.save_file_name)

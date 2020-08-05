@@ -28,6 +28,33 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from ipasc_tool.qualitycontrol.CompletenessChecker import CompletenessChecker
-from ipasc_tool.qualitycontrol.ConsistencyChecker import ConsistencyChecker
-from ipasc_tool.qualitycontrol.PADataIntegrityCheck import perform_pa_data_integrity_check
+from ipasc_tool import PAData
+from ipasc_tool.qualitycontrol import CompletenessChecker, ConsistencyChecker
+
+
+def perform_pa_data_integrity_check(_pa_data: PAData, _verbose: bool = False) -> bool:
+    """
+    TODO
+    :param _pa_data:
+    :param _verbose:
+    :return:
+    """
+
+    if _pa_data is None:
+        raise ValueError("The data file must not be None!")
+
+    if not isinstance(_pa_data, PAData):
+        raise ValueError("The given data file must be of type PAData!")
+
+    completeness_checker = CompletenessChecker(verbose=_verbose)
+    consistency_checker = ConsistencyChecker(verbose=_verbose)
+
+    is_complete_meta_acquisition = completeness_checker.check_meta_data(_pa_data.meta_data)
+    is_complete_meta_device = completeness_checker.check_meta_data(_pa_data.meta_data_device)
+
+    is_consistent_binary = consistency_checker.check_binary(_pa_data.binary_time_series_data)
+    is_consistent_meta_acquisition = consistency_checker.check_meta_data(_pa_data.meta_data)
+    is_consistent_meta_device = consistency_checker.check_meta_data(_pa_data.meta_data_device)
+
+    return (is_complete_meta_acquisition and is_complete_meta_device and is_consistent_binary and
+            is_consistent_meta_acquisition and is_consistent_meta_device)
