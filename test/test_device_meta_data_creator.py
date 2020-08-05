@@ -34,15 +34,7 @@ from ipasc_tool.core import MetadataDeviceTags
 from ipasc_tool.core import DeviceMetaDataCreator, IlluminationElementCreator, DetectionElementCreator
 import numpy as np
 
-
-def create_random_testing_parameters():
-    test_float = np.random.random()
-    test_list = [np.random.random(), np.random.random(), -np.random.random()]
-    test_string = str(np.random.random())
-    test_dict = dict()
-    test_array = np.random.random((1000, 2))
-    return {'test_float': test_float, 'test_list': test_list, 'test_string': test_string, 'test_dict': test_dict, 'test_array': test_array}
-
+from test.utils import create_random_testing_parameters
 
 class DeviceMetaDataCreatorTest(TestCase):
 

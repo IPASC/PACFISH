@@ -48,7 +48,6 @@ def load_data(path: str):
         :param in_file_path: Path inside the file object group structure
         :return: Dictionary instance
         """
-        print(file.type)
         data = {}
         for key, item in h5file[in_file_path].items():
             if isinstance(item, h5py._hl.dataset.Dataset):
@@ -123,20 +122,3 @@ def write_data(path: str, pa_data: PAData):
         h5file.create_dataset("binary_time_series_data", data=pa_data.binary_time_series_data)
         recursively_save_dictionaries(h5file, "/meta_data/", pa_data.meta_data)
         recursively_save_dictionaries(h5file, "/meta_data_device/", pa_data.meta_data_device)
-
-
-if __name__ == "__main__":
-    import numpy as np
-
-    pa_data = PAData(time_series_data=np.zeros([256, 2048]),
-                     meta_data={"test_int": 3, "test_float": 3.14, "test_string": "test", "test_list": [3, 5, 7]},
-                     meta_data_device={"test_np_array": np.zeros([1, 2]), "test_nested_dict": {"test": {"test": 1}}})
-    write_data("test.hdf5", pa_data)
-    test_data = load_data("test.hdf5")
-
-    for original, test in zip(pa_data.__dict__, test_data.__dict__):
-        assert original == test
-
-    print(test_data.binary_time_series_data)
-    print(test_data.meta_data_device)
-    print(test_data.meta_data)

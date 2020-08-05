@@ -32,80 +32,8 @@ import os
 from unittest.case import TestCase
 from ipasc_tool.core import MetadataDeviceTags
 from ipasc_tool.qualitycontrol import CompletenessChecker
+from test.utils import create_complete_device_metadata_dictionary
 import numpy as np
-
-
-def create_complete_device_metadata_dictionary():
-    DIM_X = 0.03
-    DIM_Y = 0.001
-    DIM_Z = 0.01
-
-    def create_random_illumination_element():
-        illuminator_dict = dict()
-        illuminator_dict[MetadataDeviceTags.ILLUMINATOR_POSITION.info.tag] = np.asarray([
-            np.random.random() * 2 * DIM_X - DIM_X,
-            np.random.random() * 2 * DIM_X - DIM_X,
-            -np.random.random() * DIM_X / 2])
-        illuminator_dict[MetadataDeviceTags.ILLUMINATOR_ORIENTATION.info.tag] = np.asarray([
-            np.random.random() * DIM_X - DIM_X / 2,
-            np.random.random() * DIM_Y - DIM_Y / 2,
-            np.random.random() * DIM_Z - DIM_Z / 2])
-        size = np.random.random() * DIM_X / 10
-        illuminator_dict[MetadataDeviceTags.ILLUMINATOR_SHAPE.info.tag] = np.asarray([size, size, size])
-        min_wavelength = np.random.random() * 200 + 600
-        illuminator_dict[MetadataDeviceTags.WAVELENGTH_RANGE.info.tag] = np.asarray([min_wavelength,
-                                                                                     min_wavelength +
-                                                                                     np.random.random() * 200,
-                                                                                     1.0])
-        illuminator_dict[MetadataDeviceTags.LASER_ENERGY_PROFILE.info.tag] = np.random.random(size=(200,))
-        illuminator_dict[MetadataDeviceTags.LASER_STABILITY_PROFILE.info.tag] = np.random.random(size=(200,))
-        illuminator_dict[MetadataDeviceTags.PULSE_WIDTH.info.tag] = 0.00000012
-        illuminator_dict[MetadataDeviceTags.BEAM_INTENSITY_PROFILE.info.tag] = np.random.random(size=(100, 100))
-        illuminator_dict[MetadataDeviceTags.BEAM_DIVERGENCE_ANGLES.info.tag] = np.deg2rad(np.random.random() * 90)
-        return illuminator_dict
-
-    def create_random_detection_element():
-        detector_dict = dict()
-        detector_dict[MetadataDeviceTags.DETECTOR_POSITION.info.tag] = np.asarray([np.random.random() * DIM_X,
-                                                                                   np.random.random() * DIM_Y,
-                                                                                   -np.random.random() * DIM_Z])
-        detector_dict[MetadataDeviceTags.DETECTOR_ORIENTATION.info.tag] = np.asarray(
-            [np.random.random() * DIM_X - DIM_X / 2,
-             np.random.random() * DIM_Y - DIM_Y / 2,
-             np.random.random() * DIM_Z - DIM_Z / 2])
-        detector_dict[MetadataDeviceTags.DETECTOR_SIZE.info.tag] = np.asarray([np.random.random() * DIM_X,
-                                                                               np.random.random() * DIM_Y,
-                                                                               np.random.random() * DIM_Z])
-        detector_dict[MetadataDeviceTags.FREQUENCY_RESPONSE.info.tag] = np.random.random(size=(200,))
-        detector_dict[MetadataDeviceTags.ANGULAR_RESPONSE.info.tag] = np.random.random(size=(200,))
-        return detector_dict
-
-    dictionary = {
-        MetadataDeviceTags.GENERAL.info.tag: {
-            MetadataDeviceTags.UUID.info.tag: "a2fd-48nbsh-sfiush7-chjs",
-            MetadataDeviceTags.FIELD_OF_VIEW.info.tag: np.asarray([0.03, 0.002, 0.03]),
-            MetadataDeviceTags.NUMBER_OF_ILLUMINATORS.info.tag: 2,
-            MetadataDeviceTags.NUMBER_OF_DETECTORS.info.tag: 4
-        },
-        MetadataDeviceTags.ILLUMINATORS.info.tag: {
-            MetadataDeviceTags.ILLUMINATION_ELEMENT.info.tag + "_0":
-                create_random_illumination_element(),
-            MetadataDeviceTags.ILLUMINATION_ELEMENT.info.tag + "_1":
-                create_random_illumination_element()
-        },
-        MetadataDeviceTags.DETECTORS.info.tag: {
-            MetadataDeviceTags.DETECTION_ELEMENT.info.tag + "_0":
-                create_random_detection_element(),
-            MetadataDeviceTags.DETECTION_ELEMENT.info.tag + "_1":
-                create_random_detection_element(),
-            MetadataDeviceTags.DETECTION_ELEMENT.info.tag + "_2":
-                create_random_detection_element(),
-            MetadataDeviceTags.DETECTION_ELEMENT.info.tag + "_3":
-                create_random_detection_element()
-        }
-    }
-
-    return dictionary
 
 
 class MetaDataTest(TestCase):
