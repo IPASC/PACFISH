@@ -54,16 +54,35 @@ class DeviceMetaDataCreatorTest(TestCase):
         pa_data = PAData(time_series_data=np.zeros([256, 2048]),
                          meta_data={"test_int": 3, "test_float": 3.14, "test_string": "test", "test_list": [3, 5, 7]},
                          meta_data_device=device_dict)
-        write_data("test.hdf5", pa_data)
-        test_data = load_data("test.hdf5")
 
-        for original, test in zip(pa_data.__dict__, test_data.__dict__):
-            assert original == test
+        try:
+            write_data("test.hdf5", pa_data)
+            test_data = load_data("test.hdf5")
+        except Exception as e:
+            raise e
+        finally:
+            # clean up after test
+            if os.path.exists("test.hdf5"):
+                os.remove("test.hdf5")
 
-        print(test_data.binary_time_series_data)
-        print(test_data.meta_data_device)
-        print(test_data.meta_data)
+        def assertEqualsRecursive(a, b):
+            if isinstance(a, dict):
+                for item in a:
+                    self.assertTrue(item in a)
+                    self.assertTrue(item in b)
+                    if isinstance(a[item], dict):
+                        assertEqualsRecursive(a[item], b[item])
+                    else:
+                        if isinstance(a[item], np.ndarray):
+                            self.assertTrue((a[item] == b[item]).all())
+                        else:
+                            self.assertEqual(a[item], b[item])
+            elif isinstance(a, list):
+                for item1, item2 in zip(a, b):
+                    assertEqualsRecursive(item1, item2)
+            else:
+                self.assertEqual(a, b)
 
-        #clean up after test
-        if os.path.exists("test.hdf5"):
-            os.remove("test.hdf5")
+        assertEqualsRecursive(pa_data.meta_data, test_data.meta_data)
+        assertEqualsRecursive(pa_data.meta_data_device, test_data.meta_data_device)
+        self.assertTrue((pa_data.binary_time_series_data == test_data.binary_time_series_data).all())

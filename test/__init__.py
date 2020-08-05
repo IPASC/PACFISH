@@ -27,33 +27,3 @@
 # CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
-import numpy as np
-import uuid
-
-from ipasc_tool.core.metadata_tags import MetaDatum
-
-print("GENERIC TESTING AREA")
-
-from ipasc_tool.api import BaseAdapter
-
-
-class DeviceSpecificAdapter(BaseAdapter):
-
-    def generate_binary_data(self) -> np.ndarray:
-        # IMPLEMENTATION HERE
-        pass
-
-    def generate_meta_data_device(self) -> dict:
-        # IMPLEMENTATION HERE
-        pass
-
-    def set_metadata_value(self, metadata_tag: MetaDatum) -> object:
-        # IMPLEMENTATION HERE
-        pass
-
-    def uuid(self):
-        return uuid.uuid4()
-
-    def encoding(self):
-        return "raw"

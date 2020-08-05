@@ -63,9 +63,9 @@ def load_data(path: str):
                             data.append(item[listkey][()])
                         elif isinstance(item[listkey], h5py._hl.group.Group):
                             data.append(
-                                recursively_load_dictionaries(file, path + key + "/" + listkey + "/"))
+                                recursively_load_dictionaries(file, in_file_path + key + "/" + listkey + "/"))
                 else:
-                    data[key] = recursively_load_dictionaries(file, path + key + "/")
+                    data[key] = recursively_load_dictionaries(file, in_file_path + key + "/")
         return data
 
     with h5py.File(path, "r") as h5file:
@@ -109,14 +109,14 @@ def write_data(path: str, pa_data: PAData):
                             print(item, "of type", type(item), "could not be serialized!")
                             raise err
             elif item is None:
-                h5file[path + key] = "None"
+                h5file[in_file_path + key] = "None"
             elif isinstance(item, list):
                 list_dict = dict()
                 for i, list_item in enumerate(item):
                     list_dict[str(i)] = list_item
-                recursively_save_dictionaries(file, path + key + "/list/", list_dict)
+                recursively_save_dictionaries(file, in_file_path + key + "/list/", list_dict)
             else:
-                recursively_save_dictionaries(file, path + key + "/", item)
+                recursively_save_dictionaries(file, in_file_path + key + "/", item)
 
     with h5py.File(path, "w") as h5file:
         h5file.create_dataset("binary_time_series_data", data=pa_data.binary_time_series_data)
