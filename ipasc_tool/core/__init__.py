@@ -28,9 +28,9 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from ipasc_tool.core.metadata_tags import MetaDatum
-from ipasc_tool.core.metadata_tags import MetadataTags
-from ipasc_tool.core.metadata_tags import MetadataDeviceTags
+from ipasc_tool.core.Metadata import MetaDatum
+from ipasc_tool.core.Metadata import MetadataTags
+from ipasc_tool.core.Metadata import MetadataDeviceTags
 
 from ipasc_tool.core.DeviceMetaDataCreator import DeviceMetaDataCreator
 from ipasc_tool.core.DeviceMetaDataCreator import DetectionElementCreator

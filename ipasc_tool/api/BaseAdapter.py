@@ -31,7 +31,7 @@
 from abc import ABC, abstractmethod
 from ipasc_tool.core.PAData import PAData
 from ipasc_tool.qualitycontrol import ConsistencyChecker
-from ipasc_tool.core.metadata_tags import MetadataTags, MetaDatum
+from ipasc_tool.core.Metadata import MetadataTags, MetaDatum
 import numpy as np
 
 

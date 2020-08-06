@@ -1,7 +1,7 @@
 import matplotlib.pylab as plt
 from matplotlib.patches import Rectangle
 import numpy as np
-from ipasc_tool.core.metadata_tags import MetadataDeviceTags
+from ipasc_tool.core.Metadata import MetadataDeviceTags
 from test.test_meta_data import create_complete_device_metadata_dictionary
 
 def define_boundary_values(device_dictionary : dict):
