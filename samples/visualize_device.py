@@ -1,8 +1,9 @@
 import matplotlib.pylab as plt
 from matplotlib.patches import Rectangle
 import numpy as np
-from ipasc_tool.core.Metadata import MetadataDeviceTags
+from ipasc_tool import MetadataDeviceTags
 from test.test_meta_data import create_complete_device_metadata_dictionary
+
 
 def define_boundary_values(device_dictionary : dict):
     mins = np.zeros(3)
@@ -81,7 +82,6 @@ def add_xy_plane(device_dictionary: dict, mins, maxs):
 
     for illuminator in device_dictionary["illuminators"]:
         position = device_dictionary["illuminators"][illuminator][MetadataDeviceTags.ILLUMINATOR_POSITION.info.tag]
-        print(position)
         ax1.scatter([position[0]], [position[1]], color="red", marker="x")
 
     ax1.scatter(None, None, color="blue", marker="x", label="Detector Element")

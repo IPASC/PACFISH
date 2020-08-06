@@ -32,9 +32,9 @@ import os
 import numpy as np
 from unittest.case import TestCase
 
-from ipasc_tool.core import PAData
-from ipasc_tool.iohandler import write_data
-from ipasc_tool.iohandler import load_data
+from ipasc_tool import PAData
+from ipasc_tool import write_data
+from ipasc_tool import load_data
 from test.utils import create_complete_device_metadata_dictionary
 
 

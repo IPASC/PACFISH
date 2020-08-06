@@ -55,3 +55,5 @@ class PAData:
         self.binary_time_series_data = time_series_data
         self.meta_data = meta_data
         self.meta_data_device = meta_data_device
+
+    # TODO provide convenience methods to access the dictionaries?

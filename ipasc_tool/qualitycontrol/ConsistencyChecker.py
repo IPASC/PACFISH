@@ -28,13 +28,20 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from ipasc_tool.core.Metadata import MetaDatum
+from ipasc_tool import MetaDatum
 
 
 class ConsistencyChecker:
 
-    def __init__(self):
-        print("TODO")
+    def __init__(self, verbose: bool = False, log_file_path: str = None):
+        """
+        :param verbose: A flag to indicate whether the log should be printed
+                to the console.
+        :param log_file_path: If given a string with the path to where the log
+              file should be written to.
+        """
+        self.verbose = verbose
+        self.log_file_path = log_file_path
 
     def check_binary(self, binary_data):
         # TODO

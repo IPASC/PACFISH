@@ -28,32 +28,33 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from ipasc_tool import DeviceMetaDataCreator
-from ipasc_tool import DetectionElementCreator
-from ipasc_tool import IlluminationElementCreator
-
-from ipasc_tool import CompletenessChecker
+from ipasc_tool import PAData
+from ipasc_tool.qualitycontrol import CompletenessChecker, ConsistencyChecker
 
 
-device_metadata_creator = DeviceMetaDataCreator()
+def perform_pa_data_integrity_check(_pa_data: PAData, _verbose: bool = False) -> bool:
+    """
+    TODO
+    :param _pa_data:
+    :param _verbose:
+    :return:
+    """
 
-illumination_element_creator = IlluminationElementCreator()
-illumination_element_creator.set_pulse_width(12.5)
-illumination_element_creator.set_beam_divergence_angles(0.5)
-illuminator = illumination_element_creator.get_dictionary()
+    if _pa_data is None:
+        raise ValueError("The data file must not be None!")
 
-device_metadata_creator.add_illumination_element("illuminator_1", illuminator)
+    if not isinstance(_pa_data, PAData):
+        raise ValueError("The given data file must be of type PAData!")
 
+    completeness_checker = CompletenessChecker(verbose=_verbose)
+    consistency_checker = ConsistencyChecker(verbose=_verbose)
 
-detection_element_creator = DetectionElementCreator()
-detection_element_creator.set_detector_position([0.3, 0.5, 0.2])
-detection_element_creator.set_detector_orientation([0.1, 0.1, 0.1])
-detector = detection_element_creator.get_dictionary()
+    is_complete_meta_acquisition = completeness_checker.check_meta_data(_pa_data.meta_data)
+    is_complete_meta_device = completeness_checker.check_meta_data(_pa_data.meta_data_device)
 
-device_metadata_creator.add_detection_element("detector_1", detector)
+    is_consistent_binary = consistency_checker.check_binary(_pa_data.binary_time_series_data)
+    is_consistent_meta_acquisition = consistency_checker.check_meta_data(_pa_data.meta_data)
+    is_consistent_meta_device = consistency_checker.check_meta_data(_pa_data.meta_data_device)
 
-result_dictionary = device_metadata_creator.finalize_device_meta_data()
-
-completeness_checker = CompletenessChecker()
-
-completeness_checker.check_meta_data_device(result_dictionary, verbose=True)
+    return (is_complete_meta_acquisition and is_complete_meta_device and is_consistent_binary and
+            is_consistent_meta_acquisition and is_consistent_meta_device)

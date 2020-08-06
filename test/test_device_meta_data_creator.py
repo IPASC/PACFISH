@@ -30,11 +30,10 @@
 
 
 from unittest.case import TestCase
-from ipasc_tool.core import MetadataDeviceTags
-from ipasc_tool.core import DeviceMetaDataCreator, IlluminationElementCreator, DetectionElementCreator
-import numpy as np
-
+from ipasc_tool import MetadataDeviceTags
+from ipasc_tool import DeviceMetaDataCreator, IlluminationElementCreator, DetectionElementCreator
 from test.utils import create_random_testing_parameters
+
 
 class DeviceMetaDataCreatorTest(TestCase):
 

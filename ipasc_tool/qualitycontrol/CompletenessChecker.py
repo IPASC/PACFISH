@@ -28,18 +28,24 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from ipasc_tool.core import MetadataTags
-from ipasc_tool.core import MetadataDeviceTags
-from ipasc_tool.core import MetaDatum
+from ipasc_tool import MetadataTags
+from ipasc_tool import MetadataDeviceTags
 
 
 class CompletenessChecker:
 
-    def __init__(self):
+    def __init__(self, verbose: bool = False, log_file_path: str = None):
+        """
+        :param verbose: A flag to indicate whether the log should be printed
+                to the console.
+        :param log_file_path: If given a string with the path to where the log
+              file should be written to.
+        """
         self.save_file_name = "logfile.md"
+        self.verbose = verbose
+        self.log_file_path = log_file_path
 
-    def check_meta_data(self, meta_data_dictionary: dict, verbose: bool = False,
-                        log_file_path: str = None) -> bool:
+    def check_meta_data(self, meta_data_dictionary: dict) -> bool:
         """
         This function will evaluate the completeness of the reported metadata.
         It can be used to generate a report to the console by setting `verbose`
@@ -48,10 +54,6 @@ class CompletenessChecker:
 
         :param meta_data_dictionary: A dictionary containing all PA image
         meta data.
-        :param verbose: A flag to indicate whether the log should be printed
-                        to the console.
-        :param log_file_path: If given a string with the path to where the log
-                              file should be written to.
 
         :return: True, if the meta_data_dictionary is complete
 
@@ -89,17 +91,16 @@ class CompletenessChecker:
             log_string += "The metadata dictionary is complete\n"
 
         # Reporting of the results
-        if verbose:
+        if self.verbose:
             print(log_string)
 
-        if log_file_path is not None:
-            with open(log_file_path + self.save_file_name, "w") as log_file_handle:
+        if self.log_file_path is not None:
+            with open(self.log_file_path + self.save_file_name, "w") as log_file_handle:
                 log_file_handle.writelines(log_string)
 
         return incompletenes_count == 0
 
-    def check_meta_data_device(self, device_meta_data: dict, verbose: bool = False,
-                               log_file_path: str = None):
+    def check_meta_data_device(self, device_meta_data: dict):
 
         incompletenes_count = 0
 
@@ -180,11 +181,11 @@ class CompletenessChecker:
         else:
             log_string += "The metadata dictionary is complete.\n"
 
-        if verbose:
+        if self.verbose:
             print(log_string)
 
-        if log_file_path is not None:
-            with open(log_file_path + self.save_file_name, "w") as log_file_handle:
+        if self.log_file_path is not None:
+            with open(self.log_file_path + self.save_file_name, "w") as log_file_handle:
                 log_file_handle.writelines(log_string)
 
         return incompletenes_count == 0

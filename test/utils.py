@@ -29,7 +29,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import numpy as np
-from ipasc_tool.core import MetadataDeviceTags
+from ipasc_tool import MetadataDeviceTags
 
 
 def create_random_testing_parameters():

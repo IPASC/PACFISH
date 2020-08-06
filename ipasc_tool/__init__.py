@@ -27,3 +27,9 @@
 # CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
+# Export all explicitly imported names in the submodules __init__ files in order to make the API easier to use.
+from ipasc_tool.core import *
+from ipasc_tool.api import *
+from ipasc_tool.iohandler import *
+from ipasc_tool.qualitycontrol import *
