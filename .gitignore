@@ -1,3 +1,6 @@
+samples/demodata.nrrd
+samples/demodata.hdf5
+
 # PyCharm
 */.idea/*
 .idea/*

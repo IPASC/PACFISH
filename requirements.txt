@@ -4,3 +4,4 @@ h5py
 sphinx
 rst2pdf
 m2r
+pynrrd
