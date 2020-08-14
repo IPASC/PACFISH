@@ -29,7 +29,7 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 from ipasc_tool.core.Metadata import MetaDatum
-from ipasc_tool.core.Metadata import MetadataTags
+from ipasc_tool.core.Metadata import MetadataAcquisitionTags
 from ipasc_tool.core.Metadata import MetadataDeviceTags
 
 from ipasc_tool.core.DeviceMetaDataCreator import DeviceMetaDataCreator

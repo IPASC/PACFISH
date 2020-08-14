@@ -30,7 +30,11 @@
 
 import numpy as np
 from enum import Enum
+import numbers
 from abc import ABC, abstractmethod
+
+
+DIMENSIONALITY_STRINGS = ['1D', '2D', '3D', '1D+t', '2D+t', '3D+t']
 
 
 class Units:
@@ -84,10 +88,6 @@ class MetaDatum(ABC):
 
 
 class UnconstrainedMetaDatum(MetaDatum):
-    """
-    An unconstrained meta datum
-    """
-
     def __init__(self, tag, mandatory, dtype, unit=Units.NO_UNIT):
         super().__init__(tag, mandatory, dtype, unit)
 
@@ -96,6 +96,96 @@ class UnconstrainedMetaDatum(MetaDatum):
             raise TypeError("The given value was not of the expected data type. Expected ", self.dtype, "but was",
                             type(value).__name__)
         return True
+
+
+class NonNegativeWholeNumber(MetaDatum):
+    def __init__(self, tag, mandatory, dtype, unit=Units.NO_UNIT):
+        super().__init__(tag, mandatory, dtype, unit)
+
+    def evaluate_value_range(self, value) -> bool:
+        if not isinstance(value, self.dtype):
+            raise TypeError("The given value was not of the expected data type. Expected ", self.dtype, "but was",
+                            type(value).__name__)
+        if not isinstance(value, int):
+            raise TypeError("Whole numbers must be of type int, but was", type(value).__name__)
+        return value >= 0
+
+
+class NonNegativeNumbersInArray(MetaDatum):
+    def __init__(self, tag, mandatory, dtype, unit=Units.NO_UNIT):
+        super().__init__(tag, mandatory, dtype, unit)
+
+    def evaluate_value_range(self, value) -> bool:
+        if not isinstance(value, self.dtype):
+            raise TypeError("The given value was not of the expected data type. Expected ", self.dtype, "but was",
+                            type(value).__name__)
+        if not isinstance(value, np.ndarray):
+            raise TypeError("A sequence of numbers must be of type numpy.ndarray, but was", type(value).__name__)
+
+        for number in value:
+            if number < 0:
+                return False
+        return True
+
+
+class NumberWithUpperAndLowerLimit(MetaDatum):
+    def __init__(self, tag, mandatory, dtype, unit=Units.NO_UNIT, lower_limit=-np.inf, upper_limit=np.inf):
+        super().__init__(tag, mandatory, dtype, unit)
+        self.lower_limit = lower_limit
+        self.upper_limit = upper_limit
+
+    def evaluate_value_range(self, value) -> bool:
+        if not isinstance(value, self.dtype):
+            raise TypeError("The given value was not of the expected data type. Expected ", self.dtype, "but was",
+                            type(value).__name__)
+        if not isinstance(value, numbers.Number):
+            raise TypeError("Expected value to be a number, but was", type(value).__name__)
+
+        return self.lower_limit <= value <= self.upper_limit
+
+
+class NDimensionalNumpyArray(MetaDatum):
+    def __init__(self, tag, mandatory, dtype, unit=Units.NO_UNIT, expected_array_dimension=1):
+        super().__init__(tag, mandatory, dtype, unit)
+        self.expected_array_dimension = expected_array_dimension
+
+    def evaluate_value_range(self, value) -> bool:
+        if not isinstance(value, self.dtype):
+            raise TypeError("The given value was not of the expected data type. Expected ", self.dtype, "but was",
+                            type(value).__name__)
+        if not isinstance(value, np.ndarray):
+            raise TypeError("A N-Dimensional array must be of type numpy.ndarray, but was", type(value).__name__)
+        return len(value) == self.expected_array_dimension
+
+
+class NonNegativeNumber(MetaDatum):
+    def __init__(self, tag, mandatory, dtype, unit=Units.NO_UNIT):
+        super().__init__(tag, mandatory, dtype, unit)
+
+    def evaluate_value_range(self, value) -> bool:
+        if not isinstance(value, self.dtype):
+            raise TypeError("The given value was not of the expected data type. Expected ", self.dtype, "but was",
+                            type(value).__name__)
+        if not isinstance(value, numbers.Number):
+            raise TypeError("Expected value to be a number, but was", type(value).__name__)
+
+        return value >= 0
+
+
+class EnumeratedString(MetaDatum):
+    def __init__(self, tag, mandatory, dtype, unit=Units.NO_UNIT, permissible_strings=None):
+        super().__init__(tag, mandatory, dtype, unit)
+        self.permissible_strings = permissible_strings
+
+    def evaluate_value_range(self, value) -> bool:
+        if not isinstance(value, self.dtype):
+            raise TypeError("The given value was not of the expected data type. Expected ", self.dtype, "but was",
+                            type(value).__name__)
+
+        if self.permissible_strings is None:
+            return False
+
+        return value in self.permissible_strings
 
 
 class MetadataDeviceTags(Enum):
@@ -112,31 +202,39 @@ class MetadataDeviceTags(Enum):
     ILLUMINATORS = UnconstrainedMetaDatum("illuminators", True, dict)
     DETECTORS = UnconstrainedMetaDatum("detectors", True, dict)
     FIELD_OF_VIEW = UnconstrainedMetaDatum("field_of_view", False, np.ndarray, Units.METERS)
-    NUMBER_OF_ILLUMINATORS = UnconstrainedMetaDatum("num_illuminators", False, int, Units.DIMENSIONLESS_UNIT)
-    NUMBER_OF_DETECTORS = UnconstrainedMetaDatum("num_detectors", False, int, Units.DIMENSIONLESS_UNIT)
+    NUMBER_OF_ILLUMINATORS = NonNegativeWholeNumber("num_illuminators", False, int, Units.DIMENSIONLESS_UNIT)
+    NUMBER_OF_DETECTORS = NonNegativeWholeNumber("num_detectors", False, int, Units.DIMENSIONLESS_UNIT)
 
     # Illumination geometry-specific fields
     ILLUMINATION_ELEMENT = UnconstrainedMetaDatum("illumination_element", False, str)
     ILLUMINATOR_POSITION = UnconstrainedMetaDatum("illuminator_position", False, np.ndarray, Units.METERS)
-    ILLUMINATOR_ORIENTATION = UnconstrainedMetaDatum("illuminator_orientation", False, np.ndarray, Units.RADIANS)
-    ILLUMINATOR_SHAPE = UnconstrainedMetaDatum("illuminator_shape", False, np.ndarray, Units.METERS)
+    ILLUMINATOR_ORIENTATION = NumberWithUpperAndLowerLimit("illuminator_orientation", False, np.ndarray, Units.RADIANS,
+                                                           lower_limit=-2*np.pi, upper_limit=2*np.pi)
+    ILLUMINATOR_SHAPE = UnconstrainedMetaDatum("illuminator_shape", False, np.ndarray, Units.METERS)  # FIXME: Consistent behavior with detectors
     WAVELENGTH_RANGE = UnconstrainedMetaDatum("wavelength_range", False, np.ndarray, Units.METERS)
-    LASER_ENERGY_PROFILE = UnconstrainedMetaDatum("laser_energy_profile", False, np.ndarray, Units.JOULES)
-    LASER_STABILITY_PROFILE = UnconstrainedMetaDatum("laser_stability_profile", False, np.ndarray, Units.JOULES)
-    PULSE_WIDTH = UnconstrainedMetaDatum("pulse_width", False, float, Units.SECONDS)
-    BEAM_INTENSITY_PROFILE = UnconstrainedMetaDatum("beam_intensity_profile", False, np.ndarray, Units.DIMENSIONLESS_UNIT)
-    BEAM_DIVERGENCE_ANGLES = UnconstrainedMetaDatum("beam_divergence_angles", False, float, Units.RADIANS)
+    LASER_ENERGY_PROFILE = NDimensionalNumpyArray("laser_energy_profile", False, np.ndarray, Units.JOULES,
+                                                  expected_array_dimension=2)
+    LASER_STABILITY_PROFILE = NDimensionalNumpyArray("laser_stability_profile", False, np.ndarray, Units.JOULES,
+                                                     expected_array_dimension=2)
+    PULSE_WIDTH = NonNegativeNumber("pulse_width", False, float, Units.SECONDS)
+    BEAM_INTENSITY_PROFILE = NonNegativeNumbersInArray("beam_intensity_profile", False, np.ndarray,
+                                                       Units.DIMENSIONLESS_UNIT)
+    BEAM_DIVERGENCE_ANGLES = NumberWithUpperAndLowerLimit("beam_divergence_angles", False, float, Units.RADIANS,
+                                                          lower_limit=0, upper_limit=2*np.pi)
 
     # Detection geometry-specific fields
     DETECTION_ELEMENT = UnconstrainedMetaDatum("detection_element", True, str)
     DETECTOR_POSITION = UnconstrainedMetaDatum("detector_position", True, np.ndarray, Units.METERS)
-    DETECTOR_ORIENTATION = UnconstrainedMetaDatum("detector_orientation", False, np.ndarray, Units.RADIANS)
-    DETECTOR_SIZE = UnconstrainedMetaDatum("detector_size", False, np.ndarray, Units.METERS)
-    FREQUENCY_RESPONSE = UnconstrainedMetaDatum("frequency_response", False, np.ndarray, Units.DIMENSIONLESS_UNIT)
-    ANGULAR_RESPONSE = UnconstrainedMetaDatum("angular_response", False, np.ndarray, Units.DIMENSIONLESS_UNIT)
+    DETECTOR_ORIENTATION = NumberWithUpperAndLowerLimit("detector_orientation", False, np.ndarray, Units.RADIANS,
+                                                        lower_limit=-2*np.pi, upper_limit=2*np.pi)
+    DETECTOR_SIZE = UnconstrainedMetaDatum("detector_size", False, np.ndarray, Units.METERS)  # FIXME: Consistent behavior with illuminators
+    FREQUENCY_RESPONSE = NDimensionalNumpyArray("frequency_response", False, np.ndarray, Units.DIMENSIONLESS_UNIT,
+                                                expected_array_dimension=2)
+    ANGULAR_RESPONSE = NDimensionalNumpyArray("angular_response", False, np.ndarray, Units.DIMENSIONLESS_UNIT,
+                                              expected_array_dimension=2)
 
 
-class MetadataTags(Enum):
+class MetadataAcquisitionTags(Enum):
     """
     Binary time series data meta data tags
     """
@@ -149,17 +247,17 @@ class MetadataTags(Enum):
     COMPRESSION = UnconstrainedMetaDatum("compression", True, str)
     PHOTOACOUSTIC_IMAGING_DEVICE = UnconstrainedMetaDatum("photoacoustic_imaging_device", False, str)
     DATA_TYPE = UnconstrainedMetaDatum("data_type", True, str)
-    DIMENSIONALITY = UnconstrainedMetaDatum("dimensionality", True, str)
-    SIZES = UnconstrainedMetaDatum("sizes", True, np.ndarray, Units.DIMENSIONLESS_UNIT)
-    PULSE_LASER_ENERGY = UnconstrainedMetaDatum("pulse_laser_energy", False, np.ndarray, Units.JOULES)
-    FRAME_ACQUISITION_TIMESTAMPS = UnconstrainedMetaDatum("frame_acquisition_timestamps", False, np.ndarray, Units.SECONDS)
-    ACQUISITION_OPTICAL_WAVELENGTHS = UnconstrainedMetaDatum("acquisition_optical_wavelengths", False, np.ndarray, Units.METERS)
-    TIME_GAIN_COMPNSATION = UnconstrainedMetaDatum("time_gain_compensation", False, np.ndarray, Units.DIMENSIONLESS_UNIT)
-    OVERALL_GAIN = UnconstrainedMetaDatum("overall_gain", False, float, Units.DIMENSIONLESS_UNIT)
-    ELEMENT_DEPENDENT_GAIN = UnconstrainedMetaDatum("element_dependent_gain", False, np.ndarray, Units.DIMENSIONLESS_UNIT)
-    TEMPERATURE_CONTROL = UnconstrainedMetaDatum("temperature_control", False, np.ndarray, Units.KELVIN)
-    ACOUSTIC_COUPLING_AGENT = UnconstrainedMetaDatum("acoustic_cupling_agent", False, str)
+    DIMENSIONALITY = EnumeratedString("dimensionality", True, str, permissible_strings=DIMENSIONALITY_STRINGS)
+    SIZES = NonNegativeNumbersInArray("sizes", True, np.ndarray, Units.DIMENSIONLESS_UNIT)
+    PULSE_LASER_ENERGY = NonNegativeNumbersInArray("pulse_laser_energy", False, np.ndarray, Units.JOULES)
+    FRAME_ACQUISITION_TIMESTAMPS = NonNegativeNumbersInArray("frame_acquisition_timestamps", False, np.ndarray, Units.SECONDS)
+    ACQUISITION_OPTICAL_WAVELENGTHS = NonNegativeNumbersInArray("acquisition_optical_wavelengths", False, np.ndarray, Units.METERS)
+    TIME_GAIN_COMPENSATION = NonNegativeNumbersInArray("time_gain_compensation", False, np.ndarray, Units.DIMENSIONLESS_UNIT)
+    OVERALL_GAIN = NonNegativeNumber("overall_gain", False, float, Units.DIMENSIONLESS_UNIT)
+    ELEMENT_DEPENDENT_GAIN = NonNegativeNumbersInArray("element_dependent_gain", False, np.ndarray, Units.DIMENSIONLESS_UNIT)
+    TEMPERATURE_CONTROL = NonNegativeNumber("temperature_control", False, np.ndarray, Units.KELVIN)
+    ACOUSTIC_COUPLING_AGENT = UnconstrainedMetaDatum("acoustic_coupling_agent", False, str)
     SCANNING_METHOD = UnconstrainedMetaDatum("scanning_method", False, str)
-    AD_SAMPLING_RATE = UnconstrainedMetaDatum("ad_sampling_rate", True, np.ndarray, Units.HERTZ)
+    AD_SAMPLING_RATE = NonNegativeNumber("ad_sampling_rate", True, float, Units.HERTZ)
     FREQUENCY_DOMAIN_FILTER = UnconstrainedMetaDatum("frequency_domain_filter", False, str)
-    FILTER_THRESHOLD = UnconstrainedMetaDatum("filter_threshold", False, np.ndarray, Units.HERTZ)
+    #FILTER_THRESHOLD = UnconstrainedMetaDatum("filter_threshold", False, np.ndarray, Units.HERTZ)

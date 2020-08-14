@@ -28,7 +28,7 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-from ipasc_tool import MetadataTags
+from ipasc_tool import MetadataAcquisitionTags
 from ipasc_tool import MetadataDeviceTags
 
 
@@ -75,7 +75,7 @@ class CompletenessChecker:
         log_string = "#Completeness Report\n\n"
 
         log_string += "##Individual fields\n\n"
-        for metadatum in MetadataTags:
+        for metadatum in MetadataAcquisitionTags:
             [log, count] = check_metadatum_from_dict(meta_data_dictionary, metadatum)
             incompletenes_count += count
             log_string += log

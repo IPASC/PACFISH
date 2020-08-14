@@ -31,7 +31,7 @@
 from abc import ABC, abstractmethod
 from ipasc_tool.core.PAData import PAData
 from ipasc_tool.qualitycontrol import ConsistencyChecker
-from ipasc_tool.core.Metadata import MetadataTags, MetaDatum
+from ipasc_tool.core.Metadata import MetadataAcquisitionTags, MetaDatum
 import numpy as np
 
 
@@ -55,7 +55,7 @@ class BaseAdapter(ABC):
         """
         meta_data_dictionary = dict()
 
-        for metadata_tag in MetadataTags:
+        for metadata_tag in MetadataAcquisitionTags:
             target_value = self.set_metadata_value(metadata_tag)
             self.consistency_checker.check_meta_datum(metadata_tag, target_value)
             meta_data_dictionary[metadata_tag] = target_value
