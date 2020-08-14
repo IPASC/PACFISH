@@ -52,7 +52,7 @@ class DKFZCAMIExperimentalSystemNrrdFileConverter(BaseAdapter):
         return dictionary
 
     def set_metadata_value(self, metadata_tag: MetaDatum) -> object:
-        if metadata_tag.tag == MetadataAcquisitionTags.UUID.info.tag:
+        if metadata_tag == MetadataAcquisitionTags.UUID:
             return "TestUUID"
-        elif metadata_tag.tag == MetadataAcquisitionTags.DATA_TYPE:
+        elif metadata_tag == MetadataAcquisitionTags.DATA_TYPE:
             return self.meta['type']

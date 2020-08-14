@@ -194,14 +194,10 @@ class EnumeratedString(MetaDatum):
         return value in self.permissible_strings
 
 
-class MetadataDeviceTags(Enum):
+class MetadataDeviceTags:
     """
     This class defines the naming conventions of the
     """
-
-    def __init__(self, metadatum: MetaDatum):
-        self.info = metadatum
-
     # General purpose fields
     UUID = UnconstrainedMetaDatum("uuid", True, str)
     GENERAL = UnconstrainedMetaDatum("general", True, dict)
@@ -239,14 +235,19 @@ class MetadataDeviceTags(Enum):
     ANGULAR_RESPONSE = NDimensionalNumpyArray("angular_response", False, np.ndarray, Units.DIMENSIONLESS_UNIT,
                                               expected_array_dimension=2)
 
+    TAGS_GENERAL = [GENERAL, UUID, ILLUMINATORS, DETECTORS, FIELD_OF_VIEW, NUMBER_OF_ILLUMINATORS, NUMBER_OF_DETECTORS]
+    TAGS_ILLUMONATORS = [ILLUMINATION_ELEMENT, ILLUMINATOR_POSITION, ILLUMINATOR_ORIENTATION, ILLUMINATOR_SHAPE,
+                         WAVELENGTH_RANGE, LASER_ENERGY_PROFILE, LASER_STABILITY_PROFILE, PULSE_WIDTH,
+                         BEAM_INTENSITY_PROFILE, BEAM_DIVERGENCE_ANGLES]
+    TAGS_DETECTORS = [DETECTION_ELEMENT, DETECTOR_POSITION, DETECTOR_ORIENTATION, DETECTOR_SIZE, FREQUENCY_RESPONSE,
+                      ANGULAR_RESPONSE]
+    TAGS = TAGS_GENERAL + TAGS_DETECTORS + TAGS_ILLUMONATORS
 
-class MetadataAcquisitionTags(Enum):
+
+class MetadataAcquisitionTags:
     """
     Binary time series data meta data tags
     """
-
-    def __init__(self, metadatum: MetaDatum):
-        self.info = metadatum
 
     UUID = UnconstrainedMetaDatum("uuid", True, str)
     ENCODING = UnconstrainedMetaDatum("encoding", True, str)
@@ -266,3 +267,10 @@ class MetadataAcquisitionTags(Enum):
     SCANNING_METHOD = UnconstrainedMetaDatum("scanning_method", False, str)
     AD_SAMPLING_RATE = NonNegativeNumber("ad_sampling_rate", True, float, Units.HERTZ)
     FREQUENCY_DOMAIN_FILTER = UnconstrainedMetaDatum("frequency_domain_filter", False, np.ndarray)
+
+    TAGS_BINARY = [DATA_TYPE, DIMENSIONALITY, SIZES]
+    TAGS_CONTAINER = [UUID, ENCODING, COMPRESSION]
+    TAGS_ACQUISITION = [PHOTOACOUSTIC_IMAGING_DEVICE, PULSE_LASER_ENERGY, ACQUISITION_OPTICAL_WAVELENGTHS,
+                        TIME_GAIN_COMPENSATION, OVERALL_GAIN, ELEMENT_DEPENDENT_GAIN, TEMPERATURE_CONTROL,
+                        ACOUSTIC_COUPLING_AGENT, SCANNING_METHOD, AD_SAMPLING_RATE, FREQUENCY_DOMAIN_FILTER]
+    TAGS = TAGS_BINARY + TAGS_ACQUISITION + TAGS_CONTAINER

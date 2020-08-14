@@ -51,13 +51,13 @@ class MetaDataTest(TestCase):
         device_dictionary = create_complete_device_metadata_dictionary()
         assert self.completeness_checker.check_meta_data_device(device_dictionary)
 
-        device_dictionary[MetadataDeviceTags.GENERAL.info.tag][MetadataDeviceTags.UUID.info.tag] = None
+        device_dictionary[MetadataDeviceTags.GENERAL.tag][MetadataDeviceTags.UUID.tag] = None
         assert not self.completeness_checker.check_meta_data_device(device_dictionary)
 
         device_dictionary = create_complete_device_metadata_dictionary()
         assert self.completeness_checker.check_meta_data_device(device_dictionary)
 
-        device_dictionary[MetadataDeviceTags.GENERAL.info.tag].pop(MetadataDeviceTags.UUID.info.tag)
+        device_dictionary[MetadataDeviceTags.GENERAL.tag].pop(MetadataDeviceTags.UUID.tag)
         assert not self.completeness_checker.check_meta_data_device(device_dictionary)
 
         os.remove(self.completeness_checker.save_file_name)
@@ -96,8 +96,11 @@ class MetaDataTest(TestCase):
                                             expected_array_dimension=2)
         assert test_field.evaluate_value_range(np.asarray([1.23])) is False
         assert test_field.evaluate_value_range(np.asarray([[0.0, 17.46], [12, 12]])) is True
-        assert test_field.evaluate_value_range(np.asarray([[1.23, -17.46, 0.0], [1.23, -17.46, 0.0],
-                                                          [1.23, -17.46, 0.0]])) is False
+        assert test_field.evaluate_value_range(np.asarray([[[1.23, -17.46, 0.0], [1.23, -17.46, 0.0],
+                                                          [1.23, -17.46, 0.0]],
+                                                           [[1.23, -17.46, 0.0], [1.23, -17.46, 0.0],
+                                                            [1.23, -17.46, 0.0]]
+                                                           ])) is False
 
         test_field = EnumeratedString("tag", True, str, Units.METERS,
                                             permissible_strings=["A", "B"])

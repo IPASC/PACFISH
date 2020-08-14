@@ -39,82 +39,82 @@ class IlluminationElementCreator(object):
         """
         :param illuminator_position: is a list of three float values that describe the position of the illumination element in the
                     x1, x2, and x3 direction.
-                    The units can be found in MetadataDeviceTags.ILLUMINATOR_POSITION.info.unit.
+                    The units can be found in MetadataDeviceTags.ILLUMINATOR_POSITION.unit.
         :return: void
         """
-        self.illuminator_element_dict[MetadataDeviceTags.ILLUMINATOR_POSITION.info.tag] = illuminator_position
+        self.illuminator_element_dict[MetadataDeviceTags.ILLUMINATOR_POSITION.tag] = illuminator_position
 
     def set_illuminator_orientation(self, orientation:list):
         """
         :param orientation: is a list of three float values that describe the orientation of the illumination element in the
                     x1, x2, and x3 direction.
-                    The units can be found in MetadataDeviceTags.ILLUMINATOR_ORIENTATION.info.unit.
+                    The units can be found in MetadataDeviceTags.ILLUMINATOR_ORIENTATION.unit.
         :return: void
         """
-        self.illuminator_element_dict[MetadataDeviceTags.ILLUMINATOR_ORIENTATION.info.tag] = orientation
+        self.illuminator_element_dict[MetadataDeviceTags.ILLUMINATOR_ORIENTATION.tag] = orientation
 
     def set_illuminator_shape(self, shape):
         """
         :param shape: is a list of three float values that describe the shape of the illuminator in the
                     x1, x2, and x3 direction.
-                    The units can be found in MetadataDeviceTags.ILLUMINATOR_SHAPE.info.unit.
+                    The units can be found in MetadataDeviceTags.ILLUMINATOR_SHAPE.unit.
         :return: void
         """
-        self.illuminator_element_dict[MetadataDeviceTags.ILLUMINATOR_SHAPE.info.tag] = shape
+        self.illuminator_element_dict[MetadataDeviceTags.ILLUMINATOR_SHAPE.tag] = shape
 
     def set_wavelength_range(self, wl_range:list):
         """
         :param wl_range: is a list of three float values that describe the minimum wavelength lambda_min, 
         the maximum wavelength lambda_max and a metric for the accuracy lambda_accuracy.
-        The units can be found in MetadataDeviceTags.WAVELENGTH_RANGE.info.unit.
+        The units can be found in MetadataDeviceTags.WAVELENGTH_RANGE.unit.
         :return: void
         """
-        self.illuminator_element_dict[MetadataDeviceTags.WAVELENGTH_RANGE.info.tag] = wl_range
+        self.illuminator_element_dict[MetadataDeviceTags.WAVELENGTH_RANGE.tag] = wl_range
 
     def set_laser_energy_profile(self, energy_profile):
         """
         :param energy_profile: a two element list [wavelengths, laser_energy] describing the laser energy profile.
                     Laser energy and wavelengths are also lists where len(laser_energy) == len(profile)
-                    The units can be found in MetadataDeviceTags.LASER_ENERGY_PROFILE.info.unit.
+                    The units can be found in MetadataDeviceTags.LASER_ENERGY_PROFILE.unit.
         :return: void
         """
-        self.illuminator_element_dict[MetadataDeviceTags.LASER_ENERGY_PROFILE.info.tag] = energy_profile
+        self.illuminator_element_dict[MetadataDeviceTags.LASER_ENERGY_PROFILE.tag] = energy_profile
         
     def set_laser_stability_profile(self, stability_profile):
         """
         :param stability_profile: a two element list [wavelengths,laser_stability,] describing the laser stability profile.
                     Laser stability and wavelengths are also lists where len(stability_profile) == len(wavelengths).
-                    The units can be found in MetadataDeviceTags.LASER_STABILITY_PROFILE.info.unit.
+                    The units can be found in MetadataDeviceTags.LASER_STABILITY_PROFILE.unit.
         :return: void
         """
-        self.illuminator_element_dict[MetadataDeviceTags.LASER_STABILITY_PROFILE.info.tag] = stability_profile
+        self.illuminator_element_dict[MetadataDeviceTags.LASER_STABILITY_PROFILE.tag] = stability_profile
 
     def set_pulse_width(self, pulse_width:float):
         """
         :param pulse_width: a floating point value describing the pulse width of the laser 
-                    in the units of MetadataDeviceTags.PULSE_WIDTH.info.unit.
+                    in the units of MetadataDeviceTags.PULSE_WIDTH.unit.
         :return: void
         """
-        self.illuminator_element_dict[MetadataDeviceTags.PULSE_WIDTH.info.tag] = pulse_width
+        self.illuminator_element_dict[MetadataDeviceTags.PULSE_WIDTH.tag] = pulse_width
 
     def set_beam_intensity_profile(self, intensity_profile):
         """
         :param intensity_profile: a two element list [wavelengths, intensity_profile] describing the beam itensity profile.
                     Wavelengths and intensity_profile are also lists where len(wavelengths) == len(intensity_profile)
-                    The units can be found in MetadataDeviceTags.BEAM_INTENSITY_PROFILE.info.unit.
+                    The units can be found in MetadataDeviceTags.BEAM_INTENSITY_PROFILE.unit.
         :return: void
         """
-        self.illuminator_element_dict[MetadataDeviceTags.BEAM_INTENSITY_PROFILE.info.tag] = intensity_profile
+        self.illuminator_element_dict[MetadataDeviceTags.BEAM_INTENSITY_PROFILE.tag] = intensity_profile
 
     def set_beam_divergence_angles(self, angle:float):
         """
         :param angle: a value describing the opening angle of the laser beam from the illuminator shape with respect 
                     to the orientation vector. This angle is represented by the standard deviation of the beam divergence.
-                    The units can be found in MetadataDeviceTags.BEAM_DIVERGENCE_ANGLES.info.unit.
+                    The units can be found in MetadataDeviceTags.BEAM_DIVERGENCE_ANGLES.unit.
                     
         :return: void
         """
-        self.illuminator_element_dict[MetadataDeviceTags.BEAM_DIVERGENCE_ANGLES.info.tag] = angle
+        self.illuminator_element_dict[MetadataDeviceTags.BEAM_DIVERGENCE_ANGLES.tag] = angle
 
     def get_dictionary(self):
         return copy.deepcopy(self.illuminator_element_dict)
@@ -128,45 +128,45 @@ class DetectionElementCreator(object):
         """
         :param detector_position: a list of three float values that describe the position of the detection element in the
                     x1, x2, and x3 direction.
-                    The units can be found in MetadataDeviceTags.DETECTOR_POSITION.info.unit.
+                    The units can be found in MetadataDeviceTags.DETECTOR_POSITION.unit.
         :return: void
         """
-        self.detection_element_dict[MetadataDeviceTags.DETECTOR_POSITION.info.tag] = detector_position
+        self.detection_element_dict[MetadataDeviceTags.DETECTOR_POSITION.tag] = detector_position
 
     def set_detector_orientation(self, orientation: list):
         """
         :param orientation: a list of three float values that describe the orientation of the detector element in the
                     x1, x2, and x3 direction.
-                    The units can be found in MetadataDeviceTags.DETECTOR_ORIENTATION.info.unit.
+                    The units can be found in MetadataDeviceTags.DETECTOR_ORIENTATION.unit.
         :return: void
         """
-        self.detection_element_dict[MetadataDeviceTags.DETECTOR_ORIENTATION.info.tag] = orientation
+        self.detection_element_dict[MetadataDeviceTags.DETECTOR_ORIENTATION.tag] = orientation
 
     def set_detector_size(self, size: list):
         """
         :param size: a three element list [x1, x2, x3] describing the extent of the detector size in x1, x2, and x3 direction.
-                    The units can be found in MetadataDeviceTags.DETECTOR_SIZE.info.unit.
+                    The units can be found in MetadataDeviceTags.DETECTOR_SIZE.unit.
         :return: void
         """
-        self.detection_element_dict[MetadataDeviceTags.DETECTOR_SIZE.info.tag] = size
+        self.detection_element_dict[MetadataDeviceTags.DETECTOR_SIZE.tag] = size
 
     def set_frequency_response(self, frequency_response):
         """
         :param frequency_response: a two element list [frequency, response] describing the frequency response of the detector.
                     Frequency and response are also lists where len(frequency) == len(response).
-                    The units can be found in MetadataDeviceTags.FREQUENCY_RESPONSE.info.unit.
+                    The units can be found in MetadataDeviceTags.FREQUENCY_RESPONSE.unit.
         :return: void
         """
-        self.detection_element_dict[MetadataDeviceTags.FREQUENCY_RESPONSE.info.tag] = frequency_response
+        self.detection_element_dict[MetadataDeviceTags.FREQUENCY_RESPONSE.tag] = frequency_response
 
     def set_angular_response(self, angular_response):
         """
         :param angular_response: a two element list [angles, response] describing the angular response of the detecor.
                     Angles and response are also lists where len(angles) == len(response).
-                    The units can be found in MetadataDeviceTags.ANGULAR_RESPONSE.info.unit.
+                    The units can be found in MetadataDeviceTags.ANGULAR_RESPONSE.unit.
         :return: void
         """
-        self.detection_element_dict[MetadataDeviceTags.ANGULAR_RESPONSE.info.tag] = angular_response
+        self.detection_element_dict[MetadataDeviceTags.ANGULAR_RESPONSE.tag] = angular_response
 
     def get_dictionary(self):
         return copy.deepcopy(self.detection_element_dict)
@@ -190,8 +190,8 @@ class DeviceMetaDataCreator(object):
                     x1, x2, and x3 direction (x1, x2, x3 is defined in TODO).
         :return: void
         """
-        self.device_dict[self.GENERAL][MetadataDeviceTags.UUID.info.tag] = uuid
-        self.device_dict[self.GENERAL][MetadataDeviceTags.FIELD_OF_VIEW.info.tag] = fov
+        self.device_dict[self.GENERAL][MetadataDeviceTags.UUID.tag] = uuid
+        self.device_dict[self.GENERAL][MetadataDeviceTags.FIELD_OF_VIEW.tag] = fov
 
     def add_detection_element(self, uid: str, detection_element: dict):
         """
@@ -211,9 +211,9 @@ class DeviceMetaDataCreator(object):
 
     def finalize_device_meta_data(self):
 
-        self.device_dict[self.GENERAL][MetadataDeviceTags.NUMBER_OF_DETECTORS.info.tag] = len(
+        self.device_dict[self.GENERAL][MetadataDeviceTags.NUMBER_OF_DETECTORS.tag] = len(
             self.device_dict[self.DETECTORS])
-        self.device_dict[self.GENERAL][MetadataDeviceTags.NUMBER_OF_ILLUMINATORS.info.tag] = len(
+        self.device_dict[self.GENERAL][MetadataDeviceTags.NUMBER_OF_ILLUMINATORS.tag] = len(
             self.device_dict[self.ILLUMINATORS])
 
         return copy.deepcopy(self.device_dict)

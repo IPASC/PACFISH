@@ -35,24 +35,24 @@ from ipasc_tool import MetadataDeviceTags, MetadataAcquisitionTags
 def create_complete_meta_data_dictionary():
 
     dictionary = dict()
-    dictionary[MetadataAcquisitionTags.UUID.info.tag] = create_random_testing_parameters()['test_string']
-    dictionary[MetadataAcquisitionTags.ENCODING.info.tag] = create_random_testing_parameters()['test_string']
-    dictionary[MetadataAcquisitionTags.COMPRESSION.info.tag] = create_random_testing_parameters()['test_string']
-    dictionary[MetadataAcquisitionTags.PHOTOACOUSTIC_IMAGING_DEVICE.info.tag] = create_random_testing_parameters()['test_string']
-    dictionary[MetadataAcquisitionTags.DATA_TYPE.info.tag] = create_random_testing_parameters()['test_string']
-    dictionary[MetadataAcquisitionTags.DIMENSIONALITY.info.tag] = "2D"
-    dictionary[MetadataAcquisitionTags.SIZES.info.tag] = np.asarray([100, 200])
-    dictionary[MetadataAcquisitionTags.PULSE_LASER_ENERGY.info.tag] = np.asarray([2])
-    dictionary[MetadataAcquisitionTags.FRAME_ACQUISITION_TIMESTAMPS.info.tag] = np.asarray([2])
-    dictionary[MetadataAcquisitionTags.ACQUISITION_OPTICAL_WAVELENGTHS.info.tag] = np.asarray([2])
-    dictionary[MetadataAcquisitionTags.TIME_GAIN_COMPENSATION.info.tag] = create_random_testing_parameters()['test_array']
-    dictionary[MetadataAcquisitionTags.OVERALL_GAIN.info.tag] = 2.2
-    dictionary[MetadataAcquisitionTags.ELEMENT_DEPENDENT_GAIN.info.tag] = np.ones(100)
-    dictionary[MetadataAcquisitionTags.TEMPERATURE_CONTROL.info.tag] = np.ones(100) * 290.3
-    dictionary[MetadataAcquisitionTags.ACOUSTIC_COUPLING_AGENT.info.tag] = create_random_testing_parameters()['test_string']
-    dictionary[MetadataAcquisitionTags.SCANNING_METHOD.info.tag] = create_random_testing_parameters()['test_string']
-    dictionary[MetadataAcquisitionTags.AD_SAMPLING_RATE.info.tag] = 1.2234
-    dictionary[MetadataAcquisitionTags.FREQUENCY_DOMAIN_FILTER.info.tag] = create_random_testing_parameters()['test_array']
+    dictionary[MetadataAcquisitionTags.UUID.tag] = create_random_testing_parameters()['test_string']
+    dictionary[MetadataAcquisitionTags.ENCODING.tag] = create_random_testing_parameters()['test_string']
+    dictionary[MetadataAcquisitionTags.COMPRESSION.tag] = create_random_testing_parameters()['test_string']
+    dictionary[MetadataAcquisitionTags.PHOTOACOUSTIC_IMAGING_DEVICE.tag] = create_random_testing_parameters()['test_string']
+    dictionary[MetadataAcquisitionTags.DATA_TYPE.tag] = create_random_testing_parameters()['test_string']
+    dictionary[MetadataAcquisitionTags.DIMENSIONALITY.tag] = "2D"
+    dictionary[MetadataAcquisitionTags.SIZES.tag] = np.asarray([100, 200])
+    dictionary[MetadataAcquisitionTags.PULSE_LASER_ENERGY.tag] = np.asarray([2])
+    dictionary[MetadataAcquisitionTags.FRAME_ACQUISITION_TIMESTAMPS.tag] = np.asarray([2])
+    dictionary[MetadataAcquisitionTags.ACQUISITION_OPTICAL_WAVELENGTHS.tag] = np.asarray([2])
+    dictionary[MetadataAcquisitionTags.TIME_GAIN_COMPENSATION.tag] = create_random_testing_parameters()['test_array']
+    dictionary[MetadataAcquisitionTags.OVERALL_GAIN.tag] = 2.2
+    dictionary[MetadataAcquisitionTags.ELEMENT_DEPENDENT_GAIN.tag] = np.ones(100)
+    dictionary[MetadataAcquisitionTags.TEMPERATURE_CONTROL.tag] = np.ones(100) * 290.3
+    dictionary[MetadataAcquisitionTags.ACOUSTIC_COUPLING_AGENT.tag] = create_random_testing_parameters()['test_string']
+    dictionary[MetadataAcquisitionTags.SCANNING_METHOD.tag] = create_random_testing_parameters()['test_string']
+    dictionary[MetadataAcquisitionTags.AD_SAMPLING_RATE.tag] = 1.2234
+    dictionary[MetadataAcquisitionTags.FREQUENCY_DOMAIN_FILTER.tag] = create_random_testing_parameters()['test_array']
     return dictionary
 
 
@@ -80,26 +80,26 @@ def create_random_illumination_element(dim_x=None, dim_y=None, dim_z=None):
         dim_z = 0.01
 
     illuminator_dict = dict()
-    illuminator_dict[MetadataDeviceTags.ILLUMINATOR_POSITION.info.tag] = np.asarray([
+    illuminator_dict[MetadataDeviceTags.ILLUMINATOR_POSITION.tag] = np.asarray([
         np.random.random() * 2 * dim_x - dim_x,
         np.random.random() * 2 * dim_x - dim_x,
         -np.random.random() * dim_x / 2])
-    illuminator_dict[MetadataDeviceTags.ILLUMINATOR_ORIENTATION.info.tag] = np.asarray([
+    illuminator_dict[MetadataDeviceTags.ILLUMINATOR_ORIENTATION.tag] = np.asarray([
         np.random.random() * dim_x - dim_x / 2,
         np.random.random() * dim_y - dim_y / 2,
         np.random.random() * dim_z - dim_z / 2])
     size = np.random.random() * dim_x / 10
-    illuminator_dict[MetadataDeviceTags.ILLUMINATOR_SHAPE.info.tag] = np.asarray([size, size, size])
+    illuminator_dict[MetadataDeviceTags.ILLUMINATOR_SHAPE.tag] = np.asarray([size, size, size])
     min_wavelength = np.random.random() * 200 + 600
-    illuminator_dict[MetadataDeviceTags.WAVELENGTH_RANGE.info.tag] = np.asarray([min_wavelength,
+    illuminator_dict[MetadataDeviceTags.WAVELENGTH_RANGE.tag] = np.asarray([min_wavelength,
                                                                                  min_wavelength +
                                                                                  np.random.random() * 200,
                                                                                  1.0])
-    illuminator_dict[MetadataDeviceTags.LASER_ENERGY_PROFILE.info.tag] = np.random.random(size=(200, 2))
-    illuminator_dict[MetadataDeviceTags.LASER_STABILITY_PROFILE.info.tag] = np.random.random(size=(200, 2))
-    illuminator_dict[MetadataDeviceTags.PULSE_WIDTH.info.tag] = 0.00000012
-    illuminator_dict[MetadataDeviceTags.BEAM_INTENSITY_PROFILE.info.tag] = np.random.random(size=(100, 100))
-    illuminator_dict[MetadataDeviceTags.BEAM_DIVERGENCE_ANGLES.info.tag] = np.deg2rad(np.random.random() * 90)
+    illuminator_dict[MetadataDeviceTags.LASER_ENERGY_PROFILE.tag] = np.random.random(size=(200, 2))
+    illuminator_dict[MetadataDeviceTags.LASER_STABILITY_PROFILE.tag] = np.random.random(size=(200, 2))
+    illuminator_dict[MetadataDeviceTags.PULSE_WIDTH.tag] = 0.00000012
+    illuminator_dict[MetadataDeviceTags.BEAM_INTENSITY_PROFILE.tag] = np.random.random(size=(100, 100))
+    illuminator_dict[MetadataDeviceTags.BEAM_DIVERGENCE_ANGLES.tag] = np.deg2rad(np.random.random() * 90)
     return illuminator_dict
 
 
@@ -113,18 +113,18 @@ def create_random_detection_element(dim_x=None, dim_y=None, dim_z=None):
         dim_z = 0.01
 
     detector_dict = dict()
-    detector_dict[MetadataDeviceTags.DETECTOR_POSITION.info.tag] = np.asarray([np.random.random() * dim_x,
+    detector_dict[MetadataDeviceTags.DETECTOR_POSITION.tag] = np.asarray([np.random.random() * dim_x,
                                                                                np.random.random() * dim_y,
                                                                                -np.random.random() * dim_z])
-    detector_dict[MetadataDeviceTags.DETECTOR_ORIENTATION.info.tag] = np.asarray(
+    detector_dict[MetadataDeviceTags.DETECTOR_ORIENTATION.tag] = np.asarray(
         [np.random.random() * dim_x - dim_x / 2,
          np.random.random() * dim_y - dim_y / 2,
          np.random.random() * dim_z - dim_z / 2])
-    detector_dict[MetadataDeviceTags.DETECTOR_SIZE.info.tag] = np.asarray([np.random.random() * dim_x,
+    detector_dict[MetadataDeviceTags.DETECTOR_SIZE.tag] = np.asarray([np.random.random() * dim_x,
                                                                            np.random.random() * dim_y,
                                                                            np.random.random() * dim_z])
-    detector_dict[MetadataDeviceTags.FREQUENCY_RESPONSE.info.tag] = np.random.random(size=(200, 2))
-    detector_dict[MetadataDeviceTags.ANGULAR_RESPONSE.info.tag] = np.random.random(size=(200, 2))
+    detector_dict[MetadataDeviceTags.FREQUENCY_RESPONSE.tag] = np.random.random(size=(200, 2))
+    detector_dict[MetadataDeviceTags.ANGULAR_RESPONSE.tag] = np.random.random(size=(200, 2))
     return detector_dict
 
 
@@ -138,26 +138,26 @@ def create_complete_device_metadata_dictionary(dim_x=None, dim_y=None, dim_z=Non
         dim_z = 0.01
 
     dictionary = {
-        MetadataDeviceTags.GENERAL.info.tag: {
-            MetadataDeviceTags.UUID.info.tag: "a2fd-48nbsh-sfiush7-chjs",
-            MetadataDeviceTags.FIELD_OF_VIEW.info.tag: np.asarray([0.03, 0.002, 0.03]),
-            MetadataDeviceTags.NUMBER_OF_ILLUMINATORS.info.tag: 2,
-            MetadataDeviceTags.NUMBER_OF_DETECTORS.info.tag: 4
+        MetadataDeviceTags.GENERAL.tag: {
+            MetadataDeviceTags.UUID.tag: "a2fd-48nbsh-sfiush7-chjs",
+            MetadataDeviceTags.FIELD_OF_VIEW.tag: np.asarray([0.03, 0.002, 0.03]),
+            MetadataDeviceTags.NUMBER_OF_ILLUMINATORS.tag: 2,
+            MetadataDeviceTags.NUMBER_OF_DETECTORS.tag: 4
         },
-        MetadataDeviceTags.ILLUMINATORS.info.tag: {
-            MetadataDeviceTags.ILLUMINATION_ELEMENT.info.tag + "_0":
+        MetadataDeviceTags.ILLUMINATORS.tag: {
+            MetadataDeviceTags.ILLUMINATION_ELEMENT.tag + "_0":
                 create_random_illumination_element(dim_x, dim_y, dim_z),
-            MetadataDeviceTags.ILLUMINATION_ELEMENT.info.tag + "_1":
+            MetadataDeviceTags.ILLUMINATION_ELEMENT.tag + "_1":
                 create_random_illumination_element(dim_x, dim_y, dim_z)
         },
-        MetadataDeviceTags.DETECTORS.info.tag: {
-            MetadataDeviceTags.DETECTION_ELEMENT.info.tag + "_0":
+        MetadataDeviceTags.DETECTORS.tag: {
+            MetadataDeviceTags.DETECTION_ELEMENT.tag + "_0":
                 create_random_detection_element(dim_x, dim_y, dim_z),
-            MetadataDeviceTags.DETECTION_ELEMENT.info.tag + "_1":
+            MetadataDeviceTags.DETECTION_ELEMENT.tag + "_1":
                 create_random_detection_element(dim_x, dim_y, dim_z),
-            MetadataDeviceTags.DETECTION_ELEMENT.info.tag + "_2":
+            MetadataDeviceTags.DETECTION_ELEMENT.tag + "_2":
                 create_random_detection_element(dim_x, dim_y, dim_z),
-            MetadataDeviceTags.DETECTION_ELEMENT.info.tag + "_3":
+            MetadataDeviceTags.DETECTION_ELEMENT.tag + "_3":
                 create_random_detection_element(dim_x, dim_y, dim_z)
         }
     }

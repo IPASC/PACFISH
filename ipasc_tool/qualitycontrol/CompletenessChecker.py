@@ -30,6 +30,7 @@
 
 from ipasc_tool import MetadataAcquisitionTags
 from ipasc_tool import MetadataDeviceTags
+from ipasc_tool import MetaDatum
 
 
 class CompletenessChecker:
@@ -75,7 +76,7 @@ class CompletenessChecker:
         log_string = "#Completeness Report\n\n"
 
         log_string += "##Acquisition Meta Data\n\n"
-        for metadatum in MetadataAcquisitionTags:
+        for metadatum in MetadataAcquisitionTags.TAGS:
             [log, count] = check_metadatum_from_dict(meta_data_dictionary, metadatum)
             incompletenes_count += count
             log_string += log
@@ -117,12 +118,12 @@ class CompletenessChecker:
 
         general_tags = [MetadataDeviceTags.UUID, MetadataDeviceTags.FIELD_OF_VIEW]
 
-        if MetadataDeviceTags.GENERAL.info.tag not in device_meta_data:
+        if MetadataDeviceTags.GENERAL.tag not in device_meta_data:
             log_string += "General device meta data is missing!\n\n"
             incompletenes_count += len(general_tags)
         else:
             for general_meta_datum in general_tags:
-                [log, count] = check_metadatum_from_dict(device_meta_data[MetadataDeviceTags.GENERAL.info.tag],
+                [log, count] = check_metadatum_from_dict(device_meta_data[MetadataDeviceTags.GENERAL.tag],
                                                          general_meta_datum)
                 log_string += log
                 incompletenes_count += count
@@ -133,17 +134,17 @@ class CompletenessChecker:
                           MetadataDeviceTags.DETECTOR_POSITION, MetadataDeviceTags.FREQUENCY_RESPONSE,
                           MetadataDeviceTags.ANGULAR_RESPONSE]
 
-        if MetadataDeviceTags.DETECTORS.info.tag not in device_meta_data:
+        if MetadataDeviceTags.DETECTORS.tag not in device_meta_data:
             log_string += "Detection elements data is missing!\n\n"
             incompletenes_count += len(detection_tags)
         else:
-            log_string += ("Found " + str(len(device_meta_data[MetadataDeviceTags.DETECTORS.info.tag])) +
+            log_string += ("Found " + str(len(device_meta_data[MetadataDeviceTags.DETECTORS.tag])) +
                            " detection elements.\n\n")
-            for detector_dict in device_meta_data[MetadataDeviceTags.DETECTORS.info.tag]:
+            for detector_dict in device_meta_data[MetadataDeviceTags.DETECTORS.tag]:
                 log_string += ("Now analyzing detector element \"" +
                                detector_dict + "\"\n\n")
                 for detector_meta_datum in detection_tags:
-                    [log, count] = check_metadatum_from_dict(device_meta_data[MetadataDeviceTags.DETECTORS.info.tag][detector_dict],
+                    [log, count] = check_metadatum_from_dict(device_meta_data[MetadataDeviceTags.DETECTORS.tag][detector_dict],
                                                              detector_meta_datum)
                     log_string += log
                     incompletenes_count += count
@@ -156,17 +157,17 @@ class CompletenessChecker:
                              MetadataDeviceTags.LASER_STABILITY_PROFILE, MetadataDeviceTags.BEAM_INTENSITY_PROFILE,
                              MetadataDeviceTags.BEAM_DIVERGENCE_ANGLES]
 
-        if MetadataDeviceTags.ILLUMINATORS.info.tag not in device_meta_data:
+        if MetadataDeviceTags.ILLUMINATORS.tag not in device_meta_data:
             log_string += "Detection elements data is missing!\n\n"
             incompletenes_count += len(illumination_tags)
         else:
-            log_string += ("Found " + str(len(device_meta_data[MetadataDeviceTags.ILLUMINATORS.info.tag])) +
+            log_string += ("Found " + str(len(device_meta_data[MetadataDeviceTags.ILLUMINATORS.tag])) +
                            " detection elements.\n\n")
-            for illuminator_dict in device_meta_data[MetadataDeviceTags.ILLUMINATORS.info.tag]:
+            for illuminator_dict in device_meta_data[MetadataDeviceTags.ILLUMINATORS.tag]:
                 log_string += ("Now analyzing illumination element \"" +
                                illuminator_dict + "\"\n\n")
                 for illuminator_meta_datum in illumination_tags:
-                    [log, count] = check_metadatum_from_dict(device_meta_data[MetadataDeviceTags.ILLUMINATORS.info.tag][illuminator_dict],
+                    [log, count] = check_metadatum_from_dict(device_meta_data[MetadataDeviceTags.ILLUMINATORS.tag][illuminator_dict],
                                                              illuminator_meta_datum)
                     log_string += log
                     incompletenes_count += count
@@ -191,7 +192,7 @@ class CompletenessChecker:
         return incompletenes_count == 0
 
 
-def check_metadatum_from_dict(dictionary: dict, metadatum: MetadataDeviceTags):
+def check_metadatum_from_dict(dictionary: dict, metadatum: MetaDatum):
     """
 
     :param dictionary:
@@ -200,21 +201,21 @@ def check_metadatum_from_dict(dictionary: dict, metadatum: MetadataDeviceTags):
     """
     log_string = ""
     count = 0
-    if metadatum.info.tag not in dictionary:
-        log_string += "* missing entry \"" + metadatum.info.tag + "\"\n"
+    if metadatum.tag not in dictionary:
+        log_string += "* missing entry \"" + metadatum.tag + "\"\n"
         log_string += "  * metadatum not found in dictionary\n\n"
         count += 1
-    elif dictionary[metadatum.info.tag] is None:
-        log_string += "* missing entry \"" + metadatum.info.tag + "\"\n"
+    elif dictionary[metadatum.tag] is None:
+        log_string += "* missing entry \"" + metadatum.tag + "\"\n"
         log_string += "  * metadatum found in dictionary\n"
         log_string += "  * but the mapped field was None\n\n"
         count += 1
-    elif not isinstance(dictionary[metadatum.info.tag], metadatum.info.dtype):
-        log_string += "* corrupt entry \"" + metadatum.info.tag + "\"\n"
+    elif not isinstance(dictionary[metadatum.tag], metadatum.dtype):
+        log_string += "* corrupt entry \"" + metadatum.tag + "\"\n"
         log_string += "  * metadatum found in dictionary\n"
         log_string += "  * and the mapped field was not None\n"
         log_string += ("  * but the mapped field was not of type " +
-                       str(metadatum.info.dtype) + "\n\n")
+                       str(metadatum.dtype) + "\n\n")
         count += 1
 
     return [log_string, count]

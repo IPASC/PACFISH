@@ -55,9 +55,9 @@ class BaseAdapter(ABC):
         """
         meta_data_dictionary = dict()
 
-        for metadata_enum in MetadataAcquisitionTags:
-            target_value = self.set_metadata_value(metadata_enum.info)
-            meta_data_dictionary[metadata_enum.info.tag] = target_value
+        for metadata_enum in MetadataAcquisitionTags.TAGS:
+            target_value = self.set_metadata_value(metadata_enum)
+            meta_data_dictionary[metadata_enum.tag] = target_value
 
         return meta_data_dictionary
 

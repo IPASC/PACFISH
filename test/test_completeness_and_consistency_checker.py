@@ -62,11 +62,11 @@ class CompletenessAndConsistencyTest(TestCase):
 
     def test_check_a_complete_but_inconsistent_pa_data_instance(self):
         device_dict = create_complete_device_metadata_dictionary()
-        for illuminator_tag in device_dict[MetadataDeviceTags.ILLUMINATORS.info.tag]:
-            device_dict[MetadataDeviceTags.ILLUMINATORS.info.tag][illuminator_tag]\
-                [MetadataDeviceTags.PULSE_WIDTH.info.tag] = -0.1
+        for illuminator_tag in device_dict[MetadataDeviceTags.ILLUMINATORS.tag]:
+            device_dict[MetadataDeviceTags.ILLUMINATORS.tag][illuminator_tag]\
+                [MetadataDeviceTags.PULSE_WIDTH.tag] = -0.1
         acquisition_dict = create_complete_meta_data_dictionary()
-        acquisition_dict[MetadataAcquisitionTags.DIMENSIONALITY.info.tag] = "Wrong string"
+        acquisition_dict[MetadataAcquisitionTags.DIMENSIONALITY.tag] = "Wrong string"
 
         pa_data = PAData(time_series_data=np.zeros([256, 2048]),
                          meta_data=acquisition_dict,
