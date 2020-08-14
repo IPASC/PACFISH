@@ -29,7 +29,31 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import numpy as np
-from ipasc_tool import MetadataDeviceTags
+from ipasc_tool import MetadataDeviceTags, MetadataAcquisitionTags
+
+
+def create_complete_meta_data_dictionary():
+
+    dictionary = dict()
+    dictionary[MetadataAcquisitionTags.UUID.info.tag] = create_random_testing_parameters()['test_string']
+    dictionary[MetadataAcquisitionTags.ENCODING.info.tag] = create_random_testing_parameters()['test_string']
+    dictionary[MetadataAcquisitionTags.COMPRESSION.info.tag] = create_random_testing_parameters()['test_string']
+    dictionary[MetadataAcquisitionTags.PHOTOACOUSTIC_IMAGING_DEVICE.info.tag] = create_random_testing_parameters()['test_string']
+    dictionary[MetadataAcquisitionTags.DATA_TYPE.info.tag] = create_random_testing_parameters()['test_string']
+    dictionary[MetadataAcquisitionTags.DIMENSIONALITY.info.tag] = "2D"
+    dictionary[MetadataAcquisitionTags.SIZES.info.tag] = np.asarray([100, 200])
+    dictionary[MetadataAcquisitionTags.PULSE_LASER_ENERGY.info.tag] = np.asarray([2])
+    dictionary[MetadataAcquisitionTags.FRAME_ACQUISITION_TIMESTAMPS.info.tag] = np.asarray([2])
+    dictionary[MetadataAcquisitionTags.ACQUISITION_OPTICAL_WAVELENGTHS.info.tag] = np.asarray([2])
+    dictionary[MetadataAcquisitionTags.TIME_GAIN_COMPENSATION.info.tag] = create_random_testing_parameters()['test_array']
+    dictionary[MetadataAcquisitionTags.OVERALL_GAIN.info.tag] = 2.2
+    dictionary[MetadataAcquisitionTags.ELEMENT_DEPENDENT_GAIN.info.tag] = np.ones(100)
+    dictionary[MetadataAcquisitionTags.TEMPERATURE_CONTROL.info.tag] = np.ones(100) * 290.3
+    dictionary[MetadataAcquisitionTags.ACOUSTIC_COUPLING_AGENT.info.tag] = create_random_testing_parameters()['test_string']
+    dictionary[MetadataAcquisitionTags.SCANNING_METHOD.info.tag] = create_random_testing_parameters()['test_string']
+    dictionary[MetadataAcquisitionTags.AD_SAMPLING_RATE.info.tag] = 1.2234
+    dictionary[MetadataAcquisitionTags.FREQUENCY_DOMAIN_FILTER.info.tag] = create_random_testing_parameters()['test_array']
+    return dictionary
 
 
 def create_random_testing_parameters():
@@ -71,8 +95,8 @@ def create_random_illumination_element(dim_x=None, dim_y=None, dim_z=None):
                                                                                  min_wavelength +
                                                                                  np.random.random() * 200,
                                                                                  1.0])
-    illuminator_dict[MetadataDeviceTags.LASER_ENERGY_PROFILE.info.tag] = np.random.random(size=(200,))
-    illuminator_dict[MetadataDeviceTags.LASER_STABILITY_PROFILE.info.tag] = np.random.random(size=(200,))
+    illuminator_dict[MetadataDeviceTags.LASER_ENERGY_PROFILE.info.tag] = np.random.random(size=(200, 2))
+    illuminator_dict[MetadataDeviceTags.LASER_STABILITY_PROFILE.info.tag] = np.random.random(size=(200, 2))
     illuminator_dict[MetadataDeviceTags.PULSE_WIDTH.info.tag] = 0.00000012
     illuminator_dict[MetadataDeviceTags.BEAM_INTENSITY_PROFILE.info.tag] = np.random.random(size=(100, 100))
     illuminator_dict[MetadataDeviceTags.BEAM_DIVERGENCE_ANGLES.info.tag] = np.deg2rad(np.random.random() * 90)
@@ -99,8 +123,8 @@ def create_random_detection_element(dim_x=None, dim_y=None, dim_z=None):
     detector_dict[MetadataDeviceTags.DETECTOR_SIZE.info.tag] = np.asarray([np.random.random() * dim_x,
                                                                            np.random.random() * dim_y,
                                                                            np.random.random() * dim_z])
-    detector_dict[MetadataDeviceTags.FREQUENCY_RESPONSE.info.tag] = np.random.random(size=(200,))
-    detector_dict[MetadataDeviceTags.ANGULAR_RESPONSE.info.tag] = np.random.random(size=(200,))
+    detector_dict[MetadataDeviceTags.FREQUENCY_RESPONSE.info.tag] = np.random.random(size=(200, 2))
+    detector_dict[MetadataDeviceTags.ANGULAR_RESPONSE.info.tag] = np.random.random(size=(200, 2))
     return detector_dict
 
 

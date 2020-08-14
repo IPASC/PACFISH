@@ -74,7 +74,7 @@ class CompletenessChecker:
 
         log_string = "#Completeness Report\n\n"
 
-        log_string += "##Individual fields\n\n"
+        log_string += "##Acquisition Meta Data\n\n"
         for metadatum in MetadataAcquisitionTags:
             [log, count] = check_metadatum_from_dict(meta_data_dictionary, metadatum)
             incompletenes_count += count
@@ -95,7 +95,7 @@ class CompletenessChecker:
             print(log_string)
 
         if self.log_file_path is not None:
-            with open(self.log_file_path + self.save_file_name, "w") as log_file_handle:
+            with open(self.log_file_path + self.save_file_name, "a") as log_file_handle:
                 log_file_handle.writelines(log_string)
 
         return incompletenes_count == 0
@@ -185,7 +185,7 @@ class CompletenessChecker:
             print(log_string)
 
         if self.log_file_path is not None:
-            with open(self.log_file_path + self.save_file_name, "w") as log_file_handle:
+            with open(self.log_file_path + self.save_file_name, "a") as log_file_handle:
                 log_file_handle.writelines(log_string)
 
         return incompletenes_count == 0

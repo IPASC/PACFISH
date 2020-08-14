@@ -122,7 +122,7 @@ class NonNegativeNumbersInArray(MetaDatum):
         if not isinstance(value, np.ndarray):
             raise TypeError("A sequence of numbers must be of type numpy.ndarray, but was", type(value).__name__)
 
-        for number in value:
+        for number in np.reshape(value, (-1, )):
             if number < 0:
                 return False
         return True
@@ -138,6 +138,12 @@ class NumberWithUpperAndLowerLimit(MetaDatum):
         if not isinstance(value, self.dtype):
             raise TypeError("The given value was not of the expected data type. Expected ", self.dtype, "but was",
                             type(value).__name__)
+        if isinstance(value, np.ndarray):
+            for item in np.reshape(value, (-1, )):
+                if not self.lower_limit <= item <= self.upper_limit:
+                    return False
+            return True
+
         if not isinstance(value, numbers.Number):
             raise TypeError("Expected value to be a number, but was", type(value).__name__)
 
@@ -155,7 +161,7 @@ class NDimensionalNumpyArray(MetaDatum):
                             type(value).__name__)
         if not isinstance(value, np.ndarray):
             raise TypeError("A N-Dimensional array must be of type numpy.ndarray, but was", type(value).__name__)
-        return len(value) == self.expected_array_dimension
+        return len(np.shape(value)) == self.expected_array_dimension
 
 
 class NonNegativeNumber(MetaDatum):
@@ -255,9 +261,8 @@ class MetadataAcquisitionTags(Enum):
     TIME_GAIN_COMPENSATION = NonNegativeNumbersInArray("time_gain_compensation", False, np.ndarray, Units.DIMENSIONLESS_UNIT)
     OVERALL_GAIN = NonNegativeNumber("overall_gain", False, float, Units.DIMENSIONLESS_UNIT)
     ELEMENT_DEPENDENT_GAIN = NonNegativeNumbersInArray("element_dependent_gain", False, np.ndarray, Units.DIMENSIONLESS_UNIT)
-    TEMPERATURE_CONTROL = NonNegativeNumber("temperature_control", False, np.ndarray, Units.KELVIN)
+    TEMPERATURE_CONTROL = NonNegativeNumbersInArray("temperature_control", False, np.ndarray, Units.KELVIN)
     ACOUSTIC_COUPLING_AGENT = UnconstrainedMetaDatum("acoustic_coupling_agent", False, str)
     SCANNING_METHOD = UnconstrainedMetaDatum("scanning_method", False, str)
     AD_SAMPLING_RATE = NonNegativeNumber("ad_sampling_rate", True, float, Units.HERTZ)
-    FREQUENCY_DOMAIN_FILTER = UnconstrainedMetaDatum("frequency_domain_filter", False, str)
-    #FILTER_THRESHOLD = UnconstrainedMetaDatum("filter_threshold", False, np.ndarray, Units.HERTZ)
+    FREQUENCY_DOMAIN_FILTER = UnconstrainedMetaDatum("frequency_domain_filter", False, np.ndarray)
