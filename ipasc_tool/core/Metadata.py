@@ -92,8 +92,12 @@ class UnconstrainedMetaDatum(MetaDatum):
         super().__init__(tag, mandatory, dtype, unit)
 
     def evaluate_value_range(self, value) -> bool:
+        if value is None:
+            return False
+
         if not isinstance(value, self.dtype):
-            raise TypeError("The given value was not of the expected data type. Expected ", self.dtype, "but was",
+            raise TypeError("The given value of", self.tag, "was not of the expected data type. Expected ",
+                            self.dtype, "but was",
                             type(value).__name__)
         return True
 
@@ -103,8 +107,12 @@ class NonNegativeWholeNumber(MetaDatum):
         super().__init__(tag, mandatory, dtype, unit)
 
     def evaluate_value_range(self, value) -> bool:
+        if value is None:
+            return False
+
         if not isinstance(value, self.dtype):
-            raise TypeError("The given value was not of the expected data type. Expected ", self.dtype, "but was",
+            raise TypeError("The given value of", self.tag, "was not of the expected data type. Expected ",
+                            self.dtype, "but was",
                             type(value).__name__)
         if not isinstance(value, int):
             raise TypeError("Whole numbers must be of type int, but was", type(value).__name__)
@@ -116,8 +124,12 @@ class NonNegativeNumbersInArray(MetaDatum):
         super().__init__(tag, mandatory, dtype, unit)
 
     def evaluate_value_range(self, value) -> bool:
+        if value is None:
+            return False
+
         if not isinstance(value, self.dtype):
-            raise TypeError("The given value was not of the expected data type. Expected ", self.dtype, "but was",
+            raise TypeError("The given value of", self.tag, "was not of the expected data type. Expected ",
+                            self.dtype, "but was",
                             type(value).__name__)
         if not isinstance(value, np.ndarray):
             raise TypeError("A sequence of numbers must be of type numpy.ndarray, but was", type(value).__name__)
@@ -135,8 +147,12 @@ class NumberWithUpperAndLowerLimit(MetaDatum):
         self.upper_limit = upper_limit
 
     def evaluate_value_range(self, value) -> bool:
+        if value is None:
+            return False
+
         if not isinstance(value, self.dtype):
-            raise TypeError("The given value was not of the expected data type. Expected ", self.dtype, "but was",
+            raise TypeError("The given value of", self.tag, "was not of the expected data type. Expected ",
+                            self.dtype, "but was",
                             type(value).__name__)
         if isinstance(value, np.ndarray):
             for item in np.reshape(value, (-1, )):
@@ -145,7 +161,7 @@ class NumberWithUpperAndLowerLimit(MetaDatum):
             return True
 
         if not isinstance(value, numbers.Number):
-            raise TypeError("Expected value to be a number, but was", type(value).__name__)
+            raise TypeError("Expected value of", self.tag, "to be a number, but was", type(value).__name__)
 
         return self.lower_limit <= value <= self.upper_limit
 
@@ -156,8 +172,11 @@ class NDimensionalNumpyArray(MetaDatum):
         self.expected_array_dimension = expected_array_dimension
 
     def evaluate_value_range(self, value) -> bool:
+        if value is None:
+            return False
+
         if not isinstance(value, self.dtype):
-            raise TypeError("The given value was not of the expected data type. Expected ", self.dtype, "but was",
+            raise TypeError("The given value of", self.tag, "was not of the expected data type. Expected ", self.dtype, "but was",
                             type(value).__name__)
         if not isinstance(value, np.ndarray):
             raise TypeError("A N-Dimensional array must be of type numpy.ndarray, but was", type(value).__name__)
@@ -169,11 +188,14 @@ class NonNegativeNumber(MetaDatum):
         super().__init__(tag, mandatory, dtype, unit)
 
     def evaluate_value_range(self, value) -> bool:
+        if value is None:
+            return False
+
         if not isinstance(value, self.dtype):
-            raise TypeError("The given value was not of the expected data type. Expected ", self.dtype, "but was",
+            raise TypeError("The given value of", self.tag, "was not of the expected data type. Expected ", self.dtype, "but was",
                             type(value).__name__)
         if not isinstance(value, numbers.Number):
-            raise TypeError("Expected value to be a number, but was", type(value).__name__)
+            raise TypeError("Expected value of", self.tag, "to be a number, but was", type(value).__name__)
 
         return value >= 0
 
@@ -184,8 +206,11 @@ class EnumeratedString(MetaDatum):
         self.permissible_strings = permissible_strings
 
     def evaluate_value_range(self, value) -> bool:
+        if value is None:
+            return False
+
         if not isinstance(value, self.dtype):
-            raise TypeError("The given value was not of the expected data type. Expected ", self.dtype, "but was",
+            raise TypeError("The given value of", self.tag, "was not of the expected data type. Expected ", self.dtype, "but was",
                             type(value).__name__)
 
         if self.permissible_strings is None:

@@ -30,15 +30,11 @@
 
 from abc import ABC, abstractmethod
 from ipasc_tool.core.PAData import PAData
-from ipasc_tool.qualitycontrol import ConsistencyChecker
 from ipasc_tool.core.Metadata import MetadataAcquisitionTags, MetaDatum
 import numpy as np
 
 
 class BaseAdapter(ABC):
-
-    def __init__(self):
-        self.consistency_checker = ConsistencyChecker()
 
     @abstractmethod
     def generate_binary_data(self) -> np.ndarray:
@@ -57,7 +53,8 @@ class BaseAdapter(ABC):
 
         for metadata_enum in MetadataAcquisitionTags.TAGS:
             target_value = self.set_metadata_value(metadata_enum)
-            meta_data_dictionary[metadata_enum.tag] = target_value
+            if target_value is not None:
+                meta_data_dictionary[metadata_enum.tag] = target_value
 
         return meta_data_dictionary
 
@@ -73,15 +70,12 @@ class BaseAdapter(ABC):
         pa_data = PAData()
 
         binary_data = self.generate_binary_data()
-        #self.consistency_checker.check_binary(binary_data)
         pa_data.binary_time_series_data = binary_data
 
         meta_data = self.generate_meta_data()
-        #self.consistency_checker.check_meta_data(meta_data)
         pa_data.meta_data = meta_data
 
         meta_data_device = self.generate_meta_data_device()
-        #self.consistency_checker.check_meta_data_device(meta_data_device)
         pa_data.meta_data_device = meta_data_device
 
         return pa_data

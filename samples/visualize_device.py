@@ -10,7 +10,7 @@ def define_boundary_values(device_dictionary : dict):
     maxs = np.ones(3) * -1000
 
     for illuminator in device_dictionary["illuminators"]:
-        position = device_dictionary["illuminators"][illuminator][MetadataDeviceTags.ILLUMINATOR_POSITION.info.tag]
+        position = device_dictionary["illuminators"][illuminator][MetadataDeviceTags.ILLUMINATOR_POSITION.tag]
         for i in range(3):
             if position[i] < mins[i]:
                 mins[i] = position[i]
@@ -18,14 +18,14 @@ def define_boundary_values(device_dictionary : dict):
                 maxs[i] = position[i]
 
     for detector in device_dictionary["detectors"]:
-        position = device_dictionary["detectors"][detector][MetadataDeviceTags.DETECTOR_POSITION.info.tag]
+        position = device_dictionary["detectors"][detector][MetadataDeviceTags.DETECTOR_POSITION.tag]
         for i in range(3):
             if position[i] < mins[i]:
                 mins[i] = position[i]
             if position[i] > maxs[i]:
                 maxs[i] = position[i]
 
-    fov = device_dictionary["general"][MetadataDeviceTags.FIELD_OF_VIEW.info.tag]
+    fov = device_dictionary["general"][MetadataDeviceTags.FIELD_OF_VIEW.tag]
     for i in range(3):
         if fov[i] < mins[i]:
             mins[i] = fov[i]
@@ -39,7 +39,7 @@ def define_boundary_values(device_dictionary : dict):
 
 
 def add_xz_plane(device_dictionary: dict, mins, maxs):
-    fov = device_dictionary["general"][MetadataDeviceTags.FIELD_OF_VIEW.info.tag]
+    fov = device_dictionary["general"][MetadataDeviceTags.FIELD_OF_VIEW.tag]
 
     ax1 = plt.subplot(121)
     ax1.set_xlim(mins[0], maxs[0])
@@ -53,11 +53,11 @@ def add_xz_plane(device_dictionary: dict, mins, maxs):
                   label="Device"))
 
     for detector in device_dictionary["detectors"]:
-        position = device_dictionary["detectors"][detector][MetadataDeviceTags.DETECTOR_POSITION.info.tag]
+        position = device_dictionary["detectors"][detector][MetadataDeviceTags.DETECTOR_POSITION.tag]
         ax1.scatter([position[0]], [position[2]], color="blue", marker="x")
 
     for illuminator in device_dictionary["illuminators"]:
-        position = device_dictionary["illuminators"][illuminator][MetadataDeviceTags.ILLUMINATOR_POSITION.info.tag]
+        position = device_dictionary["illuminators"][illuminator][MetadataDeviceTags.ILLUMINATOR_POSITION.tag]
         print(position)
         ax1.scatter([position[0]], [position[2]], color="red", marker="x")
 
@@ -69,7 +69,7 @@ def add_xz_plane(device_dictionary: dict, mins, maxs):
 
 
 def add_xy_plane(device_dictionary: dict, mins, maxs):
-    fov = device_dictionary["general"][MetadataDeviceTags.FIELD_OF_VIEW.info.tag]
+    fov = device_dictionary["general"][MetadataDeviceTags.FIELD_OF_VIEW.tag]
 
     ax1 = plt.subplot(122)
     ax1.set_xlim(mins[0], maxs[0])
@@ -77,11 +77,11 @@ def add_xy_plane(device_dictionary: dict, mins, maxs):
     ax1.set_title("XY projection")
 
     for detector in device_dictionary["detectors"]:
-        position = device_dictionary["detectors"][detector][MetadataDeviceTags.DETECTOR_POSITION.info.tag]
+        position = device_dictionary["detectors"][detector][MetadataDeviceTags.DETECTOR_POSITION.tag]
         ax1.scatter([position[0]], [position[1]], color="blue", marker="x")
 
     for illuminator in device_dictionary["illuminators"]:
-        position = device_dictionary["illuminators"][illuminator][MetadataDeviceTags.ILLUMINATOR_POSITION.info.tag]
+        position = device_dictionary["illuminators"][illuminator][MetadataDeviceTags.ILLUMINATOR_POSITION.tag]
         ax1.scatter([position[0]], [position[1]], color="red", marker="x")
 
     ax1.scatter(None, None, color="blue", marker="x", label="Detector Element")

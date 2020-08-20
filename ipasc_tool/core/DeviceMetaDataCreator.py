@@ -30,41 +30,42 @@
 
 from ipasc_tool.core import MetadataDeviceTags
 import copy
+import numpy as np
 
 class IlluminationElementCreator(object):
     def __init__(self):
         self.illuminator_element_dict = dict()
 
-    def set_illuminator_position(self, illuminator_position:list):
+    def set_illuminator_position(self, illuminator_position: np.ndarray):
         """
-        :param illuminator_position: is a list of three float values that describe the position of the illumination element in the
+        :param illuminator_position: is an array of three float values that describe the position of the illumination element in the
                     x1, x2, and x3 direction.
                     The units can be found in MetadataDeviceTags.ILLUMINATOR_POSITION.unit.
         :return: void
         """
         self.illuminator_element_dict[MetadataDeviceTags.ILLUMINATOR_POSITION.tag] = illuminator_position
 
-    def set_illuminator_orientation(self, orientation:list):
+    def set_illuminator_orientation(self, orientation: np.ndarray):
         """
-        :param orientation: is a list of three float values that describe the orientation of the illumination element in the
+        :param orientation: is an array of three float values that describe the orientation of the illumination element in the
                     x1, x2, and x3 direction.
                     The units can be found in MetadataDeviceTags.ILLUMINATOR_ORIENTATION.unit.
         :return: void
         """
         self.illuminator_element_dict[MetadataDeviceTags.ILLUMINATOR_ORIENTATION.tag] = orientation
 
-    def set_illuminator_shape(self, shape):
+    def set_illuminator_shape(self, shape: np.ndarray):
         """
-        :param shape: is a list of three float values that describe the shape of the illuminator in the
+        :param shape: is an array of three float values that describe the shape of the illuminator in the
                     x1, x2, and x3 direction.
                     The units can be found in MetadataDeviceTags.ILLUMINATOR_SHAPE.unit.
         :return: void
         """
         self.illuminator_element_dict[MetadataDeviceTags.ILLUMINATOR_SHAPE.tag] = shape
 
-    def set_wavelength_range(self, wl_range:list):
+    def set_wavelength_range(self, wl_range: np.ndarray):
         """
-        :param wl_range: is a list of three float values that describe the minimum wavelength lambda_min, 
+        :param wl_range: is an array of three float values that describe the minimum wavelength lambda_min,
         the maximum wavelength lambda_max and a metric for the accuracy lambda_accuracy.
         The units can be found in MetadataDeviceTags.WAVELENGTH_RANGE.unit.
         :return: void
@@ -73,8 +74,8 @@ class IlluminationElementCreator(object):
 
     def set_laser_energy_profile(self, energy_profile):
         """
-        :param energy_profile: a two element list [wavelengths, laser_energy] describing the laser energy profile.
-                    Laser energy and wavelengths are also lists where len(laser_energy) == len(profile)
+        :param energy_profile: a two element array [wavelengths, laser_energy] describing the laser energy profile.
+                    Laser energy and wavelengths are also arrays where len(laser_energy) == len(profile)
                     The units can be found in MetadataDeviceTags.LASER_ENERGY_PROFILE.unit.
         :return: void
         """
@@ -82,14 +83,14 @@ class IlluminationElementCreator(object):
         
     def set_laser_stability_profile(self, stability_profile):
         """
-        :param stability_profile: a two element list [wavelengths,laser_stability,] describing the laser stability profile.
-                    Laser stability and wavelengths are also lists where len(stability_profile) == len(wavelengths).
+        :param stability_profile: a two element array [wavelengths,laser_stability,] describing the laser stability profile.
+                    Laser stability and wavelengths are also arrays where len(stability_profile) == len(wavelengths).
                     The units can be found in MetadataDeviceTags.LASER_STABILITY_PROFILE.unit.
         :return: void
         """
         self.illuminator_element_dict[MetadataDeviceTags.LASER_STABILITY_PROFILE.tag] = stability_profile
 
-    def set_pulse_width(self, pulse_width:float):
+    def set_pulse_width(self, pulse_width: float):
         """
         :param pulse_width: a floating point value describing the pulse width of the laser 
                     in the units of MetadataDeviceTags.PULSE_WIDTH.unit.
@@ -99,14 +100,14 @@ class IlluminationElementCreator(object):
 
     def set_beam_intensity_profile(self, intensity_profile):
         """
-        :param intensity_profile: a two element list [wavelengths, intensity_profile] describing the beam itensity profile.
-                    Wavelengths and intensity_profile are also lists where len(wavelengths) == len(intensity_profile)
+        :param intensity_profile: a two element array [wavelengths, intensity_profile] describing the beam itensity profile.
+                    Wavelengths and intensity_profile are also arrays where len(wavelengths) == len(intensity_profile)
                     The units can be found in MetadataDeviceTags.BEAM_INTENSITY_PROFILE.unit.
         :return: void
         """
         self.illuminator_element_dict[MetadataDeviceTags.BEAM_INTENSITY_PROFILE.tag] = intensity_profile
 
-    def set_beam_divergence_angles(self, angle:float):
+    def set_beam_divergence_angles(self, angle: float):
         """
         :param angle: a value describing the opening angle of the laser beam from the illuminator shape with respect 
                     to the orientation vector. This angle is represented by the standard deviation of the beam divergence.
@@ -124,27 +125,27 @@ class DetectionElementCreator(object):
     def __init__(self):
         self.detection_element_dict = dict()
 
-    def set_detector_position(self, detector_position: list):
+    def set_detector_position(self, detector_position: np.ndarray):
         """
-        :param detector_position: a list of three float values that describe the position of the detection element in the
+        :param detector_position: an array of three float values that describe the position of the detection element in the
                     x1, x2, and x3 direction.
                     The units can be found in MetadataDeviceTags.DETECTOR_POSITION.unit.
         :return: void
         """
         self.detection_element_dict[MetadataDeviceTags.DETECTOR_POSITION.tag] = detector_position
 
-    def set_detector_orientation(self, orientation: list):
+    def set_detector_orientation(self, orientation: np.ndarray):
         """
-        :param orientation: a list of three float values that describe the orientation of the detector element in the
+        :param orientation: a n array of three float values that describe the orientation of the detector element in the
                     x1, x2, and x3 direction.
                     The units can be found in MetadataDeviceTags.DETECTOR_ORIENTATION.unit.
         :return: void
         """
         self.detection_element_dict[MetadataDeviceTags.DETECTOR_ORIENTATION.tag] = orientation
 
-    def set_detector_size(self, size: list):
+    def set_detector_size(self, size: np.ndarray):
         """
-        :param size: a three element list [x1, x2, x3] describing the extent of the detector size in x1, x2, and x3 direction.
+        :param size: a three element array [x1, x2, x3] describing the extent of the detector size in x1, x2, and x3 direction.
                     The units can be found in MetadataDeviceTags.DETECTOR_SIZE.unit.
         :return: void
         """
@@ -152,8 +153,8 @@ class DetectionElementCreator(object):
 
     def set_frequency_response(self, frequency_response):
         """
-        :param frequency_response: a two element list [frequency, response] describing the frequency response of the detector.
-                    Frequency and response are also lists where len(frequency) == len(response).
+        :param frequency_response: a two element array [frequency, response] describing the frequency response of the detector.
+                    Frequency and response are also arrays where len(frequency) == len(response).
                     The units can be found in MetadataDeviceTags.FREQUENCY_RESPONSE.unit.
         :return: void
         """
@@ -161,8 +162,8 @@ class DetectionElementCreator(object):
 
     def set_angular_response(self, angular_response):
         """
-        :param angular_response: a two element list [angles, response] describing the angular response of the detecor.
-                    Angles and response are also lists where len(angles) == len(response).
+        :param angular_response: a two element array [angles, response] describing the angular response of the detecor.
+                    Angles and response are also arrays where len(angles) == len(response).
                     The units can be found in MetadataDeviceTags.ANGULAR_RESPONSE.unit.
         :return: void
         """
@@ -175,18 +176,18 @@ class DetectionElementCreator(object):
 class DeviceMetaDataCreator(object):
 
     def __init__(self):
-        self.GENERAL = "general"
-        self.ILLUMINATORS = "illuminators"
-        self.DETECTORS = "detectors"
+        self.GENERAL = MetadataDeviceTags.GENERAL.tag
+        self.ILLUMINATORS = MetadataDeviceTags.ILLUMINATORS.tag
+        self.DETECTORS = MetadataDeviceTags.DETECTORS.tag
         self.device_dict = dict()
         self.device_dict[self.GENERAL] = dict()
         self.device_dict[self.ILLUMINATORS] = dict()
         self.device_dict[self.DETECTORS] = dict()
 
-    def set_general_information(self, uuid: str, fov: list):
+    def set_general_information(self, uuid: str, fov: np.ndarray):
         """
         :param uuid: is a string that uniquely identifies the photoacoustic device
-        :param fov: is a list of three float values that describe the extent of the field of view of the device in the
+        :param fov: is an array of three float values that describe the extent of the field of view of the device in the
                     x1, x2, and x3 direction (x1, x2, x3 is defined in TODO).
         :return: void
         """

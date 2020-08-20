@@ -34,6 +34,8 @@ import requests
 from ipasc_tool.api.adapters.DKFZ_CAMI_Experimental_System_Nrrd_File_Converter import DKFZCAMIExperimentalSystemNrrdFileConverter
 import matplotlib.pylab as plt
 from ipasc_tool import write_data
+from ipasc_tool import quality_check_pa_data
+from samples.visualize_device import visualize_device
 
 URL = "http://mitk.org/download/demos/PhotonicsWest2018/demoDataPhantomPA.nrrd"
 
@@ -46,11 +48,13 @@ converter = DKFZCAMIExperimentalSystemNrrdFileConverter('demodata.nrrd')
 
 pa_data = converter.generate_pa_data()
 
+quality_check_pa_data(pa_data, verbose=False, log_file_path="")
+
 write_data("demodata.hdf5", pa_data)
 
-print(pa_data)
 binary = np.rot90(pa_data.binary_time_series_data[:, :, 0], -1)
 plt.imshow(binary, aspect=0.04, vmin=-10000, vmax=10000)
 plt.show()
 plt.close()
 
+visualize_device(pa_data.meta_data_device)

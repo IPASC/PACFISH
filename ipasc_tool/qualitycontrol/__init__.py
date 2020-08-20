@@ -28,6 +28,22 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
+from ipasc_tool import PAData
 from ipasc_tool.qualitycontrol.CompletenessChecker import CompletenessChecker
 from ipasc_tool.qualitycontrol.ConsistencyChecker import ConsistencyChecker
 from ipasc_tool.qualitycontrol.PADataIntegrityCheck import perform_pa_data_integrity_check
+
+
+def quality_check_pa_data(pa_data: PAData, verbose: bool = False, log_file_path: str = None) -> bool:
+    completeness = CompletenessChecker(verbose=verbose, log_file_path=log_file_path)
+    consistency = ConsistencyChecker(verbose=verbose, log_file_path=log_file_path)
+
+    b1 = completeness.check_meta_data(pa_data.meta_data)
+    b2 = consistency.check_meta_data(pa_data.meta_data)
+
+    b3 = completeness.check_meta_data_device(pa_data.meta_data_device)
+    b4 = consistency.check_meta_data_device(pa_data.meta_data_device)
+
+    b5 = consistency.check_binary(pa_data.binary_time_series_data)
+
+    return b1 and b2 and b3 and b4 and b5
