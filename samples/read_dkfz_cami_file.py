@@ -31,7 +31,8 @@
 import os
 import numpy as np
 import requests
-from ipasc_tool.api.adapters.DKFZ_CAMI_Experimental_System_Nrrd_File_Converter import DKFZCAMIExperimentalSystemNrrdFileConverter
+from ipasc_tool.api.adapters.DKFZ_CAMI_Experimental_System_Nrrd_File_Converter import \
+    DKFZCAMIExperimentalSystemNrrdFileConverter
 import matplotlib.pylab as plt
 from ipasc_tool import write_data
 from ipasc_tool import quality_check_pa_data
@@ -63,7 +64,5 @@ visualize_device(pa_data.meta_data_device)
 
 if os.path.exists("logfile.md"):
     os.remove("logfile.md")
-# if os.path.exists("demodata.nrrd"):
-#     os.remove("demodata.nrrd")
 if os.path.exists("demodata.hdf5"):
     os.remove("demodata.hdf5")

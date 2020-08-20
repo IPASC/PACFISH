@@ -237,7 +237,7 @@ class MetadataDeviceTags:
     ILLUMINATOR_POSITION = UnconstrainedMetaDatum("illuminator_position", False, np.ndarray, Units.METERS)
     ILLUMINATOR_ORIENTATION = NumberWithUpperAndLowerLimit("illuminator_orientation", False, np.ndarray, Units.RADIANS,
                                                            lower_limit=-2*np.pi, upper_limit=2*np.pi)
-    ILLUMINATOR_SHAPE = UnconstrainedMetaDatum("illuminator_shape", False, np.ndarray, Units.METERS)  # FIXME: Consistent behavior with detectors
+    ILLUMINATOR_SIZE = UnconstrainedMetaDatum("illuminator_shape", False, np.ndarray, Units.METERS)  # FIXME: Consistent behavior with detectors
     WAVELENGTH_RANGE = UnconstrainedMetaDatum("wavelength_range", False, np.ndarray, Units.METERS)
     LASER_ENERGY_PROFILE = NDimensionalNumpyArray("laser_energy_profile", False, np.ndarray, Units.JOULES,
                                                   expected_array_dimension=2)
@@ -261,7 +261,7 @@ class MetadataDeviceTags:
                                               expected_array_dimension=2)
 
     TAGS_GENERAL = [GENERAL, UUID, ILLUMINATORS, DETECTORS, FIELD_OF_VIEW, NUMBER_OF_ILLUMINATORS, NUMBER_OF_DETECTORS]
-    TAGS_ILLUMONATORS = [ILLUMINATION_ELEMENT, ILLUMINATOR_POSITION, ILLUMINATOR_ORIENTATION, ILLUMINATOR_SHAPE,
+    TAGS_ILLUMONATORS = [ILLUMINATION_ELEMENT, ILLUMINATOR_POSITION, ILLUMINATOR_ORIENTATION, ILLUMINATOR_SIZE,
                          WAVELENGTH_RANGE, LASER_ENERGY_PROFILE, LASER_STABILITY_PROFILE, PULSE_WIDTH,
                          BEAM_INTENSITY_PROFILE, BEAM_DIVERGENCE_ANGLES]
     TAGS_DETECTORS = [DETECTION_ELEMENT, DETECTOR_POSITION, DETECTOR_ORIENTATION, DETECTOR_SIZE, FREQUENCY_RESPONSE,

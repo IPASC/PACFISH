@@ -1,5 +1,5 @@
 import matplotlib.pylab as plt
-from matplotlib.patches import Rectangle
+from matplotlib.patches import Rectangle, Polygon
 import numpy as np
 from ipasc_tool import MetadataDeviceTags
 from test.test_meta_data import create_complete_device_metadata_dictionary
@@ -54,15 +54,18 @@ def add_xz_plane(device_dictionary: dict, mins, maxs):
 
     for detector in device_dictionary["detectors"]:
         position = device_dictionary["detectors"][detector][MetadataDeviceTags.DETECTOR_POSITION.tag]
-        ax1.scatter([position[0]], [position[2]], color="blue", marker="x")
+        sizes = device_dictionary["detectors"][detector][MetadataDeviceTags.DETECTOR_SIZE.tag]
+        ax1.add_patch(Rectangle((position[0]-sizes[0]/2, position[2]-sizes[2]/2), sizes[0],
+                                sizes[2], color="blue", alpha=0.5))
 
     for illuminator in device_dictionary["illuminators"]:
         position = device_dictionary["illuminators"][illuminator][MetadataDeviceTags.ILLUMINATOR_POSITION.tag]
-        print(position)
-        ax1.scatter([position[0]], [position[2]], color="red", marker="x")
+        orientation = device_dictionary["illuminators"][illuminator][MetadataDeviceTags.ILLUMINATOR_ORIENTATION.tag]
+        sizes = device_dictionary["illuminators"][illuminator][MetadataDeviceTags.ILLUMINATOR_SIZE.tag]
+        ax1.add_patch(Rectangle((position[0] - sizes[0] / 2, position[2] - sizes[2] / 2), sizes[0],
+                                sizes[2], color="red", alpha=0.5))
+        ax1.add_patch(Polygon([[position[0], position[2]], [], []], color="yellow", alpha=0.25))
 
-    ax1.scatter(None, None, color="blue", marker="x", label="Detector Element")
-    ax1.scatter(None, None, color="red", marker="x", label="Illumination Element")
 
     ax1.add_patch(
         Rectangle((0, fov[2]), fov[0], -fov[2], color="red", fill=False, label="Field of View"))
@@ -78,11 +81,15 @@ def add_xy_plane(device_dictionary: dict, mins, maxs):
 
     for detector in device_dictionary["detectors"]:
         position = device_dictionary["detectors"][detector][MetadataDeviceTags.DETECTOR_POSITION.tag]
-        ax1.scatter([position[0]], [position[1]], color="blue", marker="x")
+        sizes = device_dictionary["detectors"][detector][MetadataDeviceTags.DETECTOR_SIZE.tag]
+        ax1.add_patch(Rectangle((position[0] - sizes[0] / 2, position[1] - sizes[1] / 2), sizes[0],
+                                sizes[1], color="blue", alpha=0.5))
 
     for illuminator in device_dictionary["illuminators"]:
         position = device_dictionary["illuminators"][illuminator][MetadataDeviceTags.ILLUMINATOR_POSITION.tag]
-        ax1.scatter([position[0]], [position[1]], color="red", marker="x")
+        sizes = device_dictionary["illuminators"][illuminator][MetadataDeviceTags.ILLUMINATOR_SIZE.tag]
+        ax1.add_patch(Rectangle((position[0] - sizes[0] / 2, position[1] - sizes[1] / 2), sizes[0],
+                                sizes[1], color="red", alpha=0.5))
 
     ax1.scatter(None, None, color="blue", marker="x", label="Detector Element")
     ax1.scatter(None, None, color="red", marker="x", label="Illumination Element")

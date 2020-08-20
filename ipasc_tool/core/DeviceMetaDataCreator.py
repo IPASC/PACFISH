@@ -61,7 +61,7 @@ class IlluminationElementCreator(object):
                     The units can be found in MetadataDeviceTags.ILLUMINATOR_SHAPE.unit.
         :return: void
         """
-        self.illuminator_element_dict[MetadataDeviceTags.ILLUMINATOR_SHAPE.tag] = shape
+        self.illuminator_element_dict[MetadataDeviceTags.ILLUMINATOR_SIZE.tag] = shape
 
     def set_wavelength_range(self, wl_range: np.ndarray):
         """

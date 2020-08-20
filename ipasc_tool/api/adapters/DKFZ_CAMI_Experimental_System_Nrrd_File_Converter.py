@@ -38,12 +38,11 @@ from ipasc_tool import DeviceMetaDataCreator, DetectionElementCreator, Illuminat
 class DKFZCAMIExperimentalSystemNrrdFileConverter(BaseAdapter):
 
     def __init__(self, nrrd_file_path):
-        super().__init__()
         self.nrrd_file_path = nrrd_file_path
         [data, meta] = nrrd.read(nrrd_file_path)
         self.data = data
         self.meta = meta
-        print(self.meta)
+        super().__init__()
 
     def generate_binary_data(self) -> np.ndarray:
         return self.data

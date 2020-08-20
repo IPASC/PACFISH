@@ -89,7 +89,7 @@ def create_random_illumination_element(dim_x=None, dim_y=None, dim_z=None):
         np.random.random() * dim_y - dim_y / 2,
         np.random.random() * dim_z - dim_z / 2])
     size = np.random.random() * dim_x / 10
-    illuminator_dict[MetadataDeviceTags.ILLUMINATOR_SHAPE.tag] = np.asarray([size, size, size])
+    illuminator_dict[MetadataDeviceTags.ILLUMINATOR_SIZE.tag] = np.asarray([size, size, size])
     min_wavelength = np.random.random() * 200 + 600
     illuminator_dict[MetadataDeviceTags.WAVELENGTH_RANGE.tag] = np.asarray([min_wavelength,
                                                                                  min_wavelength +
