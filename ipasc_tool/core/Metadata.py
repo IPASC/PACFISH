@@ -29,7 +29,6 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import numpy as np
-from enum import Enum
 import numbers
 from abc import ABC, abstractmethod
 
@@ -198,7 +197,7 @@ class NonNegativeNumber(MetaDatum):
         if not isinstance(value, numbers.Number):
             raise TypeError("Expected value of", self.tag, "to be a number, but was", type(value).__name__)
 
-        return value >= 0
+        return value >= 0.0
 
 
 class EnumeratedString(MetaDatum):

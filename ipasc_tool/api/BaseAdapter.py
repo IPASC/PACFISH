@@ -36,11 +36,44 @@ import numpy as np
 
 class BaseAdapter(ABC):
 
+    def __init__(self):
+        self.pa_data = PAData()
+
+        binary_data = self.generate_binary_data()
+        self.pa_data.binary_time_series_data = binary_data
+
+        meta_data = self.generate_meta_data()
+        self.pa_data.meta_data_acquisition = meta_data
+
+        meta_data_device = self.generate_meta_data_device()
+        self.pa_data.meta_data_device = meta_data_device
+
+
     @abstractmethod
     def generate_binary_data(self) -> np.ndarray:
         """
         #TODO very detailed decription of how the binary meta data dump should be organized.
         :return: numpy array
+        """
+        pass
+
+    @abstractmethod
+    def generate_meta_data_device(self) -> dict:
+        """
+        # TODO this method can be implemented using the DeviceMetaDataCreator
+        :return:
+        """
+        pass
+
+    @abstractmethod
+    def set_metadata_value(self, metadata_tag: MetaDatum) -> object:
+        """
+
+        This method must be implemented to yield appropriate data for all MetaDatum elements in the
+        MetadataTags class.
+
+        :param metadata_tag:
+        :return:
         """
         pass
 
@@ -58,36 +91,15 @@ class BaseAdapter(ABC):
 
         return meta_data_dictionary
 
-    @abstractmethod
-    def generate_meta_data_device(self) -> dict:
-        """
-        # TODO this method can be implemented using the DeviceMetaDataCreator
-        :return:
-        """
-        pass
+    def add_custom_meta_datum_field(self, key: str, value: object):
+        if key is None:
+            raise KeyError("A meta datum key must not be None.")
+        if value is None:
+            raise ValueError("The given value must not be None.")
+        self.pa_data.meta_data_acquisition[key] = value
 
     def generate_pa_data(self) -> PAData:
-        pa_data = PAData()
 
-        binary_data = self.generate_binary_data()
-        pa_data.binary_time_series_data = binary_data
+        return self.pa_data
 
-        meta_data = self.generate_meta_data()
-        pa_data.meta_data = meta_data
 
-        meta_data_device = self.generate_meta_data_device()
-        pa_data.meta_data_device = meta_data_device
-
-        return pa_data
-
-    @abstractmethod
-    def set_metadata_value(self, metadata_tag: MetaDatum) -> object:
-        """
-
-        This method must be implemented to yield appropriate data for all MetaDatum elements in the
-        MetadataTags class.
-
-        :param metadata_tag:
-        :return:
-        """
-        pass

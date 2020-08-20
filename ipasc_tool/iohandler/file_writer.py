@@ -77,5 +77,5 @@ def write_data(path: str, pa_data: PAData):
 
     with h5py.File(path, "w") as h5file:
         h5file.create_dataset("binary_time_series_data", data=pa_data.binary_time_series_data)
-        recursively_save_dictionaries(h5file, "/meta_data/", pa_data.meta_data)
+        recursively_save_dictionaries(h5file, "/meta_data/", pa_data.meta_data_acquisition)
         recursively_save_dictionaries(h5file, "/meta_data_device/", pa_data.meta_data_device)

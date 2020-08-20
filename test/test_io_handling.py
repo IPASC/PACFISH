@@ -51,8 +51,8 @@ class DeviceMetaDataCreatorTest(TestCase):
         device_dict = create_complete_device_metadata_dictionary()
 
 
-        pa_data = PAData(time_series_data=np.zeros([256, 2048]),
-                         meta_data={"test_int": 3, "test_float": 3.14, "test_string": "test", "test_list": [3, 5, 7]},
+        pa_data = PAData(binary_time_series_data=np.zeros([256, 2048]),
+                         meta_data_acquisition={"test_int": 3, "test_float": 3.14, "test_string": "test", "test_list": [3, 5, 7]},
                          meta_data_device=device_dict)
 
         try:
@@ -83,6 +83,6 @@ class DeviceMetaDataCreatorTest(TestCase):
             else:
                 self.assertEqual(a, b)
 
-        assertEqualsRecursive(pa_data.meta_data, test_data.meta_data)
+        assertEqualsRecursive(pa_data.meta_data_acquisition, test_data.meta_data_acquisition)
         assertEqualsRecursive(pa_data.meta_data_device, test_data.meta_data_device)
         self.assertTrue((pa_data.binary_time_series_data == test_data.binary_time_series_data).all())
