@@ -180,6 +180,7 @@ class NDimensionalNumpyArray(MetaDatum):
                             type(value).__name__)
         if not isinstance(value, np.ndarray):
             raise TypeError("A N-Dimensional array must be of type numpy.ndarray, but was", type(value).__name__)
+
         return len(np.shape(value)) == self.expected_array_dimension
 
 

@@ -52,15 +52,19 @@ class DKFZCAMIExperimentalSystemNrrdFileConverter(BaseAdapter):
         device_creator = DeviceMetaDataCreator()
 
         device_creator.set_general_information(uuid="c771111c-36ba-425d-9f53-84b8ff092059",
-                                               fov=np.asarray([0.0384, 0, 0.0384]))
+                                               fov=np.asarray([0, 0.0384, 0.0384]))
 
         start_y_position = 0.00015
         for y_idx in range(128):
             cur_y_position = start_y_position + 0.0003 * y_idx
             detection_element_creator = DetectionElementCreator()
-            detection_element_creator.set_detector_position(np.asarray([cur_y_position, 0, 0]))
+            detection_element_creator.set_detector_position(np.asarray([0, cur_y_position, 0]))
             detection_element_creator.set_detector_orientation(np.asarray([0, 0, 1]))
             detection_element_creator.set_detector_size(np.asarray([0.0003, 0.0003, 0.0003]))
+            detection_element_creator.set_frequency_response(np.stack([np.linspace(700, 900, 100),
+                                                                       np.ones(100)]))
+            detection_element_creator.set_angular_response(np.stack([np.linspace(700, 900, 100),
+                                                                     np.ones(100)]))
 
             device_creator.add_detection_element("detection_element_" + str(y_idx),
                                                  detection_element_creator.get_dictionary())
@@ -70,12 +74,18 @@ class DKFZCAMIExperimentalSystemNrrdFileConverter(BaseAdapter):
             illumination_element_creator.set_beam_divergence_angles(0.20944)
             illumination_element_creator.set_wavelength_range(np.asarray([700, 950, 1]))
             if y_idx == 0:
-                illumination_element_creator.set_illuminator_position(np.asarray([0.0192, 0.0083, -0.001]))
-                illumination_element_creator.set_illuminator_orientation(np.asarray([0, -0.383972, 0]))
+                illumination_element_creator.set_illuminator_position(np.asarray([0.0083, 0.0192, -0.001]))
+                illumination_element_creator.set_illuminator_orientation(np.asarray([-0.383972, 0, 0]))
             elif y_idx == 1:
-                illumination_element_creator.set_illuminator_position(np.asarray([0.0192, -0.0083, -0.001]))
-                illumination_element_creator.set_illuminator_orientation(np.asarray([0, 0.383972, 0]))
-            illumination_element_creator.set_illuminator_shape(np.asarray([0.0245, 0, 0]))
+                illumination_element_creator.set_illuminator_position(np.asarray([-0.0083, 0.0192, -0.001]))
+                illumination_element_creator.set_illuminator_orientation(np.asarray([0.383972, 0, 0]))
+            illumination_element_creator.set_illuminator_shape(np.asarray([0, 0.0245, 0]))
+
+            illumination_element_creator.set_laser_energy_profile(np.stack([np.linspace(700, 900, 100),
+                                                                            np.ones(100)]))
+            illumination_element_creator.set_laser_stability_profile(np.stack([np.linspace(700, 900, 100),
+                                                                               np.ones(100)]))
+            illumination_element_creator.set_pulse_width(7e-9)
             device_creator.add_illumination_element("illumination_element_" + str(y_idx),
                                                     illumination_element_creator.get_dictionary())
 
@@ -86,3 +96,23 @@ class DKFZCAMIExperimentalSystemNrrdFileConverter(BaseAdapter):
             return "TestUUID"
         elif metadata_tag == MetadataAcquisitionTags.DATA_TYPE:
             return self.meta['type']
+        elif metadata_tag == MetadataAcquisitionTags.AD_SAMPLING_RATE:
+            return float(self.meta['space directions'][1][1]) / 1000000
+        elif metadata_tag == MetadataAcquisitionTags.ACOUSTIC_COUPLING_AGENT:
+            return "Water"
+        elif metadata_tag == MetadataAcquisitionTags.ACQUISITION_OPTICAL_WAVELENGTHS:
+            return np.asarray([700])
+        elif metadata_tag == MetadataAcquisitionTags.COMPRESSION:
+            return "None"
+        elif metadata_tag == MetadataAcquisitionTags.DIMENSIONALITY:
+            return "2D"
+        elif metadata_tag == MetadataAcquisitionTags.ENCODING:
+            return "raw"
+        elif metadata_tag == MetadataAcquisitionTags.SCANNING_METHOD:
+            return "Freehand"
+        elif metadata_tag == MetadataAcquisitionTags.PHOTOACOUSTIC_IMAGING_DEVICE:
+            return "c771111c-36ba-425d-9f53-84b8ff092059"
+        elif metadata_tag == MetadataAcquisitionTags.SIZES:
+            return np.asarray(self.meta['sizes'])
+        else:
+            return None
