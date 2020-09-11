@@ -1,6 +1,8 @@
 samples/demodata.nrrd
 samples/demodata.hdf5
-docs/
+docs/.doctrees
+docs/.doctrees/*
+docs/test_coverage
 
 # PyCharm
 */.idea/*
