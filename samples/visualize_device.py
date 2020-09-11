@@ -1,8 +1,8 @@
 import matplotlib.pylab as plt
-from matplotlib.patches import Rectangle, Polygon
+from matplotlib.patches import Rectangle
 import numpy as np
 from ipasc_tool import MetadataDeviceTags
-from test.test_meta_data import create_complete_device_metadata_dictionary
+from test.tests.test_meta_data import create_complete_device_metadata_dictionary
 
 
 def define_boundary_values(device_dictionary : dict):
@@ -64,7 +64,7 @@ def add_xz_plane(device_dictionary: dict, mins, maxs):
         sizes = device_dictionary["illuminators"][illuminator][MetadataDeviceTags.ILLUMINATOR_SIZE.tag]
         ax1.add_patch(Rectangle((position[0] - sizes[0] / 2, position[2] - sizes[2] / 2), sizes[0],
                                 sizes[2], color="red", alpha=0.5))
-        ax1.add_patch(Polygon([[position[0], position[2]], [], []], color="yellow", alpha=0.25))
+        #ax1.add_patch(Polygon([[position[0], position[2]], [], []], color="yellow", alpha=0.25))
 
 
     ax1.add_patch(

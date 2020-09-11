@@ -31,7 +31,7 @@
 import numpy as np
 from unittest.case import TestCase
 from ipasc_tool import PAData, CompletenessChecker, ConsistencyChecker, MetadataDeviceTags, MetadataAcquisitionTags
-from test.utils import create_complete_device_metadata_dictionary, create_complete_meta_data_dictionary
+from test.tests.utils import create_complete_device_metadata_dictionary, create_complete_meta_data_dictionary
 
 
 class CompletenessAndConsistencyTest(TestCase):

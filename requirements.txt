@@ -1,7 +1,8 @@
-numpy=1.14.4
-matplotlib
-h5py
-sphinx
-rst2pdf
-m2r
-pynrrd
+numpy==1.19.1
+matplotlib==3.3.1
+h5py==2.10.0
+sphinx==3.2.1
+rst2pdf==0.98
+m2r==0.2.1
+pynrrd==0.4.2
+coverage==5.2.1

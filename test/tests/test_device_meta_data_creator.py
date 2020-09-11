@@ -32,7 +32,7 @@
 from unittest.case import TestCase
 from ipasc_tool import MetadataDeviceTags
 from ipasc_tool import DeviceMetaDataCreator, IlluminationElementCreator, DetectionElementCreator
-from test.utils import create_random_testing_parameters
+from test.tests.utils import create_random_testing_parameters
 
 
 class DeviceMetaDataCreatorTest(TestCase):
