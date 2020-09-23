@@ -74,10 +74,10 @@ class DKFZCAMIExperimentalSystemNrrdFileConverter(BaseAdapter):
             illumination_element_creator.set_wavelength_range(np.asarray([700, 950, 1]))
             if y_idx == 0:
                 illumination_element_creator.set_illuminator_position(np.asarray([0.0083, 0.0192, -0.001]))
-                illumination_element_creator.set_illuminator_orientation(np.asarray([-0.383972, 0, 0]))
+                illumination_element_creator.set_illuminator_orientation(np.asarray([0, -0.383972, 0]))
             elif y_idx == 1:
                 illumination_element_creator.set_illuminator_position(np.asarray([-0.0083, 0.0192, -0.001]))
-                illumination_element_creator.set_illuminator_orientation(np.asarray([0.383972, 0, 0]))
+                illumination_element_creator.set_illuminator_orientation(np.asarray([0, 0.383972, 0]))
             illumination_element_creator.set_illuminator_shape(np.asarray([0, 0.0245, 0]))
 
             illumination_element_creator.set_laser_energy_profile(np.stack([np.linspace(700, 900, 100),

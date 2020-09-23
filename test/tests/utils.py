@@ -72,23 +72,16 @@ def create_random_testing_parameters():
 
 def create_random_illumination_element(dim_x=None, dim_y=None, dim_z=None):
 
-    if dim_x is None:
-        dim_x = 0.03
-    if dim_y is None:
-        dim_y = 0.001
-    if dim_z is None:
-        dim_z = 0.01
-
     illuminator_dict = dict()
     illuminator_dict[MetadataDeviceTags.ILLUMINATOR_POSITION.tag] = np.asarray([
         np.random.random() * 2 * dim_x - dim_x,
-        np.random.random() * 2 * dim_x - dim_x,
-        -np.random.random() * dim_x / 2])
+        np.random.random() * 2 * dim_y - dim_y,
+        -np.random.random() * dim_z / 2])
     illuminator_dict[MetadataDeviceTags.ILLUMINATOR_ORIENTATION.tag] = np.asarray([
-        np.random.random() * dim_x - dim_x / 2,
-        np.random.random() * dim_y - dim_y / 2,
-        np.random.random() * dim_z - dim_z / 2])
-    size = np.random.random() * dim_x / 10
+        np.random.random()-0.5,
+        np.random.random()-0.5,
+        np.random.random()-0.5])
+    size = 0.0001
     illuminator_dict[MetadataDeviceTags.ILLUMINATOR_SIZE.tag] = np.asarray([size, size, size])
     min_wavelength = np.random.random() * 200 + 600
     illuminator_dict[MetadataDeviceTags.WAVELENGTH_RANGE.tag] = np.asarray([min_wavelength,
@@ -99,18 +92,11 @@ def create_random_illumination_element(dim_x=None, dim_y=None, dim_z=None):
     illuminator_dict[MetadataDeviceTags.LASER_STABILITY_PROFILE.tag] = np.random.random(size=(200, 2))
     illuminator_dict[MetadataDeviceTags.PULSE_WIDTH.tag] = 0.00000012
     illuminator_dict[MetadataDeviceTags.BEAM_INTENSITY_PROFILE.tag] = np.random.random(size=(100, 100))
-    illuminator_dict[MetadataDeviceTags.BEAM_DIVERGENCE_ANGLES.tag] = np.deg2rad(np.random.random() * 90)
+    illuminator_dict[MetadataDeviceTags.BEAM_DIVERGENCE_ANGLES.tag] = np.deg2rad(np.random.random() * 40)
     return illuminator_dict
 
 
 def create_random_detection_element(dim_x=None, dim_y=None, dim_z=None):
-
-    if dim_x is None:
-        dim_x = 0.03
-    if dim_y is None:
-        dim_y = 0.001
-    if dim_z is None:
-        dim_z = 0.01
 
     detector_dict = dict()
     detector_dict[MetadataDeviceTags.DETECTOR_POSITION.tag] = np.asarray([np.random.random() * dim_x,
@@ -120,9 +106,9 @@ def create_random_detection_element(dim_x=None, dim_y=None, dim_z=None):
         [np.random.random() * dim_x - dim_x / 2,
          np.random.random() * dim_y - dim_y / 2,
          np.random.random() * dim_z - dim_z / 2])
-    detector_dict[MetadataDeviceTags.DETECTOR_SIZE.tag] = np.asarray([np.random.random() * dim_x,
-                                                                           np.random.random() * dim_y,
-                                                                           np.random.random() * dim_z])
+    detector_dict[MetadataDeviceTags.DETECTOR_SIZE.tag] = np.asarray([0.0001,
+                                                                      0.0001,
+                                                                      0.0001])
     detector_dict[MetadataDeviceTags.FREQUENCY_RESPONSE.tag] = np.random.random(size=(200, 2))
     detector_dict[MetadataDeviceTags.ANGULAR_RESPONSE.tag] = np.random.random(size=(200, 2))
     return detector_dict
@@ -131,16 +117,16 @@ def create_random_detection_element(dim_x=None, dim_y=None, dim_z=None):
 def create_complete_device_metadata_dictionary(dim_x=None, dim_y=None, dim_z=None):
 
     if dim_x is None:
-        dim_x = 0.03
+        dim_x = 0.001
     if dim_y is None:
-        dim_y = 0.001
+        dim_y = 0.03
     if dim_z is None:
-        dim_z = 0.01
+        dim_z = 0.03
 
     dictionary = {
         MetadataDeviceTags.GENERAL.tag: {
             MetadataDeviceTags.UUID.tag: "a2fd-48nbsh-sfiush7-chjs",
-            MetadataDeviceTags.FIELD_OF_VIEW.tag: np.asarray([0.03, 0.002, 0.03]),
+            MetadataDeviceTags.FIELD_OF_VIEW.tag: np.asarray([dim_x, dim_y, dim_z]),
             MetadataDeviceTags.NUMBER_OF_ILLUMINATORS.tag: 2,
             MetadataDeviceTags.NUMBER_OF_DETECTORS.tag: 4
         },

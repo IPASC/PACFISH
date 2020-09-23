@@ -64,5 +64,5 @@ visualize_device(pa_data.meta_data_device)
 
 if os.path.exists("logfile.md"):
     os.remove("logfile.md")
-if os.path.exists("demodata.hdf5"):
-    os.remove("demodata.hdf5")
+#if os.path.exists("demodata.hdf5"):
+#    os.remove("demodata.hdf5")
