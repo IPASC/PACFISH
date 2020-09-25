@@ -41,7 +41,7 @@ def create_complete_meta_data_dictionary():
     dictionary[MetadataAcquisitionTags.PHOTOACOUSTIC_IMAGING_DEVICE.tag] = create_random_testing_parameters()['test_string']
     dictionary[MetadataAcquisitionTags.DATA_TYPE.tag] = create_random_testing_parameters()['test_string']
     dictionary[MetadataAcquisitionTags.DIMENSIONALITY.tag] = "2D"
-    dictionary[MetadataAcquisitionTags.SIZES.tag] = np.asarray([100, 200])
+    dictionary[MetadataAcquisitionTags.SIZES.tag] = np.asarray([4, 200])
     dictionary[MetadataAcquisitionTags.PULSE_LASER_ENERGY.tag] = np.asarray([2])
     dictionary[MetadataAcquisitionTags.FRAME_ACQUISITION_TIMESTAMPS.tag] = np.asarray([2])
     dictionary[MetadataAcquisitionTags.ACQUISITION_OPTICAL_WAVELENGTHS.tag] = np.asarray([2])

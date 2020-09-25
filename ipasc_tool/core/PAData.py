@@ -58,26 +58,26 @@ class PAData:
         self.meta_data_device = meta_data_device
 
     def get_illuminator_ids(self):
-        return self.meta_data_device[MetadataDeviceTags.ILLUMINATORS].keys()
+        return self.meta_data_device[MetadataDeviceTags.ILLUMINATORS.tag].keys()
 
     def get_illuminator_property_by_tag(self, illuminator_id: str, metadata_device_tag: MetaDatum) -> object:
-        if illuminator_id not in self.meta_data_device[MetadataDeviceTags.ILLUMINATORS]:
+        if illuminator_id not in self.meta_data_device[MetadataDeviceTags.ILLUMINATORS.tag]:
             raise KeyError("Iluminator ID " + illuminator_id + " not found in dictionary. Use get_illuminator_ids " +
                            "to get a list of al valid illuminator ids")
-        if metadata_device_tag.tag in self.meta_data_device[MetadataDeviceTags.ILLUMINATORS][illuminator_id]:
-            return self.meta_data_device[MetadataDeviceTags.ILLUMINATORS][illuminator_id][metadata_device_tag.tag]
+        if metadata_device_tag.tag in self.meta_data_device[MetadataDeviceTags.ILLUMINATORS.tag][illuminator_id]:
+            return self.meta_data_device[MetadataDeviceTags.ILLUMINATORS.tag][illuminator_id][metadata_device_tag.tag]
         else:
             return None
 
     def get_detector_ids(self):
-        return self.meta_data_device[MetadataDeviceTags.DETECTORS].keys()
+        return self.meta_data_device[MetadataDeviceTags.DETECTORS.tag].keys()
 
     def get_detector_property_by_tag(self, detector_id: str, metadata_device_tag: MetaDatum) -> object:
-        if detector_id not in self.meta_data_device[MetadataDeviceTags.DETECTORS]:
+        if detector_id not in self.meta_data_device[MetadataDeviceTags.DETECTORS.tag]:
             raise KeyError("Device ID " + detector_id + " not found in dictionary. Use get_detector_ids to get a " +
                            "list of al valid detector ids")
-        if metadata_device_tag.tag in self.meta_data_device[MetadataDeviceTags.DETECTORS][detector_id]:
-            return self.meta_data_device[MetadataDeviceTags.DETECTORS][detector_id][metadata_device_tag.tag]
+        if metadata_device_tag.tag in self.meta_data_device[MetadataDeviceTags.DETECTORS.tag][detector_id]:
+            return self.meta_data_device[MetadataDeviceTags.DETECTORS.tag][detector_id][metadata_device_tag.tag]
         else:
             return None
 
@@ -92,3 +92,50 @@ class PAData:
             return self.meta_data_acquisition[meta_data_tag]
         else:
             return None
+
+    def get_device_uuid(self):
+        if MetadataDeviceTags.UUID.tag in self.meta_data_device[MetadataDeviceTags.GENERAL.tag]:
+            return self.meta_data_device[MetadataDeviceTags.GENERAL.tag][MetadataDeviceTags.UUID.tag]
+        else:
+            return None
+
+    def get_field_of_view(self):
+        if MetadataDeviceTags.FIELD_OF_VIEW.tag in self.meta_data_device[MetadataDeviceTags.GENERAL.tag]:
+            return self.meta_data_device[MetadataDeviceTags.GENERAL.tag][MetadataDeviceTags.FIELD_OF_VIEW.tag]
+        else:
+            return None
+
+    def get_number_of_illuminators(self):
+        if MetadataDeviceTags.NUMBER_OF_ILLUMINATORS.tag in self.meta_data_device[MetadataDeviceTags.GENERAL.tag]:
+            return self.meta_data_device[MetadataDeviceTags.GENERAL.tag][MetadataDeviceTags.NUMBER_OF_ILLUMINATORS.tag]
+        else:
+            return None
+
+    def get_number_of_detectors(self):
+        if MetadataDeviceTags.NUMBER_OF_DETECTORS.tag in self.meta_data_device[MetadataDeviceTags.GENERAL.tag]:
+            return self.meta_data_device[MetadataDeviceTags.GENERAL.tag][MetadataDeviceTags.NUMBER_OF_DETECTORS.tag]
+        else:
+            return None
+
+    def get_illuminator_position(self, identifier=None):
+        if identifier is not None:
+            if isinstance(identifier, int):
+                if identifier < 0 or identifier >= self.get_number_of_illuminators():
+                    raise ValueError("The illuminator position " + str(identifier) + "was out of range.")
+                else:
+                    return list(self.meta_data_device[MetadataDeviceTags.ILLUMINATORS.tag].values())[identifier][
+                        MetadataDeviceTags.ILLUMINATOR_POSITION.tag]
+            elif isinstance(identifier, str):
+                if identifier not in self.get_illuminator_ids():
+                    raise ValueError("The illuminator id " + str(identifier) + "was not valid.")
+                else:
+                    return self.meta_data_device[MetadataDeviceTags.ILLUMINATORS.tag][identifier][
+                        MetadataDeviceTags.ILLUMINATOR_POSITION.tag]
+            else:
+                raise ValueError("identifier must be int or string.")
+        else:
+            positions = []
+            for id in self.get_illuminator_ids():
+                positions.append(self.meta_data_device[MetadataDeviceTags.ILLUMINATORS.tag][id][
+                        MetadataDeviceTags.ILLUMINATOR_POSITION.tag])
+            return np.asarray(positions)
