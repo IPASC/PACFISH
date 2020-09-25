@@ -6,3 +6,5 @@ file = [path filename];
 
 
 inst = ipasc_tool(file);
+
+inst.visualize_device

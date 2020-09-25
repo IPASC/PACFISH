@@ -4,6 +4,7 @@ classdef ipasc_tool
         meta_data = struct()
         meta_data_device = struct()
         SamplingFrequency ;
+        Ndetectors ;
     end
     
     methods
@@ -55,6 +56,7 @@ classdef ipasc_tool
 
             fprintf('\tReading completed\n\n**********************\n');
           
+            obj = obj.update_parameter();
         end
             
      
@@ -73,9 +75,25 @@ classdef ipasc_tool
         end
         
         %% compute the sampling frequency
-        function update_parameter(obj)
+        function obj=update_parameter(obj)
             obj.SamplingFrequency = 1/obj.meta_data.ad_sampling_rate;
+            obj.Ndetectors = length(fieldnames(obj.meta_data_device.detectors));
         end
+        
+        %% visualizes the position and shapes of the detection elements in
+        % the xy, xz, and yz projections.
+        function visualize_device(obj)
+            for i=0:obj.Ndetectors-1
+                eval(['elt=obj.meta_data_device.detectors.detection_element_',num2str(i),'.detector_position*1e3;']);
+                plot3(elt(1,1), elt(2,1), elt(3,1), 'ob'); 
+                hold on;
+            end         
+            hold off;
+            xlabel('x axis [mm]', 'fontsize', 13); ylabel('y axis [mm]', 'fontsize', 13)
+            zlabel('z axis [mm]', 'fontsize', 13);
+            title('Dectetor element position', 'fontsize', 16);
+        end
+        
     end
                 
 end
