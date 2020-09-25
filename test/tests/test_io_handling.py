@@ -50,7 +50,6 @@ class DeviceMetaDataCreatorTest(TestCase):
 
         device_dict = create_complete_device_metadata_dictionary()
 
-
         pa_data = PAData(binary_time_series_data=np.zeros([256, 2048]),
                          meta_data_acquisition={"test_int": 3, "test_float": 3.14, "test_string": "test", "test_list": [3, 5, 7]},
                          meta_data_device=device_dict)

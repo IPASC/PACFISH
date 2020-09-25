@@ -39,7 +39,6 @@ def load_data(path: str):
     :param path: Path to an hdf5 file containing PAData.
     :return: PAData instance
     """
-    pa_data = PAData()
 
     def recursively_load_dictionaries(file, in_file_path):
         """
@@ -69,7 +68,8 @@ def load_data(path: str):
         return data
 
     with h5py.File(path, "r") as h5file:
-        pa_data.binary_time_series_data = h5file["/binary_time_series_data"][()]
+        binary_data = h5file["/binary_time_series_data"][()]
+        pa_data = PAData(binary_data)
         pa_data.meta_data_acquisition = recursively_load_dictionaries(h5file, "/meta_data/")
         pa_data.meta_data_device = recursively_load_dictionaries(h5file, "/meta_data_device/")
 
