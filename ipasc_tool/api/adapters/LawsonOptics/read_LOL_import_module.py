@@ -188,6 +188,21 @@ def import_and_process_binary(raw_data_folder_path, num_scans, signal_inv=True, 
     return RFdata
 
 def load_scan_log(scan_log_file_path):
+    """
+    
+
+    Parameters
+    ----------
+    scan_log_file_path : CSV file
+    
+    Returns
+    -------
+    transPositionsAllScans : np.array
+        Array with all scan positions*transducer positions* XYZ+CoR_XYZ.
+    time_taken : Time elapsed to acquire scan
+        Time in seconds.
+
+    """
     scan_positions = pd.read_csv(scan_log_file_path) # Load log file
     R = 254.25 # Set length of arm between end effector and CoR for 360array
     import datetime
@@ -207,6 +222,11 @@ def load_scan_log(scan_log_file_path):
     for i in range(numScans):
         transPositionsAllScans[:,:,i] = TransducerRotTrans(scan_positions_abbrev[i,0], scan_positions_abbrev[i,1], scan_positions_abbrev[i,2],
                                                            scan_positions_abbrev[i,3], scan_positions_abbrev[i,4], scan_positions_abbrev[i,5])
+    core_array = np.zeros((64,3,len(scan_positions_abbrev)))
+    for j in range(len(scan_positions_abbrev)):
+        cor_array_temp = np.reshape(np.tile(scan_positions_abbrev[j, 5:8],64),[3,-1],order="F")
+        core_array[:,:,j] = cor_array_temp.T
+    transPositionsAllScans = np.append(transPositionsAllScans, core_array,axis=1)
     return transPositionsAllScans, time_taken
     
     
@@ -249,6 +269,27 @@ def sph2cart(azimuth, elevation, r):
     return x, y, z
 
 def AxelRot(transducer_pos, thetadeg, u, centre_rot):
+    """
+    Modified from "https://stackoverflow.com/questions/6802577/rotation-of-3d-vector"
+    "Euler-Rodrigues" method, author: unutbu
+
+    Parameters
+    ----------
+    transducer_pos : Numpy array
+        Array of home transducer positions.
+    thetadeg : angle in degrees, 
+        rotation defined as counter-clockwise using right-hand rule.
+    u : Axis
+        axis of rotation.
+    centre_rot : CoR
+        Point centre of rotation.
+
+    Returns
+    -------
+    v_prime_vec_array : Array
+        Returns the array with transducer positions shifted by the provided amounts.
+
+    """
     v = transducer_pos
     v = (np.subtract(v,centre_rot.T)).T
     axis = u
@@ -270,3 +311,36 @@ def AxelRot(transducer_pos, thetadeg, u, centre_rot):
         Counter = Counter +1
     v_prime_vec_array = np.transpose(np.add(v_prime_vec_array, centre_rot))
     return v_prime_vec_array
+
+
+"""
+    From  https://stackoverflow.com/questions/51272288/how-to-calculate-the-vector-from-two-points-in-3d-with-python
+    
+"""
+
+def multiDimenDist(point1,point2):
+    
+   #find the difference between the two points, its really the same as below
+   deltaVals = [point2[dimension]-point1[dimension] for dimension in range(len(point1))]
+   runningSquared = 0
+   #because the pythagarom theorm works for any dimension we can just use that
+   for coOrd in deltaVals:
+       runningSquared += coOrd**2
+   return runningSquared**(1/2)
+
+def findVec(point1,point2,unitSphere = False):
+  #setting unitSphere to True will make the vector scaled down to a sphere with a radius one, instead of it's orginal length
+  finalVector = [0 for coOrd in point1]
+  for dimension, coOrd in enumerate(point1):
+      #finding total differnce for that co-ordinate(x,y,z...)
+      deltaCoOrd = point2[dimension]-coOrd
+      #adding total difference
+      finalVector[dimension] = deltaCoOrd
+  if unitSphere:
+      totalDist = multiDimenDist(point1,point2)
+      unitVector =[]
+      for dimen in finalVector:
+          unitVector.append( dimen/totalDist)
+      return unitVector
+  else:
+      return finalVector

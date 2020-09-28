@@ -28,35 +28,8 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import numpy as np
-from ipasc_tool.api.adapters.LawsonOpticsLab_360_System_File_Converter import \
-    LOLFileConverter
-import matplotlib.pylab as plt
-from ipasc_tool import write_data
-from ipasc_tool import quality_check_pa_data
-from samples.visualize_device import visualize_device
-from ipasc_tool import read_LOL_import_module
-
-
-
-converter = LOLFileConverter("/sample/data/", "/sample/data/")
-
-pa_data = converter.generate_pa_data()
-
-quality_check_pa_data(pa_data, verbose=True, log_file_path="")
-
-write_data("demodata.hdf5", pa_data)
-
-binary = np.rot90(pa_data.binary_time_series_data[:, 500:-2500, 0], -1)
-binary = binary - np.min(binary) + 1
-binary = np.log10(binary)
-plt.imshow(binary, aspect=0.08, vmin=np.percentile(binary, 1), vmax=np.percentile(binary, 99))
-plt.show()
-plt.close()
-
-visualize_device(pa_data.meta_data_device)
-
-if os.path.exists("logfile.md"):
-    os.remove("logfile.md")
-#if os.path.exists("demodata.hdf5"):
-#    os.remove("demodata.hdf5")
+# Export all explicitly imported names in the submodules __init__ files in order to make the API easier to use.
+from ipasc_tool.core import *
+from ipasc_tool.api import *
+from ipasc_tool.iohandler import *
+from ipasc_tool.qualitycontrol import *

@@ -46,18 +46,17 @@ import numpy as np
 from ipasc_tool import BaseAdapter, MetaDatum
 from ipasc_tool import MetadataAcquisitionTags
 from ipasc_tool import DeviceMetaDataCreator, DetectionElementCreator, IlluminationElementCreator
+# from ipasc_tool import read_LOL_import_module
+from ipasc_tool.api.adapters.LawsonOptics import read_LOL_import_module
 
 
 class LOLFileConverter(BaseAdapter):
 
-    def __init__(self, raw_data_folder_path, scan_log_file_path, transducer_map, 
-                 num_scans, signal_inv=True, left_shift=12,
-                 thresholding=0, photodiode=66, CheckAveraging=True, end_remove=80):
+    def __init__(self, raw_data_folder_path, scan_log_file_path, signal_inv=True, left_shift=12,
+                 thresholding=0, photodiode=65, CheckAveraging=True, end_remove=80):
         self.raw_data_folder_path = raw_data_folder_path
         self.scan_log_file_path = scan_log_file_path
-        self.transducer_map = transducer_map
         self.signal_inv = signal_inv
-        self.num_scans = num_scans
         self.left_shift = left_shift
         self.thresholding = thresholding
         self.photodiode = photodiode
@@ -73,23 +72,28 @@ class LOLFileConverter(BaseAdapter):
     def generate_meta_data_device(self) -> dict:
         device_creator = DeviceMetaDataCreator()
 
-        device_creator.set_general_information(uuid="c771111c-36ba-425d-9f53-84b8ff092059",
-                                               fov=np.asarray([0, 0.0384, 0.0384]))
+        device_creator.set_general_information(uuid="97cc5c0d-2a83-4935-9820-2aa2161ff703",
+                                               fov=np.asarray([0, 0.0500, 0.0500]))
 
-        start_y_position = 0.00015
-        for y_idx in range(128):
-            cur_y_position = start_y_position + 0.0003 * y_idx
-            detection_element_creator = DetectionElementCreator()
-            detection_element_creator.set_detector_position(np.asarray([0, cur_y_position, 0]))
-            detection_element_creator.set_detector_orientation(np.asarray([0, 0, 1]))
-            detection_element_creator.set_detector_size(np.asarray([0.0003, 0.0003, 0.0003]))
-            detection_element_creator.set_frequency_response(np.stack([np.linspace(700, 900, 100),
-                                                                       np.ones(100)]))
-            detection_element_creator.set_angular_response(np.stack([np.linspace(700, 900, 100),
-                                                                     np.ones(100)]))
+        all_positions, time_taken = read_LOL_import_module.load_scan_log(scan_log_file_path)
+        all_positions_metres = all_positions/1000
+        
 
-            device_creator.add_detection_element("detection_element_" + str(y_idx),
-                                                 detection_element_creator.get_dictionary())
+        for scan_position in range(np.shape(all_positions)[2]):
+            for detector_position in range(np.shape(all_positions)[0]):
+                
+                detection_element_creator = DetectionElementCreator()
+                detection_element_creator.set_detector_position(all_positions_metres[detector_position,0:3,scan_position])
+                orientation = findVec(all_positions_metres[detector_position, 0:3, scan_position],all_positions_metres[detector_position, 3:6, scan_position], unitSphere = True)
+                detection_element_creator.set_detector_orientation(np.asarray(orientation))
+                detection_element_creator.set_detector_size(np.asarray([0.0127, 0.0127, 0.0001]))
+                # detection_element_creator.set_frequency_response(np.stack([np.linspace(700, 900, 100),
+                #                                                            np.ones(100)]))
+                # detection_element_creator.set_angular_response(np.stack([np.linspace(700, 900, 100),
+                #                                                          np.ones(100)]))
+    
+                device_creator.add_detection_element("detection_element_scan" + str(scan_position) + "_detector" = str(detector_position)),
+                                                     detection_element_creator.get_dictionary())
 
         for y_idx in range(2):
             illumination_element_creator = IlluminationElementCreator()
@@ -119,7 +123,7 @@ class LOLFileConverter(BaseAdapter):
         elif metadata_tag == MetadataAcquisitionTags.DATA_TYPE:
             return self.meta['type']
         elif metadata_tag == MetadataAcquisitionTags.AD_SAMPLING_RATE:
-            return float(self.meta['space directions'][1][1]) / 1000000
+            return float(self.meta['space directions'][1][1]) / 50000000
         elif metadata_tag == MetadataAcquisitionTags.ACOUSTIC_COUPLING_AGENT:
             return "Water"
         elif metadata_tag == MetadataAcquisitionTags.ACQUISITION_OPTICAL_WAVELENGTHS:
@@ -127,13 +131,13 @@ class LOLFileConverter(BaseAdapter):
         elif metadata_tag == MetadataAcquisitionTags.COMPRESSION:
             return "None"
         elif metadata_tag == MetadataAcquisitionTags.DIMENSIONALITY:
-            return "2D"
+            return "3D"
         elif metadata_tag == MetadataAcquisitionTags.ENCODING:
             return "raw"
         elif metadata_tag == MetadataAcquisitionTags.SCANNING_METHOD:
-            return "Freehand"
+            return "Robotic"
         elif metadata_tag == MetadataAcquisitionTags.PHOTOACOUSTIC_IMAGING_DEVICE:
-            return "c771111c-36ba-425d-9f53-84b8ff092059"
+            return "97cc5c0d-2a83-4935-9820-2aa2161ff703"
         elif metadata_tag == MetadataAcquisitionTags.SIZES:
             return np.asarray(self.meta['sizes'])
         else:
