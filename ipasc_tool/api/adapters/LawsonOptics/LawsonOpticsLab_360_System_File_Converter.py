@@ -54,6 +54,7 @@ class LOLFileConverter(BaseAdapter):
 
     def __init__(self, raw_data_folder_path, scan_log_file_path, signal_inv=True, left_shift=12,
                  thresholding=0, photodiode=65, CheckAveraging=True, end_remove=80):
+        super().__init__() 
         self.raw_data_folder_path = raw_data_folder_path
         self.scan_log_file_path = scan_log_file_path
         self.signal_inv = signal_inv
@@ -62,7 +63,7 @@ class LOLFileConverter(BaseAdapter):
         self.photodiode = photodiode
         self.CheckAveraging = CheckAveraging
         self.end_remove = end_remove
-        super().__init__()
+        
         
         
 
@@ -75,7 +76,7 @@ class LOLFileConverter(BaseAdapter):
         device_creator.set_general_information(uuid="97cc5c0d-2a83-4935-9820-2aa2161ff703",
                                                fov=np.asarray([0, 0.0500, 0.0500]))
 
-        all_positions, time_taken = read_LOL_import_module.load_scan_log(scan_log_file_path)
+        all_positions, time_taken = read_LOL_import_module.load_scan_log(self.scan_log_file_path)
         all_positions_metres = all_positions/1000
         
 
