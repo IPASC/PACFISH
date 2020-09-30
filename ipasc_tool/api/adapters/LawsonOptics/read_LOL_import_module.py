@@ -315,7 +315,7 @@ def AxelRot(transducer_pos, thetadeg, u, centre_rot):
 
 """
     From  https://stackoverflow.com/questions/51272288/how-to-calculate-the-vector-from-two-points-in-3d-with-python
-    
+    for multiDimenDist and findVec
 """
 
 def multiDimenDist(point1,point2):
