@@ -46,7 +46,7 @@ class PAData:
     the necessity to know the internal structure by heart.
     """
 
-    def __init__(self, binary_time_series_data: np.ndarray,
+    def __init__(self, binary_time_series_data: np.ndarray = None,
                  meta_data_acquisition: dict = None,
                  meta_data_device: dict = None):
         """
@@ -58,7 +58,7 @@ class PAData:
         """
 
         if binary_time_series_data is None:
-            raise ValueError("binary_time_series_data must not be None.")
+            binary_time_series_data = None
 
         if meta_data_acquisition is None:
             meta_data_acquisition = dict()
