@@ -47,96 +47,147 @@ from ipasc_tool import BaseAdapter, MetaDatum
 from ipasc_tool import MetadataAcquisitionTags
 from ipasc_tool import DeviceMetaDataCreator, DetectionElementCreator, IlluminationElementCreator
 # from ipasc_tool import read_LOL_import_module
-from ipasc_tool.api.adapters.LawsonOptics import read_LOL_import_module
+from ipasc_tool.api.adapters.LawsonOptics import read_LOL_import_module as LOL
 
 
 class LOLFileConverter(BaseAdapter):
 
-    def __init__(self, raw_data_folder_path, scan_log_file_path, signal_inv=True, left_shift=12,
-                 thresholding=0, photodiode=65, CheckAveraging=True, end_remove=80):
+    def __init__(self, raw_data_folder_path, scan_log_file_path, homePath, wavelength, signal_inv=True, left_shift=12,
+                 thresholding=0, photodiode=65, CheckAveraging=True, end_remove=80, numIllum = 2, scanIllumSwitch = "Scanned", 
+                 fixed_illum_file_path = None):
         super().__init__() 
-        self.raw_data_folder_path = raw_data_folder_path
-        self.scan_log_file_path = scan_log_file_path
-        self.signal_inv = signal_inv
-        self.left_shift = left_shift
-        self.thresholding = thresholding
-        self.photodiode = photodiode
-        self.CheckAveraging = CheckAveraging
-        self.end_remove = end_remove
+        self.raw_data_folder_path = raw_data_folder_path #absolute path?
+        self.scan_log_file_path = scan_log_file_path #absolute path? 
+        self.homePath = homePath #absolute path? of home position file (of illuminators and detectors)
+        self.signal_inv = signal_inv # whether to flip polarity of signals (yes for current system)
+        self.left_shift = left_shift # account for delay between laser Q-switch trigger and actual firing of laser
+        self.thresholding = thresholding # whether to threshold out noise. 0 = none
+        self.photodiode = photodiode # Which channel the photodiode signal power level is in
+        self.CheckAveraging = CheckAveraging # Were serial acquisitions performed in each raw file for averaging?
+        self.end_remove = end_remove # how many points at the end of each acquisition to zero?
+        self.numIllum = numIllum # how many physical illuminators were used?
+        self.scanIllumSwitch = scanIllumSwitch # Check if the illuminators were fixed or scanned with the array ("Scanned" or "Fixed")
+        self.wavelength = wavelength # wavelengths used for the scan. np.ndarray
+        self.fixed_illum_file_path = fixed_illum_file_path # if fixed illuminators, link to .m or .h5 file with positions
         
         
         
 
     def generate_binary_data(self) -> np.ndarray:
-        return self.data
+        import pandas as pd
+        scan_positions = pd.read_csv(self.scan_log_file_path)
+        num_scans = scan_positions.shape[0] # Determine number of scans based on log file
+        # Load data 
+        RFdata = LOL.import_and_process_binary(self.raw_data_folder_path, num_scans, self.signal_inv, self.left_shift,
+                 self.thresholding, self.photodiode, self.CheckAveraging, self.end_remove, fluence_correc=False)
+        RFdata = np.swapaxes(RFdata,1,2) # swap axes to make it easier to reshape
+        RFdata = np.reshape(RFdata,(np.shape(RFdata)[0]*np.shape(RFdata)[1],-1),order = "C") # reshape to squash scan number and detectors into one dimension
+        
+        return RFdata
 
     def generate_meta_data_device(self) -> dict:
         device_creator = DeviceMetaDataCreator()
 
+        all_positions, illum_positions, time_taken = LOL.load_scan_log(self.scan_log_file_path, self.homePath) #call file to load scan log, return all positions of illum and det
+        all_positions_metres = all_positions/1000 # convert to metres
+        illum_positions_metres = illum_positions/1000 # convert to metres
+
+        #add general device meta, FOV is approximate
         device_creator.set_general_information(uuid="97cc5c0d-2a83-4935-9820-2aa2161ff703",
-                                               fov=np.asarray([0, 0.0500, 0.0500]))
+                                               fov=np.asarray([-0.025, 0.025, 0.435, 0.485, -20, 30]), 
+                                               illumination_elements = self.numIllum*np.shape(illum_positions)[2], detection_elements = 64*np.shape(all_positions)[2])
 
-        all_positions, time_taken = read_LOL_import_module.load_scan_log(self.scan_log_file_path)
-        all_positions_metres = all_positions/1000
+
         
-
+        #Add detector elements, looping through all elements at each scan position
         for scan_position in range(np.shape(all_positions)[2]):
             for detector_position in range(np.shape(all_positions)[0]):
                 
                 detection_element_creator = DetectionElementCreator()
                 detection_element_creator.set_detector_position(all_positions_metres[detector_position,0:3,scan_position])
-                orientation = findVec(all_positions_metres[detector_position, 0:3, scan_position],all_positions_metres[detector_position, 3:6, scan_position], unitSphere = True)
+                # Calculate orientation vector for each element(position)
+                orientation = LOL.findVec(all_positions_metres[detector_position, 0:3, scan_position],all_positions_metres[detector_position, 3:6, scan_position], unitSphere = True)
                 detection_element_creator.set_detector_orientation(np.asarray(orientation))
-                detection_element_creator.set_detector_size(np.asarray([0.0127, 0.0127, 0.0001]))
+                detection_element_creator.set_detector_shape(np.asarray([0.007])) # assume 14mm elements, approx.
+                #Add once freq response confirmed
                 # detection_element_creator.set_frequency_response(np.stack([np.linspace(700, 900, 100),
                 #                                                            np.ones(100)]))
                 # detection_element_creator.set_angular_response(np.stack([np.linspace(700, 900, 100),
                 #                                                          np.ones(100)]))
     
-                device_creator.add_detection_element("detection_element_scan" + str(scan_position) + "_detector" = str(detector_position)),
-                                                     detection_element_creator.get_dictionary())
+                device_creator.add_detection_element("detection_element_scan_" + str(scan_position) + "_detector_" + str(detector_position),  
+                                                        detection_element_creator.get_dictionary())
 
-        for y_idx in range(2):
-            # illumination_element_creator = IlluminationElementCreator()
-            # illumination_element_creator.set_beam_divergence_angles(0.20944)
-            # illumination_element_creator.set_wavelength_range(np.asarray([700, 950, 1]))
-            # if y_idx == 0:
-            #     illumination_element_creator.set_illuminator_position(np.asarray([0.0083, 0.0192, -0.001]))
-            #     illumination_element_creator.set_illuminator_orientation(np.asarray([0, -0.383972, 0]))
-            # elif y_idx == 1:
-            #     illumination_element_creator.set_illuminator_position(np.asarray([-0.0083, 0.0192, -0.001]))
-            #     illumination_element_creator.set_illuminator_orientation(np.asarray([0, 0.383972, 0]))
-            # illumination_element_creator.set_illuminator_shape(np.asarray([0, 0.0245, 0]))
 
-            # illumination_element_creator.set_laser_energy_profile(np.stack([np.linspace(700, 900, 100),
-            #                                                                 np.ones(100)]))
-            # illumination_element_creator.set_laser_stability_profile(np.stack([np.linspace(700, 900, 100),
-            #                                                                    np.ones(100)]))
-            # illumination_element_creator.set_pulse_width(7e-9)
-            # device_creator.add_illumination_element("illumination_element_" + str(y_idx),
-            #                                         illumination_element_creator.get_dictionary())
+        #Add illumination elements, looping through all elements at each scan position
+        if self.scanIllumSwitch == "Fixed": #if illumination sources are fixed throughout the scan
+            try:
+                import tables
+                file = tables.open_file(self.fixed_illum_file_path)
+                illum_positions_metres = file.root.illum_positions[:]/1000
+                centre_fixed_illum = file.root.centre_fixed_illum[:]/1000
+            except:
+                import scipy.io as sio
+                homepos = sio.loadmat(self.fixed_illum_file_path)
+                illum_positions_metres = homepos.get("illum_positions")/1000
+                centre_fixed_illum = homepos.get("centre_fixed_illum")/1000
+                
+            for illum_position in range(self.numIllum):
+                illumination_element_creator = IlluminationElementCreator()
+                # illumination_element_creator.set_beam_divergence_angles(0.20944) #arbitrary
+                illumination_element_creator.set_wavelength_range(np.asarray([680, 950, 1]))
+                illumination_element_creator.set_illuminator_position(illum_positions_metres[illum_position,:])
+                # Calculate orientation vector for each element(position)
+                orientation = LOL.findVec(illum_positions_metres[illum_position,:], centre_fixed_illum[:], unitSphere = True)
+                illumination_element_creator.set_illuminator_orientation(np.asarray(orientation))
+                illumination_element_creator.set_illuminator_shape(np.asarray([0.0015])) #assume 3mm exit fibre bundle
+                # illumination_element_creator.set_laser_energy_profile(np.stack([np.linspace(700, 900, 100),
+                #                                                                 np.ones(100)]))
+                # illumination_element_creator.set_laser_stability_profile(np.stack([np.linspace(700, 900, 100),
+                #                                                                     np.ones(100)]))
+                illumination_element_creator.set_pulse_width(6e-9)
+                device_creator.add_illumination_element("illuminator_" + str(illum_position),
+                                                        illumination_element_creator.get_dictionary())
+        elif self.scanIllumSwitch == "Scanned":# for moving elements
+            for scan_position in range(np.shape(all_positions)[2]): 
+                for illum_position in range(self.numIllum):
+                    illumination_element_creator = IlluminationElementCreator()
+                    # illumination_element_creator.set_beam_divergence_angles(0.20944) #arbitrary
+                    illumination_element_creator.set_wavelength_range(np.asarray([680, 950, 1]))
+                    illumination_element_creator.set_illuminator_position(illum_positions_metres[illum_position,0:3,scan_position])
+                    # Calculate orientation vector for each element(position)
+                    orientation = LOL.findVec(illum_positions_metres[illum_position, 0:3, scan_position],illum_positions_metres[illum_position, 3:6, scan_position], unitSphere = True)
+                    illumination_element_creator.set_illuminator_orientation(np.asarray(orientation))
+                    illumination_element_creator.set_illuminator_shape(np.asarray([0.0015])) #assume 3mm exit fibre bundle
+                    # illumination_element_creator.set_laser_energy_profile(np.stack([np.linspace(700, 900, 100),
+                    #                                                                 np.ones(100)]))
+                    # illumination_element_creator.set_laser_stability_profile(np.stack([np.linspace(700, 900, 100),
+                    #                                                                     np.ones(100)]))
+                    illumination_element_creator.set_pulse_width(6e-9)
+                    device_creator.add_illumination_element("illumination_element_scan_" + str(scan_position) + "_illuminator_" + str(illum_position),
+                                                            illumination_element_creator.get_dictionary())
 
         return device_creator.finalize_device_meta_data()
 
     def set_metadata_value(self, metadata_tag: MetaDatum) -> object:
         if metadata_tag == MetadataAcquisitionTags.UUID:
             return "TestUUID"
-        elif metadata_tag == MetadataAcquisitionTags.DATA_TYPE:
-            return self.meta['type']
+        elif metadata_tag == MetadataAcqufisitionTags.DATA_TYPE:
+            return "float"
         elif metadata_tag == MetadataAcquisitionTags.AD_SAMPLING_RATE:
-            return float(self.meta['space directions'][1][1]) / 50000000
+            return 50000000
         elif metadata_tag == MetadataAcquisitionTags.ACOUSTIC_COUPLING_AGENT:
             return "Water"
         elif metadata_tag == MetadataAcquisitionTags.ACQUISITION_OPTICAL_WAVELENGTHS:
-            return np.asarray([700])
+            return self.wavelength
         elif metadata_tag == MetadataAcquisitionTags.COMPRESSION:
             return "None"
         elif metadata_tag == MetadataAcquisitionTags.DIMENSIONALITY:
-            return "3D"
+            return "time and space"
         elif metadata_tag == MetadataAcquisitionTags.ENCODING:
             return "raw"
         elif metadata_tag == MetadataAcquisitionTags.SCANNING_METHOD:
-            return "Robotic"
+            return "6DoF robotic, translation + rotation"
         elif metadata_tag == MetadataAcquisitionTags.PHOTOACOUSTIC_IMAGING_DEVICE:
             return "97cc5c0d-2a83-4935-9820-2aa2161ff703"
         elif metadata_tag == MetadataAcquisitionTags.SIZES:

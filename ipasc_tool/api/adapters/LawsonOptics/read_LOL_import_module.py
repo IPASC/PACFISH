@@ -14,9 +14,9 @@ Last Modified 2020-09-28
 
 
 import numpy as np
-from pathlib import Path
-from numba import prange
-import pandas as pd
+from pathlib import Path #for operating system paths
+from numba import prange # for multithreading
+import pandas as pd #for loading CSV file
 import math
 
 
@@ -41,28 +41,27 @@ def importPAI128(raw_data_filename):
         DESCRIPTION. basically unused
 
     """
-    def fread(fidint, nelements, dtype):
+    def fread(fidint, nelements, dtype): #simulate Matlab fread, and squeeze if single elements read
         if dtype is np.str:
             dt = np.uint8  # WARNING: assuming 8-bit ASCII for np.str!
         else:
             dt = dtype
         data = np.fromfile(fidint, dt, nelements)
 
-        if np.size(data) == 1:
+        if np.size(data) == 1: #squeeze if not an array
             data = np.squeeze(data)
             if np.size(data) ==1:
                 data = np.squeeze(data)
         return data
     
-    fid = open(raw_data_filename, mode="rb")
+    fid = open(raw_data_filename, mode="rb") # open the file
 
-    version = fread(fid,1,np.int16)
-    UserID = fread(fid,1,np.int16)
-    DAQsettingssize = fread(fid,1,np.int32)
-    
+    version = fread(fid,1,np.int16) # read version metadata (unused)
+    UserID = fread(fid,1,np.int16) # read userid metadata (unused)
+    DAQsettingssize = fread(fid,1,np.int32) # read DAQsettingssize (i.e. how many DAQ boards are connected)    
     DAQsettings = {}
     
-    for ii in range(DAQsettingssize):
+    for ii in range(DAQsettingssize): #note that orders are in Matlab Fortran order, hence the "F" switches
         DAQsettings_perDAQ = {"NumPoints" : fread(fid,1,np.int32),"NumTriggers" : fread(fid,1,np.int32),
                            "NumChannels" : fread(fid,1,np.int32)}
         fread(fid,1,np.int8)
@@ -85,7 +84,7 @@ def importPAI128(raw_data_filename):
             
         DAQsettings[ii] = DAQsettings_perDAQ
         
-    #Trakstar function
+    #Trakstar function, only used if Trakstar is connected, untested
     tkEnabled = fread(fid,1,np.int8)
     if tkEnabled != 0:
         tkdatasize = fread(fid,1,np.int32)
@@ -93,20 +92,23 @@ def importPAI128(raw_data_filename):
     else:
         tkdata = []
         
-    fid.close()
+    fid.close() # close file
 
     return UserID, DAQsettings, tkdata
 
 def DAQ128settings2RF(DAQ128settings, CheckAveraging):
+    # Set array size if averaging will be used
     if (DAQ128settings.get(0, {}).get("NumTriggers") > 1 and CheckAveraging == "True"):
         RFdata = np.zeros((len(DAQ128settings)*DAQ128settings.get(0, {}).get("NumChannels"), 
                        DAQ128settings.get(0, {}).get("NumPoints")*256),
                       dtype = np.single, order="F")
+    # Set array size if no averaging (or if just turned off)
     else:
         RFdata = np.zeros((len(DAQ128settings)*DAQ128settings.get(0, {}).get("NumChannels"),
                        DAQ128settings.get(0, {}).get("NumPoints")*256*DAQ128settings.get(0, {}).get("NumTriggers")),
                       dtype = np.single, order="F")
         
+    # Sort the data. Checking if it should be averaged, and if multiple triggers were used during acquisition
     for ii in DAQ128settings:
         basen = ii * DAQ128settings.get(ii, {}).get("NumChannels")
         
@@ -137,7 +139,7 @@ def import_and_process_binary(raw_data_folder_path, num_scans, signal_inv=True, 
                           initial_values.get(0, {}).get("NumChannels")*len(initial_values)), dtype = np.single, order = "F")
     
     #Template to flip the signals since our transducers are all inverted in polarity
-    reverseGain = -1 * np.ones((num_scans, 1),dtype = np.int, order = "F") 
+    reverseGain = -1 * np.ones((initial_values.get(0, {}).get("NumChannels"), 1),dtype = np.int, order = "F") 
     reverseGain[photodiode,:] = 1
     
     #Load the signals from the binary file
@@ -160,6 +162,8 @@ def import_and_process_binary(raw_data_folder_path, num_scans, signal_inv=True, 
             RFdata_F[0] = 0
             RFdata[:,iT] = np.fft.ifft(RFdata_F)
         
+        # Do not allow fluence correction if averaging was used in hardware acquisition but not desired for data reading
+        # Otherwise all the acquisitions will be normalized to a single photodiode measurement
         if Averaging == False and initial_values.get(0, {}).get("NumTriggers") != 1:
             do_not_fluence_correct = True
             break
@@ -175,19 +179,17 @@ def import_and_process_binary(raw_data_folder_path, num_scans, signal_inv=True, 
             RFdata[abs(RFdata)<thresholding] = 0
             
         if fluence_correc == True and do_not_fluence_correct != False:
-            if AverageFluence != None:
-                break
-            else:
-                AverageFluence = np.max(np.mean(initial_values.get(0, {}).get("DataPoints").get(photodiode)))
+            if AverageFluence == None:
+                AverageFluence = np.max(np.mean(initial_values.get(0, {}).get("DataPoints").get(photodiode)))                
             ShotPower = np.max(RFdata[0:(initial_values.get(0, {}).get("NumPoints")*256/initial_values.get(0, {}).get("NumTriggers")), photodiode])
             ShotRatio = AverageFluence/ShotPower
             RFadjusted = RFdata*ShotRatio
             RFdata = RFadjusted
         imData[i,:,:] = RFdata
         
-    return RFdata
+    return imData
 
-def load_scan_log(scan_log_file_path):
+def load_scan_log(scan_log_file_path, homePath, numIllum = 2):
     """
     
 
@@ -204,7 +206,7 @@ def load_scan_log(scan_log_file_path):
 
     """
     scan_positions = pd.read_csv(scan_log_file_path) # Load log file
-    R = 254.25 # Set length of arm between end effector and CoR for 360array
+    R = 254.2772 # Set length of arm between end effector and CoR for 360array
     import datetime
     time_taken = sum(scan_positions["time taken"[:]])
     time_taken = str(datetime.timedelta(seconds=time_taken))
@@ -219,18 +221,30 @@ def load_scan_log(scan_log_file_path):
                                              pd.Series.to_numpy(scan_positions["v"[:]]), x, y, z))
     numScans = len(scan_positions_abbrev)
     transPositionsAllScans = np.zeros((64,3,numScans))
+    illumPositionsAllScans = np.zeros((numIllum,3,numScans))
     for i in range(numScans):
         transPositionsAllScans[:,:,i] = TransducerRotTrans(scan_positions_abbrev[i,0], scan_positions_abbrev[i,1], scan_positions_abbrev[i,2],
-                                                           scan_positions_abbrev[i,3], scan_positions_abbrev[i,4], scan_positions_abbrev[i,5])
+                                                           scan_positions_abbrev[i,3], scan_positions_abbrev[i,4], scan_positions_abbrev[i,5],
+                                                           homePath)
+        illumPositionsAllScans[:, :, i] = TransducerRotTrans(scan_positions_abbrev[i,0], scan_positions_abbrev[i,1], scan_positions_abbrev[i,2],
+                                                           scan_positions_abbrev[i,3], scan_positions_abbrev[i,4], scan_positions_abbrev[i,5],
+                                                           homePath, switch ="illum")
     core_array = np.zeros((64,3,len(scan_positions_abbrev)))
     for j in range(len(scan_positions_abbrev)):
         cor_array_temp = np.reshape(np.tile(scan_positions_abbrev[j, 5:8],64),[3,-1],order="F")
         core_array[:,:,j] = cor_array_temp.T
     transPositionsAllScans = np.append(transPositionsAllScans, core_array,axis=1)
-    return transPositionsAllScans, time_taken
+        
+    core_array_illum = np.zeros((numIllum,3,len(scan_positions_abbrev)))
+    for j in range(len(scan_positions_abbrev)):
+        cor_array_temp = np.reshape(np.tile(scan_positions_abbrev[j, 5:8],numIllum),[3,-1],order="F")
+        core_array_illum[:,:,j] = cor_array_temp.T
+    illumPositionsAllScans = np.append(illumPositionsAllScans, core_array_illum, axis=1)
+
+    return transPositionsAllScans, illumPositionsAllScans, time_taken
     
     
-def TransducerRotTrans(eff_x, eff_y, eff_z, eff_phi, eff_theta, R):
+def TransducerRotTrans(eff_x, eff_y, eff_z, eff_phi, eff_theta, R, homePath, switch = "trans"):
     """
     %%version 1
     Takes the log file coordinates (one at a time, so loop if you want this for multiple scan points), calculates the centre of rotation, and applies the appropriate rotations to match the transducer positions happening in the scan.
@@ -242,13 +256,19 @@ def TransducerRotTrans(eff_x, eff_y, eff_z, eff_phi, eff_theta, R):
     
     try:
         import tables
-        file = tables.open_file("20200311_Transducer_Position_Home.mat")
-        transducer_pos_home = file.root.transducer_pos_home[:]
+        file = tables.open_file(homePath)
+        if switch =="trans":
+            transducer_pos_home = file.root.transducer_pos_home[:]
+        elif switch =="illum":
+            transducer_pos_home = file.root.transducer_pos_home[:]
         centre_rot_home = file.root.centre_rot_home[:]
     except:
         import scipy.io as sio
-        homepos = sio.loadmat("20200311_Transducer_Position_Home.mat")
-        transducer_pos_home = homepos.get("transducer_pos_home")
+        homepos = sio.loadmat(homePath)
+        if switch == "trans":
+            transducer_pos_home = homepos.get("transducer_pos_home")
+        elif switch == "illum":
+            transducer_pos_home = homepos.get("illumination_pos_home")
         centre_rot_home = homepos.get("centre_rot_home")
             
     delta_cor = centre_rot - centre_rot_home
