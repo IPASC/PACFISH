@@ -29,7 +29,8 @@ cov.start()
 test_classes = ["test.tests.test_completeness_and_consistency_checker",
                 "test.tests.test_device_meta_data_creator",
                 "test.tests.test_io_handling",
-                "test.tests.test_meta_data"]
+                "test.tests.test_meta_data",
+                "test.tests.test_pa_data_class"]
 
 suite = unittest.TestSuite()
 for test_class in test_classes:

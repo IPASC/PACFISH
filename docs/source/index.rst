@@ -3,14 +3,19 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to IPASC Data Conversion Tool's documentation!
-======================================================
-
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
-.. mdinclude:: _static/test.md
+.. include:: _documentation/welcome.rst
+
+Build the documentation
+=======================
+
+Run `sphinx-build -b pdf docs/source docs` in the top level folder to build the pdf documentation.
+The latest documentation will then be available under docs/ipasc_tool_documentation.pdf
+
+.. include:: _static/coordinate_system.png
 
 Class references
 ================
