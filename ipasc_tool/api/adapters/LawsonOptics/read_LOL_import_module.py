@@ -1,4 +1,35 @@
 # -*- coding: utf-8 -*-
+
+# BSD 3-Clause License
+#
+# Copyright (c) 2020, Lawson Health Research Institute
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#
+# 1. Redistributions of source code must retain the above copyright notice, this
+#    list of conditions and the following disclaimer.
+#
+# 2. Redistributions in binary form must reproduce the above copyright notice,
+#    this list of conditions and the following disclaimer in the documentation
+#    and/or other materials provided with the distribution.
+#
+# 3. Neither the name of the copyright holder nor the names of its
+#    contributors may be used to endorse or promote products derived from
+#    this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+# AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+# FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+# SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+# CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+# OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+# OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
 """
 Module to import log, data and transducer position files for PAI128 systems
 
@@ -9,7 +40,7 @@ Western University
 London, ON, Canada
 
 Created by: Lawrence Yip
-Last Modified 2020-09-28
+Last Modified 2020-10-05
 """
 
 
@@ -98,7 +129,7 @@ def importPAI128(raw_data_filename):
 
 def DAQ128settings2RF(DAQ128settings, CheckAveraging):
     # Set array size if averaging will be used
-    if (DAQ128settings.get(0, {}).get("NumTriggers") > 1 and CheckAveraging == "True"):
+    if (DAQ128settings.get(0, {}).get("NumTriggers")) > 1 and CheckAveraging == True:
         RFdata = np.zeros((len(DAQ128settings)*DAQ128settings.get(0, {}).get("NumChannels"), 
                        DAQ128settings.get(0, {}).get("NumPoints")*256),
                       dtype = np.single, order="F")
@@ -112,7 +143,7 @@ def DAQ128settings2RF(DAQ128settings, CheckAveraging):
     for ii in DAQ128settings:
         basen = ii * DAQ128settings.get(ii, {}).get("NumChannels")
         
-        if  (DAQ128settings.get(ii, {}).get("NumTriggers") > 1 and CheckAveraging == "True"):
+        if  (DAQ128settings.get(ii, {}).get("NumTriggers") > 1 and CheckAveraging == True):
             temp = DAQ128settings.get(ii, {}).get("DataPoints")
             temp = temp.reshape(DAQ128settings.get(ii, {}).get("NumChannels"),-1, 
                                 DAQ128settings.get(ii, {}).get("NumTriggers"),order="F")
@@ -132,14 +163,14 @@ def import_and_process_binary(raw_data_folder_path, num_scans, signal_inv=True, 
     _, initial_values, _ = importPAI128(Path(raw_data_folder_path, "00000.pv3"))
     
     if Averaging == True:
-        imData = np.zeros((num_scans, np.int32(initial_values.get(0, {}).get("NumPoints")*256/initial_values.get(0, {}).get("NumTriggers")), 
+        imData = np.zeros((num_scans, np.int32(initial_values.get(0, {}).get("NumPoints")*256), 
                           initial_values.get(0, {}).get("NumChannels")*len(initial_values)), dtype = np.single, order = "F")
     else:
-        imData = np.zeros((num_scans, np.int32(initial_values.get(0, {}).get("NumPoints")*256), 
+        imData = np.zeros((num_scans, np.int32(initial_values.get(0, {}).get("NumPoints")*256*initial_values.get(0, {}).get("NumTriggers")), 
                           initial_values.get(0, {}).get("NumChannels")*len(initial_values)), dtype = np.single, order = "F")
     
     #Template to flip the signals since our transducers are all inverted in polarity
-    reverseGain = -1 * np.ones((initial_values.get(0, {}).get("NumChannels"), 1),dtype = np.int, order = "F") 
+    reverseGain = -1 * np.ones((initial_values.get(0, {}).get("NumChannels")*len(initial_values), 1),dtype = np.int, order = "F") 
     reverseGain[photodiode,:] = 1
     
     #Load the signals from the binary file
@@ -224,11 +255,9 @@ def load_scan_log(scan_log_file_path, homePath, numIllum = 2):
     illumPositionsAllScans = np.zeros((numIllum,3,numScans))
     for i in range(numScans):
         transPositionsAllScans[:,:,i] = TransducerRotTrans(scan_positions_abbrev[i,0], scan_positions_abbrev[i,1], scan_positions_abbrev[i,2],
-                                                           scan_positions_abbrev[i,3], scan_positions_abbrev[i,4], scan_positions_abbrev[i,5],
-                                                           homePath)
+                                                           scan_positions_abbrev[i,3], scan_positions_abbrev[i,4], R, homePath)
         illumPositionsAllScans[:, :, i] = TransducerRotTrans(scan_positions_abbrev[i,0], scan_positions_abbrev[i,1], scan_positions_abbrev[i,2],
-                                                           scan_positions_abbrev[i,3], scan_positions_abbrev[i,4], scan_positions_abbrev[i,5],
-                                                           homePath, switch ="illum")
+                                                           scan_positions_abbrev[i,3], scan_positions_abbrev[i,4], R, homePath, switch ="illum")
     core_array = np.zeros((64,3,len(scan_positions_abbrev)))
     for j in range(len(scan_positions_abbrev)):
         cor_array_temp = np.reshape(np.tile(scan_positions_abbrev[j, 5:8],64),[3,-1],order="F")
@@ -325,7 +354,7 @@ def AxelRot(transducer_pos, thetadeg, u, centre_rot):
                      [2 * (bc - ad), aa + cc - bb - dd, 2 * (cd + ab)],
                      [2 * (bd + ac), 2 * (cd - ab), aa + dd - bb - cc]])
     Counter = 0
-    v_prime_vec_array = np.zeros((64,3))
+    v_prime_vec_array = np.zeros((np.shape(v)[0],3))
     for i in v:
         v_prime_vec_array[Counter,:] = np.dot(rotation_matrix, i)
         Counter = Counter +1
@@ -364,3 +393,39 @@ def findVec(point1,point2,unitSphere = False):
       return unitVector
   else:
       return finalVector
+  
+    
+"""From https://stackoverflow.com/questions/38511444/python-download-files-from-google-drive-using-url
+For downloading Google Drive file
+"""
+import requests
+
+def download_file_from_google_drive(id, destination):
+    URL = "https://docs.google.com/uc?export=download"
+
+    session = requests.Session()
+
+    response = session.get(URL, params = { 'id' : id }, stream = True)
+    token = get_confirm_token(response)
+
+    if token:
+        params = { 'id' : id, 'confirm' : token }
+        response = session.get(URL, params = params, stream = True)
+
+    save_response_content(response, destination)    
+
+def get_confirm_token(response):
+    for key, value in response.cookies.items():
+        if key.startswith('download_warning'):
+            return value
+
+    return None
+
+def save_response_content(response, destination):
+    CHUNK_SIZE = 32768
+
+    with open(destination, "wb") as f:
+        for chunk in response.iter_content(CHUNK_SIZE):
+            if chunk: # filter out keep-alive new chunks
+                f.write(chunk)
+
