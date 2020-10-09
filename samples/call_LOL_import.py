@@ -55,9 +55,9 @@ converter = LawsonOpticsLab_360_System_File_Converter.LOLFileConverter(demo_file
                              [680], signal_inv=True, left_shift=12, thresholding=0, photodiode=65, CheckAveraging=True,
                              end_remove=80, numIllum=2, scanIllumSwitch="Scanned", fixed_illum_file_path=None)
 
-# pa_data = converter.generate_pa_data()
+pa_data = converter.generate_pa_data()
 
-# quality_check_pa_data(pa_data, verbose=True, log_file_path="")
+quality_check_pa_data(pa_data, verbose=True, log_file_path="")
 
 # write_data("demodata.hdf5", pa_data)
 
