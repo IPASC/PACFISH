@@ -47,7 +47,7 @@ import os
 
 filepath = Path.home() /os.path.realpath(__file__)
 
-demo_file_path = filepath.parent / 'LOL_demo'
+demo_file_path = filepath.parent / "LOL_demo"
 log_file_path = demo_file_path / "log_2020-10-07-17-18-07.csv" 
 home_pos_path = demo_file_path / "Transducer_Position_Home.mat"
 
