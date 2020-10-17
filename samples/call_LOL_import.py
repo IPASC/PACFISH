@@ -1,6 +1,6 @@
 # BSD 3-Clause License
 #
-# Copyright (c) 2020, IPASC
+# Copyright (c) 2020, Lawson Health Research Institute
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -28,13 +28,13 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-import numpy as np
+# import numpy as np
 from ipasc_tool.api.adapters.LawsonOptics import \
-    LawsonOpticsLab_360_System_File_Converter, read_LOL_import_module
-import matplotlib.pylab as plt
+    LawsonOpticsLab_360_System_File_Converter
+# import matplotlib.pylab as plt
 from ipasc_tool import write_data
 from ipasc_tool import quality_check_pa_data
-from samples.visualize_device import visualize_device
+# from samples.visualize_device import visualize_device
 from pathlib import Path
 import os
 
@@ -59,7 +59,7 @@ pa_data = converter.generate_pa_data()
 
 quality_check_pa_data(pa_data, verbose=True, log_file_path="")
 
-# write_data("demodata.hdf5", pa_data)
+write_data("demodataLOL.hdf5", pa_data)
 
 # binary = np.rot90(pa_data.binary_time_series_data[:, 500:-2500, 0], -1)
 # binary = binary - np.min(binary) + 1
