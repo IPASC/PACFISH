@@ -56,13 +56,13 @@ def load_data(path: str):
                     data[key] = None
             elif isinstance(item, h5py._hl.group.Group):
                 if key == "list":
-                    data = list()
+                    data = [None for x in item.keys()]
                     for listkey in sorted(item.keys()):
                         if isinstance(item[listkey], h5py._hl.dataset.Dataset):
-                            data.append(item[listkey][()])
+                            data[int(listkey)] = item[listkey][()]
                         elif isinstance(item[listkey], h5py._hl.group.Group):
-                            data.append(
-                                recursively_load_dictionaries(file, in_file_path + key + "/" + listkey + "/"))
+                            data[int(listkey)] = recursively_load_dictionaries(
+                                file, in_file_path + key + "/" + listkey + "/")
                 else:
                     data[key] = recursively_load_dictionaries(file, in_file_path + key + "/")
         return data

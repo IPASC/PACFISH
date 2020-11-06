@@ -51,7 +51,9 @@ class DeviceMetaDataCreatorTest(TestCase):
         device_dict = create_complete_device_metadata_dictionary()
 
         pa_data = PAData(binary_time_series_data=np.zeros([256, 2048]),
-                         meta_data_acquisition={"test_int": 3, "test_float": 3.14, "test_string": "test", "test_list": [3, 5, 7]},
+                         meta_data_acquisition={"test_int": 3, "test_float": 3.14, "test_string": "test",
+                                                "test_list": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
+                                                "test_nested_list": [1, 2, 5, {"key": [1, ["1", 1]]}]},
                          meta_data_device=device_dict)
 
         try:
