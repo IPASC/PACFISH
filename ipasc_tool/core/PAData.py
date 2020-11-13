@@ -137,8 +137,8 @@ class PAData:
 
         :return: return value can be None, of the key was not found in the meta data dictionary.
         """
-        if MetadataDeviceTags.NUMBER_OF_ILLUMINATORS.tag in self.meta_data_device[MetadataDeviceTags.GENERAL.tag]:
-            return self.meta_data_device[MetadataDeviceTags.GENERAL.tag][MetadataDeviceTags.NUMBER_OF_ILLUMINATORS.tag]
+        if MetadataDeviceTags.NUMBER_OF_ILLUMINATION_ELEMENTS.tag in self.meta_data_device[MetadataDeviceTags.GENERAL.tag]:
+            return self.meta_data_device[MetadataDeviceTags.GENERAL.tag][MetadataDeviceTags.NUMBER_OF_ILLUMINATION_ELEMENTS.tag]
         else:
             return None
 
@@ -149,8 +149,8 @@ class PAData:
 
         :return: return value can be None, of the key was not found in the meta data dictionary.
         """
-        if MetadataDeviceTags.NUMBER_OF_DETECTORS.tag in self.meta_data_device[MetadataDeviceTags.GENERAL.tag]:
-            return self.meta_data_device[MetadataDeviceTags.GENERAL.tag][MetadataDeviceTags.NUMBER_OF_DETECTORS.tag]
+        if MetadataDeviceTags.NUMBER_OF_DETECTION_ELEMENTS.tag in self.meta_data_device[MetadataDeviceTags.GENERAL.tag]:
+            return self.meta_data_device[MetadataDeviceTags.GENERAL.tag][MetadataDeviceTags.NUMBER_OF_DETECTION_ELEMENTS.tag]
         else:
             return None
 
@@ -179,7 +179,7 @@ class PAData:
 
         :return: return value can be None, of the key was not found in the meta data dictionary.
         """
-        return self.get_illuminator_attribute_for_tag(MetadataDeviceTags.ILLUMINATOR_SIZE, identifier)
+        return self.get_illuminator_attribute_for_tag(MetadataDeviceTags.ILLUMINATOR_SHAPE, identifier)
 
     def get_wavelength_range(self, identifier=None):
         """
@@ -257,7 +257,10 @@ class PAData:
             positions = []
             for id in self.get_illuminator_ids():
                 positions.append(self.meta_data_device[MetadataDeviceTags.ILLUMINATORS.tag][id][metadatum_tag.tag])
-            return np.asarray(positions)
+            if metadatum_tag.dtype == np.ndarray:
+                return np.asarray(positions)
+            else:
+                return positions
 
     def get_detector_position(self, identifier=None):
         """

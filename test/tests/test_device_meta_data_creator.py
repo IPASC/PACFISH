@@ -93,7 +93,7 @@ class IlluminationElementCreatorTest(TestCase):
         test_array = create_random_testing_parameters()['test_array']
         self.illuminator_creator.set_illuminator_shape(test_array)
         illumination_dict = self.illuminator_creator.get_dictionary()
-        assert (illumination_dict[MetadataDeviceTags.ILLUMINATOR_SIZE.tag] == test_array).all()
+        assert (illumination_dict[MetadataDeviceTags.ILLUMINATOR_SHAPE.tag] == test_array).all()
 
     def test_set_wavelength_range(self):
         test_list = create_random_testing_parameters()['test_list']
@@ -155,9 +155,9 @@ class DetectionElementCreatorTest(TestCase):
 
     def test_set_detector_size(self):
         test_list = create_random_testing_parameters()['test_list']
-        self.detection_creator.set_detector_size(test_list)
+        self.detection_creator.set_detector_shape(test_list)
         detection_dict = self.detection_creator.get_dictionary()
-        assert detection_dict[MetadataDeviceTags.DETECTOR_SIZE.tag] == test_list
+        assert detection_dict[MetadataDeviceTags.DETECTOR_SHAPE.tag] == test_list
 
     def test_frequency_response(self):
         test_array = create_random_testing_parameters()['test_array']

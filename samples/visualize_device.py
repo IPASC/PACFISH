@@ -54,17 +54,17 @@ def add_xz_plane(device_dictionary: dict, mins, maxs):
 
     for detector in device_dictionary["detectors"]:
         position = device_dictionary["detectors"][detector][MetadataDeviceTags.DETECTOR_POSITION.tag]
-        sizes = device_dictionary["detectors"][detector][MetadataDeviceTags.DETECTOR_SIZE.tag]
-        ax1.add_patch(Rectangle((position[0]-sizes[0]/2, position[2]-sizes[2]/2), sizes[0],
-                                sizes[2], color="blue", alpha=0.5))
+        sizes = device_dictionary["detectors"][detector][MetadataDeviceTags.DETECTOR_SHAPE.tag]
+        ax1.add_patch(Rectangle((position[0]-sizes[0]/2, position[2]-sizes[0]/2), sizes[0],
+                                sizes[0], color="blue", alpha=0.5))
 
     for illuminator in device_dictionary["illuminators"]:
         position = device_dictionary["illuminators"][illuminator][MetadataDeviceTags.ILLUMINATOR_POSITION.tag]
         orientation = device_dictionary["illuminators"][illuminator][MetadataDeviceTags.ILLUMINATOR_ORIENTATION.tag]
         divergence = device_dictionary["illuminators"][illuminator][MetadataDeviceTags.BEAM_DIVERGENCE_ANGLES.tag]
-        sizes = device_dictionary["illuminators"][illuminator][MetadataDeviceTags.ILLUMINATOR_SIZE.tag]
-        ax1.add_patch(Rectangle((position[0] - sizes[0] / 2, position[2] - sizes[2] / 2), sizes[0],
-                                sizes[2], color="red", alpha=0.5))
+        sizes = device_dictionary["illuminators"][illuminator][MetadataDeviceTags.ILLUMINATOR_SHAPE.tag]
+        ax1.add_patch(Rectangle((position[0] - sizes[0] / 2, position[2] - sizes[0] / 2), sizes[0],
+                                sizes[0], color="red", alpha=0.5))
         # length = 0.01
         # x_middle = position[0] + length * np.sin(orientation[1])
         # z_middle = position[2] + length * np.cos(orientation[1])
@@ -97,15 +97,15 @@ def add_xy_plane(device_dictionary: dict, mins, maxs):
 
     for detector in device_dictionary["detectors"]:
         position = device_dictionary["detectors"][detector][MetadataDeviceTags.DETECTOR_POSITION.tag]
-        sizes = device_dictionary["detectors"][detector][MetadataDeviceTags.DETECTOR_SIZE.tag]
-        ax1.add_patch(Rectangle((position[0] - sizes[0] / 2, position[1] - sizes[1] / 2), sizes[0],
-                                sizes[1], color="blue", alpha=0.5))
+        sizes = device_dictionary["detectors"][detector][MetadataDeviceTags.DETECTOR_SHAPE.tag]
+        ax1.add_patch(Rectangle((position[0] - sizes[0] / 2, position[1] - sizes[0] / 2), sizes[0],
+                                sizes[0], color="blue", alpha=0.5))
 
     for illuminator in device_dictionary["illuminators"]:
         position = device_dictionary["illuminators"][illuminator][MetadataDeviceTags.ILLUMINATOR_POSITION.tag]
-        sizes = device_dictionary["illuminators"][illuminator][MetadataDeviceTags.ILLUMINATOR_SIZE.tag]
-        ax1.add_patch(Rectangle((position[0] - sizes[0] / 2, position[1] - sizes[1] / 2), sizes[0],
-                                sizes[1], color="red", alpha=0.5))
+        sizes = device_dictionary["illuminators"][illuminator][MetadataDeviceTags.ILLUMINATOR_SHAPE.tag]
+        ax1.add_patch(Rectangle((position[0] - sizes[0] / 2, position[1] - sizes[0] / 2), sizes[0],
+                                sizes[0], color="red", alpha=0.5))
 
     ax1.scatter(None, None, color="blue", marker="x", label="Detector Element")
     ax1.scatter(None, None, color="red", marker="x", label="Illumination Element")
@@ -131,15 +131,15 @@ def add_yz_plane(device_dictionary: dict, mins, maxs):
 
     for detector in device_dictionary["detectors"]:
         position = device_dictionary["detectors"][detector][MetadataDeviceTags.DETECTOR_POSITION.tag]
-        sizes = device_dictionary["detectors"][detector][MetadataDeviceTags.DETECTOR_SIZE.tag]
-        ax1.add_patch(Rectangle((position[1] - sizes[1] / 2, position[2] - sizes[2] / 2), sizes[1],
-                                sizes[2], color="blue", alpha=0.5))
+        sizes = device_dictionary["detectors"][detector][MetadataDeviceTags.DETECTOR_SHAPE.tag]
+        ax1.add_patch(Rectangle((position[1] - sizes[0] / 2, position[2] - sizes[0] / 2), sizes[0],
+                                sizes[0], color="blue", alpha=0.5))
 
     for illuminator in device_dictionary["illuminators"]:
         position = device_dictionary["illuminators"][illuminator][MetadataDeviceTags.ILLUMINATOR_POSITION.tag]
-        sizes = device_dictionary["illuminators"][illuminator][MetadataDeviceTags.ILLUMINATOR_SIZE.tag]
-        ax1.add_patch(Rectangle((position[1] - sizes[1] / 2, position[2] - sizes[2] / 2), sizes[1],
-                                sizes[2], color="red", alpha=0.5))
+        sizes = device_dictionary["illuminators"][illuminator][MetadataDeviceTags.ILLUMINATOR_SHAPE.tag]
+        ax1.add_patch(Rectangle((position[1] - sizes[0] / 2, position[2] - sizes[0] / 2), sizes[0],
+                                sizes[0], color="red", alpha=0.5))
 
     ax1.scatter(None, None, color="blue", marker="x", label="Detector Element")
     ax1.scatter(None, None, color="red", marker="x", label="Illumination Element")

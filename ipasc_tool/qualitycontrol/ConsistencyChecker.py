@@ -104,7 +104,7 @@ class ConsistencyChecker:
                     num_inconsistencies += 1
 
         log_message += "##Detection Elements\n\n"
-        detection_tags = [MetadataDeviceTags.DETECTOR_SIZE, MetadataDeviceTags.DETECTOR_ORIENTATION,
+        detection_tags = [MetadataDeviceTags.DETECTOR_SHAPE, MetadataDeviceTags.DETECTOR_ORIENTATION,
                           MetadataDeviceTags.DETECTOR_POSITION, MetadataDeviceTags.FREQUENCY_RESPONSE,
                           MetadataDeviceTags.ANGULAR_RESPONSE]
         for metadatum in detection_tags:
@@ -118,7 +118,7 @@ class ConsistencyChecker:
                         log_message += metadatum.tag + " was found not to be consistent.\n"
 
         log_message += "##Illumination Elements\n\n"
-        illumination_tags = [MetadataDeviceTags.ILLUMINATOR_SIZE, MetadataDeviceTags.ILLUMINATOR_ORIENTATION,
+        illumination_tags = [MetadataDeviceTags.ILLUMINATOR_SHAPE, MetadataDeviceTags.ILLUMINATOR_ORIENTATION,
                              MetadataDeviceTags.ILLUMINATOR_POSITION, MetadataDeviceTags.WAVELENGTH_RANGE,
                              MetadataDeviceTags.LASER_ENERGY_PROFILE, MetadataDeviceTags.PULSE_WIDTH,
                              MetadataDeviceTags.LASER_STABILITY_PROFILE, MetadataDeviceTags.BEAM_INTENSITY_PROFILE,

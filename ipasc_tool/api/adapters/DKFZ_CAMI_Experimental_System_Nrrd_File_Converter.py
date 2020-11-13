@@ -42,10 +42,17 @@ class DKFZCAMIExperimentalSystemNrrdFileConverter(BaseAdapter):
         [data, meta] = nrrd.read(nrrd_file_path)
         self.data = data
         self.meta = meta
+
         super().__init__()
 
     def generate_binary_data(self) -> np.ndarray:
-        return self.data
+        # the CAMI_DKFZ_FILE is captured this way: [elements, samples, frames]
+        # Needs to be reshaped in order to be in line with the IPASC definition of
+        # [detectors, samples, wavelength, frames]
+        # The sample file only contains images with a single wavelength.
+        # TODO adapt for multispectral images as well
+        data = np.reshape(self.data, (self.meta['sizes'][0], self.meta['sizes'][1], 1, self.meta['sizes'][2]))
+        return data
 
     def generate_meta_data_device(self) -> dict:
         device_creator = DeviceMetaDataCreator()
@@ -59,11 +66,11 @@ class DKFZCAMIExperimentalSystemNrrdFileConverter(BaseAdapter):
             detection_element_creator = DetectionElementCreator()
             detection_element_creator.set_detector_position(np.asarray([0, cur_y_position, 0]))
             detection_element_creator.set_detector_orientation(np.asarray([0, 0, 1]))
-            detection_element_creator.set_detector_size(np.asarray([0.0003, 0.0003, 0.0003]))
-            detection_element_creator.set_frequency_response(np.stack([np.linspace(700, 900, 100),
-                                                                       np.ones(100)]))
-            detection_element_creator.set_angular_response(np.stack([np.linspace(700, 900, 100),
-                                                                     np.ones(100)]))
+            detection_element_creator.set_detector_shape(np.asarray([[0.0003]]))
+            detection_element_creator.set_frequency_response([np.linspace(700, 900, 100),
+                                                                       np.ones(100)])
+            detection_element_creator.set_angular_response([np.linspace(700, 900, 100),
+                                                                     np.ones(100)])
 
             device_creator.add_detection_element("detection_element_" + str(y_idx),
                                                  detection_element_creator.get_dictionary())
@@ -78,12 +85,12 @@ class DKFZCAMIExperimentalSystemNrrdFileConverter(BaseAdapter):
             elif y_idx == 1:
                 illumination_element_creator.set_illuminator_position(np.asarray([-0.0083, 0.0192, -0.001]))
                 illumination_element_creator.set_illuminator_orientation(np.asarray([0, 0.383972, 0]))
-            illumination_element_creator.set_illuminator_shape(np.asarray([0, 0.0245, 0]))
+            illumination_element_creator.set_illuminator_shape(np.asarray([[0.0003]]))
 
-            illumination_element_creator.set_laser_energy_profile(np.stack([np.linspace(700, 900, 100),
-                                                                            np.ones(100)]))
-            illumination_element_creator.set_laser_stability_profile(np.stack([np.linspace(700, 900, 100),
-                                                                               np.ones(100)]))
+            illumination_element_creator.set_laser_energy_profile([np.linspace(700, 900, 100),
+                                                                            np.ones(100)])
+            illumination_element_creator.set_laser_stability_profile([np.linspace(700, 900, 100),
+                                                                               np.ones(100)])
             illumination_element_creator.set_pulse_width(7e-9)
             device_creator.add_illumination_element("illumination_element_" + str(y_idx),
                                                     illumination_element_creator.get_dictionary())
@@ -104,7 +111,7 @@ class DKFZCAMIExperimentalSystemNrrdFileConverter(BaseAdapter):
         elif metadata_tag == MetadataAcquisitionTags.COMPRESSION:
             return "None"
         elif metadata_tag == MetadataAcquisitionTags.DIMENSIONALITY:
-            return "2D"
+            return "time"
         elif metadata_tag == MetadataAcquisitionTags.ENCODING:
             return "raw"
         elif metadata_tag == MetadataAcquisitionTags.SCANNING_METHOD:

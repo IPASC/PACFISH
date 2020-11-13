@@ -74,13 +74,19 @@ class DeviceMetaDataCreatorTest(TestCase):
                     else:
                         if isinstance(a[item], np.ndarray):
                             self.assertTrue((a[item] == b[item]).all())
+                        elif isinstance(a[item], list):
+                            for item1, item2 in zip(a[item], b[item]):
+                                assertEqualsRecursive(item1, item2)
                         else:
                             self.assertEqual(a[item], b[item])
             elif isinstance(a, list):
                 for item1, item2 in zip(a, b):
                     assertEqualsRecursive(item1, item2)
             else:
-                self.assertEqual(a, b)
+                if isinstance(a, np.ndarray):
+                    self.assertTrue((a == b).all())
+                else:
+                    self.assertEqual(a, b)
 
         assertEqualsRecursive(pa_data.meta_data_acquisition, test_data.meta_data_acquisition)
         assertEqualsRecursive(pa_data.meta_data_device, test_data.meta_data_device)

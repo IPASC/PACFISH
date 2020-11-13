@@ -61,7 +61,7 @@ class IlluminationElementCreator(object):
                     The units can be found in MetadataDeviceTags.ILLUMINATOR_SHAPE.unit.
         :return: void
         """
-        self.illuminator_element_dict[MetadataDeviceTags.ILLUMINATOR_SIZE.tag] = shape
+        self.illuminator_element_dict[MetadataDeviceTags.ILLUMINATOR_SHAPE.tag] = shape
 
     def set_wavelength_range(self, wl_range: np.ndarray):
         """
@@ -143,13 +143,13 @@ class DetectionElementCreator(object):
         """
         self.detection_element_dict[MetadataDeviceTags.DETECTOR_ORIENTATION.tag] = orientation
 
-    def set_detector_size(self, size: np.ndarray):
+    def set_detector_shape(self, size: np.ndarray):
         """
         :param size: a three element array [x1, x2, x3] describing the extent of the detector size in x1, x2, and x3 direction.
                     The units can be found in MetadataDeviceTags.DETECTOR_SIZE.unit.
         :return: void
         """
-        self.detection_element_dict[MetadataDeviceTags.DETECTOR_SIZE.tag] = size
+        self.detection_element_dict[MetadataDeviceTags.DETECTOR_SHAPE.tag] = size
 
     def set_frequency_response(self, frequency_response):
         """
@@ -212,9 +212,9 @@ class DeviceMetaDataCreator(object):
 
     def finalize_device_meta_data(self):
 
-        self.device_dict[self.GENERAL][MetadataDeviceTags.NUMBER_OF_DETECTORS.tag] = len(
+        self.device_dict[self.GENERAL][MetadataDeviceTags.NUMBER_OF_DETECTION_ELEMENTS.tag] = len(
             self.device_dict[self.DETECTORS])
-        self.device_dict[self.GENERAL][MetadataDeviceTags.NUMBER_OF_ILLUMINATORS.tag] = len(
+        self.device_dict[self.GENERAL][MetadataDeviceTags.NUMBER_OF_ILLUMINATION_ELEMENTS.tag] = len(
             self.device_dict[self.ILLUMINATORS])
 
         return copy.deepcopy(self.device_dict)
