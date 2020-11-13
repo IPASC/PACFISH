@@ -239,14 +239,14 @@ class MetadataDeviceTags:
                                                   expected_array_dimension=1)
     ILLUMINATOR_ORIENTATION = NDimensionalNumpyArray("illuminator_orientation", False, np.ndarray, Units.METERS,
                                                      expected_array_dimension=1)
-    ILLUMINATOR_SHAPE = NDimensionalNumpyArray("illuminator_shape", False, np.ndarray, Units.METERS,
-                                               expected_array_dimension=2)
+    ILLUMINATOR_SHAPE = UnconstrainedMetaDatum("illuminator_shape", False, list, Units.METERS)
     WAVELENGTH_RANGE = NDimensionalNumpyArray("wavelength_range", False, np.ndarray, Units.METERS,
                                               expected_array_dimension=1)
     LASER_ENERGY_PROFILE = UnconstrainedMetaDatum("laser_energy_profile", False, list, Units.JOULES)
     LASER_STABILITY_PROFILE = UnconstrainedMetaDatum("laser_stability_profile", False, list, Units.JOULES)
     PULSE_WIDTH = NonNegativeNumber("pulse_width", False, float, Units.SECONDS)
     BEAM_INTENSITY_PROFILE = UnconstrainedMetaDatum("beam_intensity_profile", False, list, Units.DIMENSIONLESS_UNIT)
+    BEAM_INTENSITY_PROFILE_DISTANCE = NonNegativeNumber("beam_intensity_profile_distance", False, float, Units.METERS)
     BEAM_DIVERGENCE_ANGLES = NumberWithUpperAndLowerLimit("beam_divergence_angles", False, float, Units.RADIANS,
                                                           lower_limit=0, upper_limit=2*np.pi)
 
@@ -256,19 +256,18 @@ class MetadataDeviceTags:
                                                expected_array_dimension=1)
     DETECTOR_ORIENTATION = NDimensionalNumpyArray("detector_orientation", False, np.ndarray, Units.METERS,
                                                   expected_array_dimension=1)
-    DETECTOR_SHAPE = NDimensionalNumpyArray("detector_shape", False, np.ndarray, Units.METERS,
-                                            expected_array_dimension=2)
-    FREQUENCY_RESPONSE = UnconstrainedMetaDatum("frequency_response", False, list, Units.DIMENSIONLESS_UNIT)
-    ANGULAR_RESPONSE = UnconstrainedMetaDatum("angular_response", False, list, Units.DIMENSIONLESS_UNIT)
+    DETECTOR_SHAPE = UnconstrainedMetaDatum("detector_shape", False, list, Units.METERS)
+    FREQUENCY_RESPONSE = UnconstrainedMetaDatum("frequency_response", False, list, Units.HERTZ + " / " + Units.DIMENSIONLESS_UNIT)
+    ANGULAR_RESPONSE = UnconstrainedMetaDatum("angular_response", False, list, Units.RADIANS + " / " + Units.DIMENSIONLESS_UNIT)
 
     TAGS_GENERAL = [GENERAL, UUID, ILLUMINATORS, DETECTORS, FIELD_OF_VIEW, NUMBER_OF_ILLUMINATION_ELEMENTS,
                     NUMBER_OF_DETECTION_ELEMENTS]
-    TAGS_ILLUMONATORS = [ILLUMINATION_ELEMENT, ILLUMINATOR_POSITION, ILLUMINATOR_ORIENTATION, ILLUMINATOR_SHAPE,
+    TAGS_ILLUMINATORS = [ILLUMINATION_ELEMENT, ILLUMINATOR_POSITION, ILLUMINATOR_ORIENTATION, ILLUMINATOR_SHAPE,
                          WAVELENGTH_RANGE, LASER_ENERGY_PROFILE, LASER_STABILITY_PROFILE, PULSE_WIDTH,
-                         BEAM_INTENSITY_PROFILE, BEAM_DIVERGENCE_ANGLES]
+                         BEAM_INTENSITY_PROFILE, BEAM_INTENSITY_PROFILE_DISTANCE, BEAM_DIVERGENCE_ANGLES]
     TAGS_DETECTORS = [DETECTION_ELEMENT, DETECTOR_POSITION, DETECTOR_ORIENTATION, DETECTOR_SHAPE, FREQUENCY_RESPONSE,
                       ANGULAR_RESPONSE]
-    TAGS = TAGS_GENERAL + TAGS_DETECTORS + TAGS_ILLUMONATORS
+    TAGS = TAGS_GENERAL + TAGS_DETECTORS + TAGS_ILLUMINATORS
 
 
 class MetadataAcquisitionTags:
@@ -293,8 +292,8 @@ class MetadataAcquisitionTags:
     FRAME_ACQUISITION_SPATIAL_POSITIONS = NDimensionalNumpyArray("frame_acquisition_spacial_positions", False,
                                                                  np.ndarray, Units.SECONDS,
                                                                  expected_array_dimension=2)
-    ACQUISITION_OPTICAL_WAVELENGTHS = NonNegativeNumbersInArray("acquisition_optical_wavelengths", False,
-                                                                np.ndarray, Units.METERS)
+    ACQUISITION_OPTICAL_WAVELENGTHS = UnconstrainedMetaDatum("acquisition_optical_wavelengths", False,
+                                                                list, Units.METERS)
     TIME_GAIN_COMPENSATION = NonNegativeNumbersInArray("time_gain_compensation", False, np.ndarray,
                                                        Units.DIMENSIONLESS_UNIT)
     OVERALL_GAIN = NonNegativeNumber("overall_gain", False, float, Units.DIMENSIONLESS_UNIT)
@@ -303,6 +302,7 @@ class MetadataAcquisitionTags:
     TEMPERATURE_CONTROL = NonNegativeNumbersInArray("temperature_control", False, np.ndarray, Units.KELVIN)
     ACOUSTIC_COUPLING_AGENT = UnconstrainedMetaDatum("acoustic_coupling_agent", False, str)
     SCANNING_METHOD = UnconstrainedMetaDatum("scanning_method", False, str)
+    ASSUMED_GLOBAL_SPEED_OF_SOUND = NonNegativeNumber("assumed_global_speed_of_sound", False, float)
     AD_SAMPLING_RATE = NonNegativeNumber("ad_sampling_rate", True, float, Units.HERTZ)
     FREQUENCY_DOMAIN_FILTER = UnconstrainedMetaDatum("frequency_domain_filter", False, np.ndarray)
 
@@ -310,5 +310,6 @@ class MetadataAcquisitionTags:
     TAGS_CONTAINER = [UUID, ENCODING, COMPRESSION]
     TAGS_ACQUISITION = [PHOTOACOUSTIC_IMAGING_DEVICE, PULSE_LASER_ENERGY, ACQUISITION_OPTICAL_WAVELENGTHS,
                         TIME_GAIN_COMPENSATION, OVERALL_GAIN, ELEMENT_DEPENDENT_GAIN, TEMPERATURE_CONTROL,
-                        ACOUSTIC_COUPLING_AGENT, SCANNING_METHOD, AD_SAMPLING_RATE, FREQUENCY_DOMAIN_FILTER]
+                        ACOUSTIC_COUPLING_AGENT, SCANNING_METHOD, AD_SAMPLING_RATE, FREQUENCY_DOMAIN_FILTER,
+                        ASSUMED_GLOBAL_SPEED_OF_SOUND]
     TAGS = TAGS_BINARY + TAGS_ACQUISITION + TAGS_CONTAINER

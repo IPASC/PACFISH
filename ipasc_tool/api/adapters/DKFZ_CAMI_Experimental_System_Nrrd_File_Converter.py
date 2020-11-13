@@ -46,9 +46,9 @@ class DKFZCAMIExperimentalSystemNrrdFileConverter(BaseAdapter):
         super().__init__()
 
     def generate_binary_data(self) -> np.ndarray:
-        # the CAMI_DKFZ_FILE is captured this way: [elements, samples, frames]
+        # the CAMI_DKFZ_FILE is captured this way: [elements, ipasc_examples, frames]
         # Needs to be reshaped in order to be in line with the IPASC definition of
-        # [detectors, samples, wavelength, frames]
+        # [detectors, ipasc_examples, wavelength, frames]
         # The sample file only contains images with a single wavelength.
         # TODO adapt for multispectral images as well
         data = np.reshape(self.data, (self.meta['sizes'][0], self.meta['sizes'][1], 1, self.meta['sizes'][2]))

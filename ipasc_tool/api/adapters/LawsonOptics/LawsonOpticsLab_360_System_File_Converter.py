@@ -116,7 +116,7 @@ class LOLFileConverter(BaseAdapter):
                 
                 #Note needs to be changed to detector_shape once the base adapter is updated
                 
-                detection_element_creator.set_detector_size(np.asarray([0.007])) # assume 14mm elements, approx.
+                detection_element_creator.set_detector_shape([0.007]) # assume 14mm elements, approx.
                 #Add once freq response confirmed
                 # detection_element_creator.set_frequency_response(np.stack([np.linspace(700, 900, 100),
                 #                                                            np.ones(100)]))
@@ -183,7 +183,7 @@ class LOLFileConverter(BaseAdapter):
         elif metadata_tag == MetadataAcquisitionTags.DATA_TYPE:
             return "float"
         elif metadata_tag == MetadataAcquisitionTags.AD_SAMPLING_RATE:
-            return 50000000
+            return 50000000.0
         elif metadata_tag == MetadataAcquisitionTags.ACOUSTIC_COUPLING_AGENT:
             return "Water"
         elif metadata_tag == MetadataAcquisitionTags.ACQUISITION_OPTICAL_WAVELENGTHS:

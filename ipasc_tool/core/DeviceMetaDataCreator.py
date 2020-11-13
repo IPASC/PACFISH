@@ -143,7 +143,7 @@ class DetectionElementCreator(object):
         """
         self.detection_element_dict[MetadataDeviceTags.DETECTOR_ORIENTATION.tag] = orientation
 
-    def set_detector_shape(self, size: np.ndarray):
+    def set_detector_shape(self, size: list):
         """
         :param size: a three element array [x1, x2, x3] describing the extent of the detector size in x1, x2, and x3 direction.
                     The units can be found in MetadataDeviceTags.DETECTOR_SIZE.unit.

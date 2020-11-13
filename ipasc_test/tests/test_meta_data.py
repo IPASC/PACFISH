@@ -34,7 +34,7 @@ from ipasc_tool import MetadataDeviceTags
 from ipasc_tool.core.Metadata import NonNegativeNumber, NonNegativeWholeNumber, NonNegativeNumbersInArray, \
     NumberWithUpperAndLowerLimit, NDimensionalNumpyArray, EnumeratedString, UnconstrainedMetaDatum, Units
 from ipasc_tool import CompletenessChecker
-from test.tests.utils import create_complete_device_metadata_dictionary
+from ipasc_test.tests.utils import create_complete_device_metadata_dictionary
 import numpy as np
 
 

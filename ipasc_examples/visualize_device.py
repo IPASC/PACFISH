@@ -2,7 +2,7 @@ import matplotlib.pylab as plt
 from matplotlib.patches import Rectangle, Polygon
 import numpy as np
 from ipasc_tool import MetadataDeviceTags
-from test.tests.test_meta_data import create_complete_device_metadata_dictionary
+from ipasc_test.tests.test_meta_data import create_complete_device_metadata_dictionary
 
 
 def define_boundary_values(device_dictionary : dict):

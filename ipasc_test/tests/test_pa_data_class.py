@@ -30,14 +30,14 @@
 
 from unittest.case import TestCase
 from ipasc_tool import PAData
-from test.tests.utils import create_complete_device_metadata_dictionary, create_complete_meta_data_dictionary
+from ipasc_test.tests.utils import create_complete_device_metadata_dictionary, create_complete_acquisition_meta_data_dictionary
 import numpy as np
 
 
 class MetaDataTest(TestCase):
 
     def setUp(self):
-        self.acquisition_metadata = create_complete_meta_data_dictionary()
+        self.acquisition_metadata = create_complete_acquisition_meta_data_dictionary()
         self.device_metadata = create_complete_device_metadata_dictionary()
         self.pa_data = PAData(binary_time_series_data=np.random.random((4, 200)),
                               meta_data_acquisition=self.acquisition_metadata,

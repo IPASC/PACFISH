@@ -1,12 +1,16 @@
-samples/demodata.nrrd
-samples/demodata.hdf5
-docs/.doctrees
-docs/.doctrees/*
-docs/test_coverage
+ipasc_examples/demodata.nrrd
+ipasc_examples/demodata.hdf5
+ipasc_docs/.doctrees
+ipasc_docs/.doctrees/*
+ipasc_docs/test_coverage
+
+**.hdf5
+**logfile.md
 
 # PyCharm
 */.idea/*
 .idea/*
+**/.idea
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -47,7 +51,7 @@ MANIFEST
 pip-log.txt
 pip-delete-this-directory.txt
 
-# Unit test / coverage reports
+# Unit ipasc_test / coverage reports
 htmlcov/
 .tox/
 .nox/
@@ -79,7 +83,7 @@ instance/
 .scrapy
 
 # Sphinx documentation
-docs/_build/
+ipasc_docs/_build/
 
 # PyBuilder
 target/

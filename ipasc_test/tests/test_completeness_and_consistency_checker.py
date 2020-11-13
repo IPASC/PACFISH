@@ -31,7 +31,7 @@
 import numpy as np
 from unittest.case import TestCase
 from ipasc_tool import PAData, CompletenessChecker, ConsistencyChecker, MetadataDeviceTags, MetadataAcquisitionTags
-from test.tests.utils import create_complete_device_metadata_dictionary, create_complete_meta_data_dictionary
+from ipasc_test.tests.utils import create_complete_device_metadata_dictionary, create_complete_acquisition_meta_data_dictionary
 
 
 class CompletenessAndConsistencyTest(TestCase):
@@ -44,7 +44,7 @@ class CompletenessAndConsistencyTest(TestCase):
 
     def test_check_a_complete_and_consistent_pa_data_instance(self):
         device_dict = create_complete_device_metadata_dictionary()
-        acquisition_dict = create_complete_meta_data_dictionary()
+        acquisition_dict = create_complete_acquisition_meta_data_dictionary()
 
         pa_data = PAData(binary_time_series_data=np.zeros([256, 2048]),
                          meta_data_acquisition=acquisition_dict,
@@ -65,7 +65,7 @@ class CompletenessAndConsistencyTest(TestCase):
         for illuminator_tag in device_dict[MetadataDeviceTags.ILLUMINATORS.tag]:
             device_dict[MetadataDeviceTags.ILLUMINATORS.tag][illuminator_tag]\
                 [MetadataDeviceTags.PULSE_WIDTH.tag] = -0.1
-        acquisition_dict = create_complete_meta_data_dictionary()
+        acquisition_dict = create_complete_acquisition_meta_data_dictionary()
         acquisition_dict[MetadataAcquisitionTags.DIMENSIONALITY.tag] = "Wrong string"
 
         pa_data = PAData(binary_time_series_data=np.zeros([256, 2048]),

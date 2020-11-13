@@ -1,6 +1,6 @@
 # BSD 3-Clause License
 #
-# Copyright (c) 2020, Lawson Health Research Institute
+# Copyright (c) 2020, IPASC
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -28,49 +28,41 @@
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-# import numpy as np
-from ipasc_tool.api.adapters.LawsonOptics import \
-    LawsonOpticsLab_360_System_File_Converter
-# import matplotlib.pylab as plt
+import os
+import numpy as np
+import requests
+from ipasc_tool.api.adapters.DKFZ_CAMI_Experimental_System_Nrrd_File_Converter import \
+    DKFZCAMIExperimentalSystemNrrdFileConverter
+import matplotlib.pylab as plt
 from ipasc_tool import write_data
 from ipasc_tool import quality_check_pa_data
-# from samples.visualize_device import visualize_device
-from pathlib import Path
-import os
+from examples.visualize_device import visualize_device
 
-# URL = "http://mitk.org/download/demos/PhotonicsWest2018/demoDataPhantomPA.nrrd"
+URL = "http://mitk.org/download/demos/PhotonicsWest2018/demoDataPhantomPA.nrrd"
 
-# if not os.path.exists('demodata.nrrd'):
-#     r = requests.get(URL, allow_redirects=True)
-#     with open('demodata.nrrd', 'wb') as demo_file:
-#         demo_file.write(r.content)
+if not os.path.exists('demodata.nrrd'):
+    r = requests.get(URL, allow_redirects=True)
+    with open('demodata.nrrd', 'wb') as demo_file:
+        demo_file.write(r.content)
 
-filepath = Path.home() /os.path.realpath(__file__)
-
-demo_file_path = filepath.parent / "LOL_demo"
-log_file_path = demo_file_path / "log_2020-10-07-17-18-07.csv" 
-home_pos_path = demo_file_path / "Transducer_Position_Home.mat"
-
-converter = LawsonOpticsLab_360_System_File_Converter.LOLFileConverter(demo_file_path, log_file_path, home_pos_path,
-                             [680], signal_inv=True, left_shift=12, thresholding=0, photodiode=65, CheckAveraging=True,
-                             end_remove=80, numIllum=2, scanIllumSwitch="Scanned", fixed_illum_file_path=None)
+converter = DKFZCAMIExperimentalSystemNrrdFileConverter('demodata.nrrd')
 
 pa_data = converter.generate_pa_data()
 
 quality_check_pa_data(pa_data, verbose=True, log_file_path="")
 
-write_data("demodataLOL.hdf5", pa_data)
+write_data("demodata.hdf5", pa_data)
 
-# binary = np.rot90(pa_data.binary_time_series_data[:, 500:-2500, 0], -1)
-# binary = binary - np.min(binary) + 1
-# binary = np.log10(binary)
-# plt.imshow(binary, aspect=0.08, vmin=np.percentile(binary, 1), vmax=np.percentile(binary, 99))
-# plt.show()
-# plt.close()
+binary = np.rot90(pa_data.binary_time_series_data[:, 500:-2500, 0, 0], -1)
+binary = binary - np.min(binary) + 1
+binary = np.log10(binary)
+plt.imshow(binary, aspect=0.08, vmin=np.percentile(binary, 1), vmax=np.percentile(binary, 99))
+plt.show()
+plt.close()
 
-# visualize_device(pa_data.meta_data_device)
+visualize_device(pa_data.meta_data_device)
 
-# if os.path.exists("logfile.md"):
-#     os.remove("logfile.md")
-# #if os.path.exists("demodata.hdf5"):
-# #    os.remove("demodata.hdf5")
+if os.path.exists("logfile.md"):
+    os.remove("logfile.md")
+if os.path.exists("demodata.hdf5"):
+    os.remove("demodata.hdf5")

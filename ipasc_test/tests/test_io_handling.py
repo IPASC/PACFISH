@@ -35,7 +35,7 @@ from unittest.case import TestCase
 from ipasc_tool import PAData
 from ipasc_tool import write_data
 from ipasc_tool import load_data
-from test.tests.utils import create_complete_device_metadata_dictionary
+from ipasc_test.tests.utils import create_complete_device_metadata_dictionary
 
 
 class DeviceMetaDataCreatorTest(TestCase):
@@ -51,20 +51,20 @@ class DeviceMetaDataCreatorTest(TestCase):
         device_dict = create_complete_device_metadata_dictionary()
 
         pa_data = PAData(binary_time_series_data=np.zeros([256, 2048]),
-                         meta_data_acquisition={"test_int": 3, "test_float": 3.14, "test_string": "test",
+                         meta_data_acquisition={"test_int": 3, "test_float": 3.14, "test_string": "ipasc_test",
                                                 "test_list": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15],
                                                 "test_nested_list": [1, 2, 5, {"key": [1, ["1", 1]]}]},
                          meta_data_device=device_dict)
 
         try:
-            write_data("test.hdf5", pa_data)
-            test_data = load_data("test.hdf5")
+            write_data("ipasc_test.hdf5", pa_data)
+            test_data = load_data("ipasc_test.hdf5")
         except Exception as e:
             raise e
         finally:
-            # clean up after test
-            if os.path.exists("test.hdf5"):
-                os.remove("test.hdf5")
+            # clean up after ipasc_test
+            if os.path.exists("ipasc_test.hdf5"):
+                os.remove("ipasc_test.hdf5")
 
         def assertEqualsRecursive(a, b):
             if isinstance(a, dict):

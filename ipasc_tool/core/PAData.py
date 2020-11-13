@@ -229,6 +229,13 @@ class PAData:
         """
         return self.get_illuminator_attribute_for_tag(MetadataDeviceTags.BEAM_INTENSITY_PROFILE, identifier)
 
+    def get_beam_profile_distance(self):
+        """
+        The distance from the light source for measuring its beam intensity profile.
+        :return: return value can be None, of the key was not found in the meta data dictionary.
+        """
+        return self.get_illuminator_attribute_for_tag(MetadataDeviceTags.BEAM_INTENSITY_PROFILE_DISTANCE)
+
     def get_beam_divergence(self, identifier=None):
         """
         The beam divergence angles represent the opening angles of the laser beam from the illuminator shape with
@@ -464,6 +471,14 @@ class PAData:
         """
         return self.get_acquisition_meta_datum(MetadataAcquisitionTags.ACOUSTIC_COUPLING_AGENT)
 
+    def get_assumed_speed_of_sound(self):
+        """
+        A value representing the assumed speed of sound in the entire imaging medium, covering both the imaged medium a
+        nd the coupling agent.
+        :return: return value can be None, of the key was not found in the meta data dictionary.
+        """
+        return self.get_acquisition_meta_datum(MetadataAcquisitionTags.ASSUMED_GLOBAL_SPEED_OF_SOUND)
+
     def get_scanning_method(self):
         """
         A string representation of the scanning method that was used.
@@ -474,7 +489,7 @@ class PAData:
 
     def get_sampling_rate(self):
         """
-        The A/D sampling rate refers to the rate at which samples of the analog signal are taken to be converted into
+        The A/D sampling rate refers to the rate at which ipasc_examples of the analog signal are taken to be converted into
         digital form.
 
         :return: return value can be None, of the key was not found in the meta data dictionary.

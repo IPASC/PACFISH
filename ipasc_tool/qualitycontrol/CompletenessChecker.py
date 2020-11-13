@@ -158,11 +158,11 @@ class CompletenessChecker:
                              MetadataDeviceTags.BEAM_DIVERGENCE_ANGLES]
 
         if MetadataDeviceTags.ILLUMINATORS.tag not in device_meta_data:
-            log_string += "Detection elements data is missing!\n\n"
+            log_string += "Illumination elements data is missing!\n\n"
             incompletenes_count += len(illumination_tags)
         else:
             log_string += ("Found " + str(len(device_meta_data[MetadataDeviceTags.ILLUMINATORS.tag])) +
-                           " detection elements.\n\n")
+                           " illumination elements.\n\n")
             for illuminator_dict in device_meta_data[MetadataDeviceTags.ILLUMINATORS.tag]:
                 log_string += ("Now analyzing illumination element \"" +
                                illuminator_dict + "\"\n\n")
