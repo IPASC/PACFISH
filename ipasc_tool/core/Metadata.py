@@ -267,13 +267,17 @@ class MetadataDeviceTags:
                                                   expected_array_dimension=1)
     ILLUMINATOR_ORIENTATION = NDimensionalNumpyArray("illuminator_orientation", False, np.ndarray, Units.METERS,
                                                      expected_array_dimension=1)
-    ILLUMINATOR_SHAPE = UnconstrainedMetaDatum("illuminator_shape", False, list, Units.METERS)
+    ILLUMINATOR_SHAPE = NDimensionalNumpyArray("illuminator_shape", False, np.ndarray, Units.METERS,
+                                               expected_array_dimension=2)
     WAVELENGTH_RANGE = NDimensionalNumpyArray("wavelength_range", False, np.ndarray, Units.METERS,
                                               expected_array_dimension=1)
-    LASER_ENERGY_PROFILE = UnconstrainedMetaDatum("laser_energy_profile", False, list, Units.JOULES)
-    LASER_STABILITY_PROFILE = UnconstrainedMetaDatum("laser_stability_profile", False, list, Units.JOULES)
+    LASER_ENERGY_PROFILE = NDimensionalNumpyArray("laser_energy_profile", False, np.ndarray, Units.JOULES,
+                                                  expected_array_dimension=2)
+    LASER_STABILITY_PROFILE = NDimensionalNumpyArray("laser_stability_profile", False, np.ndarray, Units.JOULES,
+                                                     expected_array_dimension=2)
     PULSE_WIDTH = NonNegativeNumber("pulse_width", False, float, Units.SECONDS)
-    BEAM_INTENSITY_PROFILE = UnconstrainedMetaDatum("beam_intensity_profile", False, list, Units.DIMENSIONLESS_UNIT)
+    BEAM_INTENSITY_PROFILE = NDimensionalNumpyArray("beam_intensity_profile", False, np.ndarray, Units.DIMENSIONLESS_UNIT,
+                                                    expected_array_dimension=2)
     BEAM_INTENSITY_PROFILE_DISTANCE = NonNegativeNumber("beam_intensity_profile_distance", False, float, Units.METERS)
     BEAM_DIVERGENCE_ANGLES = NumberWithUpperAndLowerLimit("beam_divergence_angles", False, float, Units.RADIANS,
                                                           lower_limit=0, upper_limit=2*np.pi)
@@ -284,9 +288,14 @@ class MetadataDeviceTags:
                                                expected_array_dimension=1)
     DETECTOR_ORIENTATION = NDimensionalNumpyArray("detector_orientation", False, np.ndarray, Units.METERS,
                                                   expected_array_dimension=1)
-    DETECTOR_SHAPE = UnconstrainedMetaDatum("detector_shape", False, list, Units.METERS)
-    FREQUENCY_RESPONSE = UnconstrainedMetaDatum("frequency_response", False, list, Units.HERTZ + " / " + Units.DIMENSIONLESS_UNIT)
-    ANGULAR_RESPONSE = UnconstrainedMetaDatum("angular_response", False, list, Units.RADIANS + " / " + Units.DIMENSIONLESS_UNIT)
+    DETECTOR_SHAPE = NDimensionalNumpyArray("detector_shape", False, np.ndarray, Units.METERS,
+                                            expected_array_dimension=2)
+    FREQUENCY_RESPONSE = NDimensionalNumpyArray("frequency_response", False, np.ndarray,
+                                                Units.HERTZ + " / " + Units.DIMENSIONLESS_UNIT,
+                                                expected_array_dimension=2)
+    ANGULAR_RESPONSE = NDimensionalNumpyArray("angular_response", False, np.ndarray,
+                                              Units.RADIANS + " / " + Units.DIMENSIONLESS_UNIT,
+                                              expected_array_dimension=2)
 
     TAGS_GENERAL = [GENERAL, UUID, ILLUMINATORS, DETECTORS, FIELD_OF_VIEW, NUMBER_OF_ILLUMINATION_ELEMENTS,
                     NUMBER_OF_DETECTION_ELEMENTS]
@@ -320,8 +329,8 @@ class MetadataAcquisitionTags:
     FRAME_ACQUISITION_SPATIAL_POSITIONS = NDimensionalNumpyArray("frame_acquisition_spacial_positions", False,
                                                                  np.ndarray, Units.SECONDS,
                                                                  expected_array_dimension=2)
-    ACQUISITION_OPTICAL_WAVELENGTHS = UnconstrainedMetaDatum("acquisition_optical_wavelengths", False,
-                                                                list, Units.METERS)
+    ACQUISITION_OPTICAL_WAVELENGTHS = NDimensionalNumpyArray("acquisition_optical_wavelengths", False,
+                                                                np.ndarray, Units.METERS, expected_array_dimension=1)
     TIME_GAIN_COMPENSATION = NonNegativeNumbersInArray("time_gain_compensation", False, np.ndarray,
                                                        Units.DIMENSIONLESS_UNIT)
     OVERALL_GAIN = NonNegativeNumber("overall_gain", False, float, Units.DIMENSIONLESS_UNIT)

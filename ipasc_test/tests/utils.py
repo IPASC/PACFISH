@@ -45,7 +45,7 @@ def create_complete_acquisition_meta_data_dictionary():
     dictionary[MetadataAcquisitionTags.SIZES.tag] = np.asarray([4, 200])
     dictionary[MetadataAcquisitionTags.PULSE_LASER_ENERGY.tag] = np.asarray([2])
     dictionary[MetadataAcquisitionTags.FRAME_ACQUISITION_TIMESTAMPS.tag] = np.asarray([2])
-    dictionary[MetadataAcquisitionTags.ACQUISITION_OPTICAL_WAVELENGTHS.tag] = [2]
+    dictionary[MetadataAcquisitionTags.ACQUISITION_OPTICAL_WAVELENGTHS.tag] = np.asarray([2])
     dictionary[MetadataAcquisitionTags.TIME_GAIN_COMPENSATION.tag] = create_random_testing_parameters()['test_array']
     dictionary[MetadataAcquisitionTags.OVERALL_GAIN.tag] = 2.2
     dictionary[MetadataAcquisitionTags.ELEMENT_DEPENDENT_GAIN.tag] = np.ones(100)
@@ -61,12 +61,10 @@ def create_complete_acquisition_meta_data_dictionary():
 def create_random_testing_parameters():
 
     test_float = np.random.random()
-    test_list = [np.random.random(), np.random.random(), -np.random.random()]
     test_string = str(np.random.random())
     test_dict = dict()
     test_array = np.random.random((1000, 2))
     return {'test_float': test_float,
-            'test_list': test_list,
             'test_string': test_string,
             'test_dict': test_dict,
             'test_array': test_array}
@@ -83,21 +81,20 @@ def create_random_illumination_element(dim_x=None, dim_y=None, dim_z=None):
         np.random.random()-0.5,
         np.random.random()-0.5,
         np.random.random()-0.5])
-    illuminator_dict[MetadataDeviceTags.ILLUMINATOR_SHAPE.tag] = [[0.0001,
+    illuminator_dict[MetadataDeviceTags.ILLUMINATOR_SHAPE.tag] = np.asarray([[0.0001,
                                                                        0.0001,
-                                                                       0.0001]]
+                                                                       0.0001]])
     min_wavelength = np.random.random() * 200 + 600
     illuminator_dict[MetadataDeviceTags.WAVELENGTH_RANGE.tag] = np.asarray([min_wavelength,
                                                                                  min_wavelength +
                                                                                  np.random.random() * 200,
                                                                                  1.0])
-    illuminator_dict[MetadataDeviceTags.LASER_ENERGY_PROFILE.tag] = [np.random.random(size=200),
-                                                                     np.random.random(size=200)]
-    illuminator_dict[MetadataDeviceTags.LASER_STABILITY_PROFILE.tag] = [np.random.random(size=200),
-                                                                        np.random.random(size=200)]
+    illuminator_dict[MetadataDeviceTags.LASER_ENERGY_PROFILE.tag] = np.asarray([np.random.random(size=200),
+                                                                     np.random.random(size=200)])
+    illuminator_dict[MetadataDeviceTags.LASER_STABILITY_PROFILE.tag] = np.asarray([np.random.random(size=200),
+                                                                        np.random.random(size=200)])
     illuminator_dict[MetadataDeviceTags.PULSE_WIDTH.tag] = 0.00000012
-    illuminator_dict[MetadataDeviceTags.BEAM_INTENSITY_PROFILE.tag] = [np.random.random(size=(200, 3)),
-                                                                     np.random.random(size=200)]
+    illuminator_dict[MetadataDeviceTags.BEAM_INTENSITY_PROFILE.tag] = np.random.random(size=(200, 4))
     illuminator_dict[MetadataDeviceTags.BEAM_INTENSITY_PROFILE_DISTANCE.tag] = 1337.4217
     illuminator_dict[MetadataDeviceTags.BEAM_DIVERGENCE_ANGLES.tag] = np.deg2rad(np.random.random() * 40)
     return illuminator_dict
@@ -113,13 +110,13 @@ def create_random_detection_element(dim_x=None, dim_y=None, dim_z=None):
         [np.random.random() * dim_x - dim_x / 2,
          np.random.random() * dim_y - dim_y / 2,
          np.random.random() * dim_z - dim_z / 2])
-    detector_dict[MetadataDeviceTags.DETECTOR_SHAPE.tag] = [[0.0001,
+    detector_dict[MetadataDeviceTags.DETECTOR_SHAPE.tag] = np.asarray([[0.0001,
                                                                        0.0001,
-                                                                       0.0001]]
-    detector_dict[MetadataDeviceTags.FREQUENCY_RESPONSE.tag] = [np.random.random(size=200),
-                                                                     np.random.random(size=200)]
-    detector_dict[MetadataDeviceTags.ANGULAR_RESPONSE.tag] = [np.random.random(size=200),
-                                                                     np.random.random(size=200)]
+                                                                       0.0001]])
+    detector_dict[MetadataDeviceTags.FREQUENCY_RESPONSE.tag] = np.asarray([np.random.random(size=200),
+                                                                           np.random.random(size=200)])
+    detector_dict[MetadataDeviceTags.ANGULAR_RESPONSE.tag] = np.asarray([np.random.random(size=200),
+                                                                         np.random.random(size=200)])
     return detector_dict
 
 
