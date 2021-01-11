@@ -71,9 +71,7 @@ class LOLFileConverter(BaseAdapter):
         self.scanIllumSwitch = scanIllumSwitch # Check if the illuminators were fixed or scanned with the array ("Scanned" or "Fixed")
         self.wavelength = np.asarray([wavelength]) # wavelengths used for the scan. np.ndarray
         self.fixed_illum_file_path = fixed_illum_file_path # if fixed illuminators, link to .m or .h5 file with positions
-        super().__init__() 
-        
-        
+        super().__init__()
 
     def generate_binary_data(self) -> np.ndarray:
         import pandas as pd
@@ -101,8 +99,6 @@ class LOLFileConverter(BaseAdapter):
         # device_creator.set_general_information(uuid="97cc5c0d-2a83-4935-9820-2aa2161ff703",
         #                                        fov=np.asarray([-0.025, 0.025, 0.435, 0.485, -20, 30]), 
         #                                        illumination_elements = self.numIllum*np.shape(illum_positions)[2], detection_elements = 64*np.shape(all_positions)[2])
-
-
         
         #Add detector elements, looping through all elements at each scan position
         for scan_position in range(np.shape(all_positions)[2]):
