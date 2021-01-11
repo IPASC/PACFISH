@@ -66,11 +66,11 @@ class DKFZCAMIExperimentalSystemNrrdFileConverter(BaseAdapter):
             detection_element_creator = DetectionElementCreator()
             detection_element_creator.set_detector_position(np.asarray([0, cur_y_position, 0]))
             detection_element_creator.set_detector_orientation(np.asarray([0, 0, 1]))
-            detection_element_creator.set_detector_shape([[0.0003]])
-            detection_element_creator.set_frequency_response([np.linspace(700, 900, 100),
-                                                                       np.ones(100)])
-            detection_element_creator.set_angular_response([np.linspace(700, 900, 100),
-                                                                     np.ones(100)])
+            detection_element_creator.set_detector_shape(np.asarray([[0.0003]]))
+            detection_element_creator.set_frequency_response(np.asarray([np.linspace(700, 900, 100),
+                                                                         np.ones(100)]))
+            detection_element_creator.set_angular_response(np.asarray([np.linspace(700, 900, 100),
+                                                                       np.ones(100)]))
 
             device_creator.add_detection_element("detection_element_" + str(y_idx),
                                                  detection_element_creator.get_dictionary())
@@ -85,12 +85,12 @@ class DKFZCAMIExperimentalSystemNrrdFileConverter(BaseAdapter):
             elif y_idx == 1:
                 illumination_element_creator.set_illuminator_position(np.asarray([-0.0083, 0.0192, -0.001]))
                 illumination_element_creator.set_illuminator_orientation(np.asarray([0, 0.383972, 0]))
-            illumination_element_creator.set_illuminator_shape([[0.0003]])
+            illumination_element_creator.set_illuminator_shape(np.asarray([[0.0003]]))
 
-            illumination_element_creator.set_laser_energy_profile([np.linspace(700, 900, 100),
-                                                                            np.ones(100)])
-            illumination_element_creator.set_laser_stability_profile([np.linspace(700, 900, 100),
-                                                                               np.ones(100)])
+            illumination_element_creator.set_laser_energy_profile(np.asarray([np.linspace(700, 900, 100),
+                                                                            np.ones(100)]))
+            illumination_element_creator.set_laser_stability_profile(np.asarray([np.linspace(700, 900, 100),
+                                                                               np.ones(100)]))
             illumination_element_creator.set_pulse_width(7e-9)
             device_creator.add_illumination_element("illumination_element_" + str(y_idx),
                                                     illumination_element_creator.get_dictionary())
@@ -107,7 +107,7 @@ class DKFZCAMIExperimentalSystemNrrdFileConverter(BaseAdapter):
         elif metadata_tag == MetadataAcquisitionTags.ACOUSTIC_COUPLING_AGENT:
             return "Water"
         elif metadata_tag == MetadataAcquisitionTags.ACQUISITION_OPTICAL_WAVELENGTHS:
-            return [700]
+            return np.asarray([700])
         elif metadata_tag == MetadataAcquisitionTags.COMPRESSION:
             return "None"
         elif metadata_tag == MetadataAcquisitionTags.DIMENSIONALITY:
