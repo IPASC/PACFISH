@@ -58,7 +58,7 @@ class DKFZCAMIExperimentalSystemNrrdFileConverter(BaseAdapter):
         device_creator = DeviceMetaDataCreator()
 
         device_creator.set_general_information(uuid="c771111c-36ba-425d-9f53-84b8ff092059",
-                                               fov=np.asarray([0, 0.0384, 0.0384]))
+                                               fov=np.asarray([0, 0, 0, 0.0384, 0, 0.0384]))
 
         start_y_position = 0.00015
         for y_idx in range(128):
@@ -66,7 +66,7 @@ class DKFZCAMIExperimentalSystemNrrdFileConverter(BaseAdapter):
             detection_element_creator = DetectionElementCreator()
             detection_element_creator.set_detector_position(np.asarray([0, cur_y_position, 0]))
             detection_element_creator.set_detector_orientation(np.asarray([0, 0, 1]))
-            detection_element_creator.set_detector_shape(np.asarray([[0.0003]]))
+            detection_element_creator.set_detector_shape([[0.0003]])
             detection_element_creator.set_frequency_response([np.linspace(700, 900, 100),
                                                                        np.ones(100)])
             detection_element_creator.set_angular_response([np.linspace(700, 900, 100),
@@ -85,7 +85,7 @@ class DKFZCAMIExperimentalSystemNrrdFileConverter(BaseAdapter):
             elif y_idx == 1:
                 illumination_element_creator.set_illuminator_position(np.asarray([-0.0083, 0.0192, -0.001]))
                 illumination_element_creator.set_illuminator_orientation(np.asarray([0, 0.383972, 0]))
-            illumination_element_creator.set_illuminator_shape(np.asarray([[0.0003]]))
+            illumination_element_creator.set_illuminator_shape([[0.0003]])
 
             illumination_element_creator.set_laser_energy_profile([np.linspace(700, 900, 100),
                                                                             np.ones(100)])
@@ -107,7 +107,7 @@ class DKFZCAMIExperimentalSystemNrrdFileConverter(BaseAdapter):
         elif metadata_tag == MetadataAcquisitionTags.ACOUSTIC_COUPLING_AGENT:
             return "Water"
         elif metadata_tag == MetadataAcquisitionTags.ACQUISITION_OPTICAL_WAVELENGTHS:
-            return np.asarray([700])
+            return [700]
         elif metadata_tag == MetadataAcquisitionTags.COMPRESSION:
             return "None"
         elif metadata_tag == MetadataAcquisitionTags.DIMENSIONALITY:

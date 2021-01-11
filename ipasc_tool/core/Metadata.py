@@ -183,6 +183,34 @@ class NDimensionalNumpyArray(MetaDatum):
         return len(np.shape(value)) == self.expected_array_dimension
 
 
+class NDimensionalNumpyArrayWithMElements(MetaDatum):
+    def __init__(self, tag, mandatory, dtype, unit=Units.NO_UNIT, expected_array_dimension=1,
+                 elements_per_dimension=None):
+        super().__init__(tag, mandatory, dtype, unit)
+        self.expected_array_dimension = expected_array_dimension
+        self.elements_per_dimension = elements_per_dimension
+
+    def evaluate_value_range(self, value) -> bool:
+        if value is None:
+            return False
+
+        if not isinstance(value, self.dtype):
+            raise TypeError("The given value of", self.tag, "was not of the expected data type. Expected ", self.dtype, "but was",
+                            type(value).__name__)
+        if not isinstance(value, np.ndarray):
+            raise TypeError("A N-Dimensional array must be of type numpy.ndarray, but was", type(value).__name__)
+
+        num_dimensions_correct = len(np.shape(value)) == self.expected_array_dimension
+        dimension_elements_correct = True
+        if self.elements_per_dimension is not None:
+            if len(np.shape(value)) != len(self.elements_per_dimension):
+                dimension_elements_correct = False
+            else:
+                dimension_elements_correct = False not in [val == self.elements_per_dimension[idx] for idx, val in enumerate(np.shape(value))]
+
+        return num_dimensions_correct and dimension_elements_correct
+
+
 class NonNegativeNumber(MetaDatum):
     def __init__(self, tag, mandatory, dtype, unit=Units.NO_UNIT):
         super().__init__(tag, mandatory, dtype, unit)
@@ -228,8 +256,8 @@ class MetadataDeviceTags:
     GENERAL = UnconstrainedMetaDatum("general", True, dict)
     ILLUMINATORS = UnconstrainedMetaDatum("illuminators", True, dict)
     DETECTORS = UnconstrainedMetaDatum("detectors", True, dict)
-    FIELD_OF_VIEW = NDimensionalNumpyArray("field_of_view", False, np.ndarray, Units.METERS,
-                                           expected_array_dimension=1)
+    FIELD_OF_VIEW = NDimensionalNumpyArrayWithMElements("field_of_view", False, np.ndarray, Units.METERS,
+                                                        expected_array_dimension=1, elements_per_dimension=[6])
     NUMBER_OF_ILLUMINATION_ELEMENTS = NonNegativeWholeNumber("num_illuminators", False, int, Units.DIMENSIONLESS_UNIT)
     NUMBER_OF_DETECTION_ELEMENTS = NonNegativeWholeNumber("num_detectors", False, int, Units.DIMENSIONLESS_UNIT)
 

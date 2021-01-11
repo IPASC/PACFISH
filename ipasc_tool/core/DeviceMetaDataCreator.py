@@ -54,7 +54,7 @@ class IlluminationElementCreator(object):
         """
         self.illuminator_element_dict[MetadataDeviceTags.ILLUMINATOR_ORIENTATION.tag] = orientation
 
-    def set_illuminator_shape(self, shape: np.ndarray):
+    def set_illuminator_shape(self, shape: list):
         """
         :param shape: is an array of three float values that describe the shape of the illuminator in the
                     x1, x2, and x3 direction.

@@ -36,7 +36,7 @@ from ipasc_tool.api.adapters.DKFZ_CAMI_Experimental_System_Nrrd_File_Converter i
 import matplotlib.pylab as plt
 from ipasc_tool import write_data
 from ipasc_tool import quality_check_pa_data
-from examples.visualize_device import visualize_device
+from ipasc_examples.visualize_device import visualize_device
 
 URL = "http://mitk.org/download/demos/PhotonicsWest2018/demoDataPhantomPA.nrrd"
 
