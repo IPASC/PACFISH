@@ -54,7 +54,7 @@ class IlluminationElementCreator(object):
         """
         self.illuminator_element_dict[MetadataDeviceTags.ILLUMINATOR_ORIENTATION.tag] = orientation
 
-    def set_illuminator_shape(self, shape: list):
+    def set_illuminator_shape(self, shape: np.ndarray):
         """
         :param shape: is an array of three float values that describe the shape of the illuminator in the
                     x1, x2, and x3 direction.
@@ -143,7 +143,7 @@ class DetectionElementCreator(object):
         """
         self.detection_element_dict[MetadataDeviceTags.DETECTOR_ORIENTATION.tag] = orientation
 
-    def set_detector_shape(self, size: list):
+    def set_detector_shape(self, size: np.ndarray):
         """
         :param size: a three element array [x1, x2, x3] describing the extent of the detector size in x1, x2, and x3 direction.
                     The units can be found in MetadataDeviceTags.DETECTOR_SIZE.unit.

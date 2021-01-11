@@ -66,7 +66,9 @@ class DKFZCAMIExperimentalSystemNrrdFileConverter(BaseAdapter):
             detection_element_creator = DetectionElementCreator()
             detection_element_creator.set_detector_position(np.asarray([0, cur_y_position, 0]))
             detection_element_creator.set_detector_orientation(np.asarray([0, 0, 1]))
-            detection_element_creator.set_detector_shape(np.asarray([[0.0003]]))
+            detection_element_creator.set_detector_shape(np.asarray([[-0.00015, -0.00015, 0], [-0.00015, 0.00015, 0],
+                                                                     [0.00015, 0.00015, 0], [0.00015, -0.00015, 0],
+                                                                     [-0.00015, -0.00015, 0]]))
             detection_element_creator.set_frequency_response(np.asarray([np.linspace(700, 900, 100),
                                                                          np.ones(100)]))
             detection_element_creator.set_angular_response(np.asarray([np.linspace(700, 900, 100),
@@ -85,7 +87,8 @@ class DKFZCAMIExperimentalSystemNrrdFileConverter(BaseAdapter):
             elif y_idx == 1:
                 illumination_element_creator.set_illuminator_position(np.asarray([-0.0083, 0.0192, -0.001]))
                 illumination_element_creator.set_illuminator_orientation(np.asarray([0, 0.383972, 0]))
-            illumination_element_creator.set_illuminator_shape(np.asarray([[0.0003]]))
+            illumination_element_creator.set_illuminator_shape(np.asarray([[0, -0.01225, 0], [0, 0.01225, 0],
+                                                                           [0, -0.01225, 0]]))
 
             illumination_element_creator.set_laser_energy_profile(np.asarray([np.linspace(700, 900, 100),
                                                                             np.ones(100)]))

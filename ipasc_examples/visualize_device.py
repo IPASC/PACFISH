@@ -53,16 +53,18 @@ def add_xz_plane(device_dictionary: dict, mins, maxs):
     for detector in device_dictionary["detectors"]:
         position = device_dictionary["detectors"][detector][MetadataDeviceTags.DETECTOR_POSITION.tag]
         shape = np.asarray(device_dictionary["detectors"][detector][MetadataDeviceTags.DETECTOR_SHAPE.tag])
-        ax1.add_patch(Rectangle((position[0]-shape[0]/2, position[2]-shape[0]/2), shape[0],
-                                shape[0], color="blue", alpha=0.5))
+
+        projected_poygon = np.asarray([[position[0] + shp[0], position[2] + shp[2]] for shp in shape])
+        ax1.add_patch(Polygon(projected_poygon, color="blue", alpha=0.5, linewidth=1))
 
     for illuminator in device_dictionary["illuminators"]:
         position = device_dictionary["illuminators"][illuminator][MetadataDeviceTags.ILLUMINATOR_POSITION.tag]
         orientation = device_dictionary["illuminators"][illuminator][MetadataDeviceTags.ILLUMINATOR_ORIENTATION.tag]
         divergence = device_dictionary["illuminators"][illuminator][MetadataDeviceTags.BEAM_DIVERGENCE_ANGLES.tag]
         shape = np.asarray(device_dictionary["illuminators"][illuminator][MetadataDeviceTags.ILLUMINATOR_SHAPE.tag])
-        ax1.add_patch(Rectangle((position[0] - shape[0] / 2, position[2] - shape[0] / 2), shape[0],
-                                shape[0], color="red", alpha=0.5))
+        projected_poygon = np.asarray([[position[0] + shp[0], position[2] + shp[2]] for shp in shape])
+        ax1.add_patch(Polygon(projected_poygon, color="red", alpha=0.5, linewidth=1))
+
         # length = 0.01
         # x_middle = position[0] + length * np.sin(orientation[1])
         # z_middle = position[2] + length * np.cos(orientation[1])
@@ -82,7 +84,7 @@ def add_xz_plane(device_dictionary: dict, mins, maxs):
 
 
     ax1.add_patch(
-        Rectangle((fov[0], fov[4]), fov[1], fov[5], color="green", fill=False, label="Field of View"))
+        Rectangle((fov[0], fov[4]), -fov[0] + fov[1], -fov[4] + fov[5], color="green", fill=False, label="Field of View"))
 
 
 def add_xy_plane(device_dictionary: dict, mins, maxs):
@@ -95,21 +97,21 @@ def add_xy_plane(device_dictionary: dict, mins, maxs):
 
     for detector in device_dictionary["detectors"]:
         position = device_dictionary["detectors"][detector][MetadataDeviceTags.DETECTOR_POSITION.tag]
-        sizes = np.asarray(device_dictionary["detectors"][detector][MetadataDeviceTags.DETECTOR_SHAPE.tag])
-        ax1.add_patch(Rectangle((position[0] - sizes[0] / 2, position[1] - sizes[0] / 2), sizes[0],
-                                sizes[0], color="blue", alpha=0.5))
+        shape = np.asarray(device_dictionary["detectors"][detector][MetadataDeviceTags.DETECTOR_SHAPE.tag])
+        projected_poygon = np.asarray([[position[0] + shp[0], position[1] + shp[1]] for shp in shape])
+        ax1.add_patch(Polygon(projected_poygon, color="blue", alpha=0.5))
 
     for illuminator in device_dictionary["illuminators"]:
         position = device_dictionary["illuminators"][illuminator][MetadataDeviceTags.ILLUMINATOR_POSITION.tag]
-        sizes = np.asarray(device_dictionary["illuminators"][illuminator][MetadataDeviceTags.ILLUMINATOR_SHAPE.tag])
-        ax1.add_patch(Rectangle((position[0] - sizes[0] / 2, position[1] - sizes[0] / 2), sizes[0],
-                                sizes[0], color="red", alpha=0.5))
+        shape = np.asarray(device_dictionary["illuminators"][illuminator][MetadataDeviceTags.ILLUMINATOR_SHAPE.tag])
+        projected_poygon = np.asarray([[position[0] + shp[0], position[1] + shp[1]] for shp in shape])
+        ax1.add_patch(Polygon(projected_poygon, color="red", alpha=0.5))
 
     ax1.scatter(None, None, color="blue", marker="x", label="Detector Element")
     ax1.scatter(None, None, color="red", marker="x", label="Illumination Element")
 
     ax1.add_patch(
-        Rectangle((fov[0], fov[2]), fov[1], fov[3], color="green", fill=False, label="Field of View"))
+        Rectangle((fov[0], fov[2]), -fov[0] + fov[1], -fov[2] + fov[3], color="green", fill=False, label="Field of View"))
 
 
 def add_yz_plane(device_dictionary: dict, mins, maxs):
@@ -123,20 +125,21 @@ def add_yz_plane(device_dictionary: dict, mins, maxs):
     for detector in device_dictionary["detectors"]:
         position = device_dictionary["detectors"][detector][MetadataDeviceTags.DETECTOR_POSITION.tag]
         shape = np.asarray(device_dictionary["detectors"][detector][MetadataDeviceTags.DETECTOR_SHAPE.tag])
-        ax1.add_patch(Rectangle((position[1] - shape[0] / 2, position[2] - shape[0] / 2), shape[0],
-                                shape[0], color="blue", alpha=0.5))
+
+        projected_poygon = np.asarray([[position[1] + shp[1], position[2] + shp[2]] for shp in shape])
+        ax1.add_patch(Polygon(projected_poygon, color="blue", alpha=0.5))
 
     for illuminator in device_dictionary["illuminators"]:
         position = device_dictionary["illuminators"][illuminator][MetadataDeviceTags.ILLUMINATOR_POSITION.tag]
         shape = np.asarray(device_dictionary["illuminators"][illuminator][MetadataDeviceTags.ILLUMINATOR_SHAPE.tag])
-        ax1.add_patch(Rectangle((position[1] - shape[0] / 2, position[2] - shape[0] / 2), shape[0],
-                                shape[0], color="red", alpha=0.5))
+        projected_poygon = np.asarray([[position[1] + shp[1], position[2] + shp[2]] for shp in shape])
+        ax1.add_patch(Polygon(projected_poygon, color="red", alpha=0.5))
 
     ax1.scatter(None, None, color="blue", marker="x", label="Detector Element")
     ax1.scatter(None, None, color="red", marker="x", label="Illumination Element")
 
     ax1.add_patch(
-        Rectangle((fov[2], fov[4]), fov[3], fov[5], color="green", fill=False, label="Field of View"))
+        Rectangle((fov[2], fov[4]), -fov[2] + fov[3], -fov[4] + fov[5], color="green", fill=False, label="Field of View"))
 
 
 def visualize_device(device_dictionary: dict, save_path: str = None):

@@ -69,7 +69,7 @@ class LOLFileConverter(BaseAdapter):
         self.end_remove = end_remove # how many points at the end of each acquisition to zero?
         self.numIllum = numIllum # how many physical illuminators were used?
         self.scanIllumSwitch = scanIllumSwitch # Check if the illuminators were fixed or scanned with the array ("Scanned" or "Fixed")
-        self.wavelength = wavelength # wavelengths used for the scan. np.ndarray
+        self.wavelength = np.asarray([wavelength]) # wavelengths used for the scan. np.ndarray
         self.fixed_illum_file_path = fixed_illum_file_path # if fixed illuminators, link to .m or .h5 file with positions
         super().__init__() 
         
@@ -96,7 +96,7 @@ class LOLFileConverter(BaseAdapter):
 
         #add general device meta, FOV is approximate
         device_creator.set_general_information(uuid="97cc5c0d-2a83-4935-9820-2aa2161ff703",
-                                               fov=np.asarray([-0.025, 0.025, 0.435, 0.485, -20, 30]))
+                                               fov=np.asarray([-0.025, 0.025, 0.435, 0.485, -0.020, 0.020]))
         # Waiting for base adapter to be updated
         # device_creator.set_general_information(uuid="97cc5c0d-2a83-4935-9820-2aa2161ff703",
         #                                        fov=np.asarray([-0.025, 0.025, 0.435, 0.485, -20, 30]), 
@@ -116,7 +116,9 @@ class LOLFileConverter(BaseAdapter):
                 
                 #Note needs to be changed to detector_shape once the base adapter is updated
                 
-                detection_element_creator.set_detector_shape([0.007]) # assume 14mm elements, approx.
+                detection_element_creator.set_detector_shape(np.asarray([[-0.0035, -0.0035, 0], [-0.0035, 0.0035, 0],
+                                                                         [0.0035, 0.0035, 0], [0.0035, -0.0035, 0],
+                                                                        [-0.0035, -0.0035, 0]])) # assume 14mm elements, approx.
                 #Add once freq response confirmed
                 # detection_element_creator.set_frequency_response(np.stack([np.linspace(700, 900, 100),
                 #                                                            np.ones(100)]))

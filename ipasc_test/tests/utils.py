@@ -110,9 +110,16 @@ def create_random_detection_element(dim_x=None, dim_y=None, dim_z=None):
         [np.random.random() * dim_x - dim_x / 2,
          np.random.random() * dim_y - dim_y / 2,
          np.random.random() * dim_z - dim_z / 2])
-    detector_dict[MetadataDeviceTags.DETECTOR_SHAPE.tag] = np.asarray([[0.0001,
-                                                                       0.0001,
-                                                                       0.0001]])
+
+    detector_dict[MetadataDeviceTags.DETECTOR_SHAPE.tag] = np.asarray([[0.0001, 0.0001, 0.0001],
+                                                                       [0.0001, 0.0001, -0.0001],
+                                                                       [0.0001, -0.0001, -0.0001],
+                                                                       [-0.0001, 0.0001, 0.0001],
+                                                                       [-0.0001, 0.0001, -0.0001],
+                                                                       [-0.0001, -0.0001, 0.0001],
+                                                                       [-0.0001, -0.0001, -0.0001],
+                                                                       [0.0001, 0.0001, 0.0001]])
+
     detector_dict[MetadataDeviceTags.FREQUENCY_RESPONSE.tag] = np.asarray([np.random.random(size=200),
                                                                            np.random.random(size=200)])
     detector_dict[MetadataDeviceTags.ANGULAR_RESPONSE.tag] = np.asarray([np.random.random(size=200),
