@@ -27,7 +27,18 @@
 # CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+"""
+Main interface to load raw files and detector positions
+This version is for IPASC adapter
 
+Lawson Optics Lab
+Lawson Health Research Institute
+Western University
+London, ON, Canada
+
+Created by: Lawrence Yip
+Last Modified 2021-04-01
+"""
 # import numpy as np
 from ipasc_tool.api.adapters.LawsonOptics import \
     LawsonOpticsLab_360_System_File_Converter
@@ -38,13 +49,6 @@ from ipasc_tool import quality_check_pa_data
 from pathlib import Path
 import os
 
-# URL = "http://mitk.org/download/demos/PhotonicsWest2018/demoDataPhantomPA.nrrd"
-
-# if not os.path.exists('demodata.nrrd'):
-#     r = requests.get(URL, allow_redirects=True)
-#     with open('demodata.nrrd', 'wb') as demo_file:
-#         demo_file.write(r.content)
-
 filepath = os.path.join("C:/Users/jgroe/Downloads", "lawrence_data/")
 
 demo_file_path = filepath + "/LOL_demo"
@@ -53,7 +57,8 @@ home_pos_path = demo_file_path + "/Transducer_Position_Home.mat"
 
 converter = LawsonOpticsLab_360_System_File_Converter.LOLFileConverter(demo_file_path, log_file_path, home_pos_path,
                              [680], signal_inv=True, left_shift=12, thresholding=0, photodiode=65, CheckAveraging=True,
-                             end_remove=80, numIllum=2, scanIllumSwitch="Scanned", fixed_illum_file_path=None)
+                             end_remove=80, numIllum=2, Method = 'trans', fluence_correc = False, 
+                             scanIllumSwitch="Scanned", fixed_illum_file_path=None)
 
 pa_data = converter.generate_pa_data()
 
@@ -75,8 +80,3 @@ plt.show()
 plt.close()
 
 visualize_device(pa_data.meta_data_device)
-
-# if os.path.exists("logfile.md"):
-#     os.remove("logfile.md")
-# #if os.path.exists("demodata.hdf5"):
-# #    os.remove("demodata.hdf5")

@@ -40,7 +40,7 @@ Western University
 London, ON, Canada
 
 Created by: Lawrence Yip
-Last Modified 2020-10-05
+Last Modified 2021-04-01
 """
 
 
@@ -156,7 +156,7 @@ def DAQ128settings2RF(DAQ128settings, CheckAveraging):
         
     return RFdata
 
-def import_and_process_binary(raw_data_folder_path, num_scans, signal_inv=True, left_shift=12,
+def import_and_process_binary(raw_data_folder_path, num_scans, signal_inv=False, left_shift=12,
                  thresholding=0, photodiode=65, Averaging=True, end_remove=80, fluence_correc=False):
     
     #Determine initial values for sample length, number of channels, etc
@@ -174,7 +174,7 @@ def import_and_process_binary(raw_data_folder_path, num_scans, signal_inv=True, 
     reverseGain[photodiode,:] = 1
     
     #Load the signals from the binary file
-    AverageFluence = None
+    # AverageFluence = None
     do_not_fluence_correct = False
     for i in range(num_scans):
         count = str(i)
@@ -197,7 +197,6 @@ def import_and_process_binary(raw_data_folder_path, num_scans, signal_inv=True, 
         # Otherwise all the acquisitions will be normalized to a single photodiode measurement
         if Averaging == False and initial_values.get(0, {}).get("NumTriggers") != 1:
             do_not_fluence_correct = True
-            break
         else:
             #Remove last measurements (spikes)
             RFdata[(-end_remove):-1,:] = 0;    
@@ -209,18 +208,23 @@ def import_and_process_binary(raw_data_folder_path, num_scans, signal_inv=True, 
         if thresholding != 0:
             RFdata[abs(RFdata)<thresholding] = 0
             
-        if fluence_correc == True and do_not_fluence_correct != False:
-            if AverageFluence == None:
-                AverageFluence = np.max(np.mean(initial_values.get(0, {}).get("DataPoints").get(photodiode)))                
-            ShotPower = np.max(RFdata[0:(initial_values.get(0, {}).get("NumPoints")*256/initial_values.get(0, {}).get("NumTriggers")), photodiode])
-            ShotRatio = AverageFluence/ShotPower
-            RFadjusted = RFdata*ShotRatio
-            RFdata = RFadjusted
+        if fluence_correc == True and do_not_fluence_correct == False:
+            # Old method for averaging. New method simply divides by PD peak
+            # if AverageFluence == None:
+            #     AverageFluence = np.max(np.mean(initial_values.get(0, {}).get("DataPoints").get(photodiode)))                
+            # ShotPower = np.max(RFdata[0:(initial_values.get(0, {}).get("NumPoints")*256/initial_values.get(0, {}).get("NumTriggers")), photodiode])
+            # ShotRatio = AverageFluence/ShotPower
+            # RFadjusted = RFdata*ShotRatio
+            # RFdata = RFadjusted
+            RFdata = RFdata/np.max(RFdata[:, photodiode])
+
+            
+            
         imData[i,:,:] = RFdata
         
     return imData
 
-def load_scan_log(scan_log_file_path, homePath, numIllum = 2):
+def load_scan_log(scan_log_file_path, homePath, numIllum = 0, R = 179.25, Method = "trans"):
     """
     
 
@@ -237,7 +241,7 @@ def load_scan_log(scan_log_file_path, homePath, numIllum = 2):
 
     """
     scan_positions = pd.read_csv(scan_log_file_path) # Load log file
-    R = 254.2772 # Set length of arm between end effector and CoR for 360array
+    # R = 254.2772 # Set length of arm between end effector and CoR for 360array
     import datetime
     time_taken = sum(scan_positions["time taken"[:]])
     time_taken = str(datetime.timedelta(seconds=time_taken))
@@ -251,64 +255,104 @@ def load_scan_log(scan_log_file_path, homePath, numIllum = 2):
                                              pd.Series.to_numpy(scan_positions["z"[:]]), pd.Series.to_numpy(scan_positions["u"[:]]),
                                              pd.Series.to_numpy(scan_positions["v"[:]]), x, y, z))
     numScans = len(scan_positions_abbrev)
-    transPositionsAllScans = np.zeros((64,3,numScans))
-    illumPositionsAllScans = np.zeros((numIllum,3,numScans))
+    if Method == "trans":
+        try:
+            import tables
+            file = tables.open_file(homePath)
+            transducer_pos_home = file.root.transducer_pos_home[:]
+        except:
+            import scipy.io as sio
+            homepos = sio.loadmat(homePath)
+            transducer_pos_home = homepos.get("transducer_pos_home")
+        numDet = len(transducer_pos_home)
+    elif Method == "Rascevska":
+        numDet = 8
+        
+    
+    transPositionsAllScans = np.zeros((numDet,3,numScans))
+    if numIllum != 0:
+        illumPositionsAllScans = np.zeros((numIllum,3,numScans))
     for i in range(numScans):
         transPositionsAllScans[:,:,i] = TransducerRotTrans(scan_positions_abbrev[i,0], scan_positions_abbrev[i,1], scan_positions_abbrev[i,2],
-                                                           scan_positions_abbrev[i,3], scan_positions_abbrev[i,4], R, homePath)
-        illumPositionsAllScans[:, :, i] = TransducerRotTrans(scan_positions_abbrev[i,0], scan_positions_abbrev[i,1], scan_positions_abbrev[i,2],
-                                                           scan_positions_abbrev[i,3], scan_positions_abbrev[i,4], R, homePath, switch ="illum")
-    core_array = np.zeros((64,3,len(scan_positions_abbrev)))
+                                                           scan_positions_abbrev[i,3], scan_positions_abbrev[i,4], R, homePath, Method)
+        if numIllum != 0:
+            illumPositionsAllScans[:, :, i] = TransducerRotTrans(scan_positions_abbrev[i,0], scan_positions_abbrev[i,1], scan_positions_abbrev[i,2],
+                                                           scan_positions_abbrev[i,3], scan_positions_abbrev[i,4], R, homePath, Method ="illum")
+    core_array = np.zeros((numDet,3,len(scan_positions_abbrev)))
     for j in range(len(scan_positions_abbrev)):
-        cor_array_temp = np.reshape(np.tile(scan_positions_abbrev[j, 5:8],64),[3,-1],order="F")
+        cor_array_temp = np.reshape(np.tile(scan_positions_abbrev[j, 5:8],numDet),[3,-1],order="F")
         core_array[:,:,j] = cor_array_temp.T
     transPositionsAllScans = np.append(transPositionsAllScans, core_array,axis=1)
         
-    core_array_illum = np.zeros((numIllum,3,len(scan_positions_abbrev)))
-    for j in range(len(scan_positions_abbrev)):
-        cor_array_temp = np.reshape(np.tile(scan_positions_abbrev[j, 5:8],numIllum),[3,-1],order="F")
-        core_array_illum[:,:,j] = cor_array_temp.T
-    illumPositionsAllScans = np.append(illumPositionsAllScans, core_array_illum, axis=1)
-
-    return transPositionsAllScans, illumPositionsAllScans, time_taken
+    if numIllum != 0:
+        core_array_illum = np.zeros((numIllum,3,len(scan_positions_abbrev)))
+        for j in range(len(scan_positions_abbrev)):
+            cor_array_temp = np.reshape(np.tile(scan_positions_abbrev[j, 5:8],numIllum),[3,-1],order="F")
+            core_array_illum[:,:,j] = cor_array_temp.T
+        illumPositionsAllScans = np.append(illumPositionsAllScans, core_array_illum, axis=1)
+    
+    if numIllum != 0:
+        return transPositionsAllScans, illumPositionsAllScans, time_taken
+    else:
+        return transPositionsAllScans, time_taken
     
     
-def TransducerRotTrans(eff_x, eff_y, eff_z, eff_phi, eff_theta, R, homePath, switch = "trans"):
+def TransducerRotTrans(eff_x, eff_y, eff_z, eff_phi, eff_theta, R, homePath, Method = "trans"):
     """
-    %%version 1
+    %%version 3: 20210331
     Takes the log file coordinates (one at a time, so loop if you want this for multiple scan points), calculates the centre of rotation, and applies the appropriate rotations to match the transducer positions happening in the scan.
     """
-    x = eff_x - R*np.sin(np.radians(eff_theta))*np.cos(np.radians(eff_phi))
-    y = eff_y - R*np.sin(np.radians(eff_theta))*np.sin(np.radians(eff_phi))
-    z = eff_z - R*np.cos(np.radians(eff_theta))
-    centre_rot = np.array([[x, y, z]])
     
-    try:
-        import tables
-        file = tables.open_file(homePath)
-        if switch =="trans":
-            transducer_pos_home = file.root.transducer_pos_home[:]
-        elif switch =="illum":
-            transducer_pos_home = file.root.transducer_pos_home[:]
-        centre_rot_home = file.root.centre_rot_home[:]
-    except:
-        import scipy.io as sio
-        homepos = sio.loadmat(homePath)
-        if switch == "trans":
-            transducer_pos_home = homepos.get("transducer_pos_home")
-        elif switch == "illum":
-            transducer_pos_home = homepos.get("illumination_pos_home")
-        centre_rot_home = homepos.get("centre_rot_home")
-            
-    delta_cor = centre_rot - centre_rot_home
-    transducer_pos = transducer_pos_home + delta_cor
-    transducer_pos = np.transpose(transducer_pos)
-    u = [0, 0, 1]
-    transducer_desired_afterphi = AxelRot(transducer_pos, eff_phi, u, centre_rot) #Rotate points for phi, going through centre of rotation
-    u2 = np.squeeze(sph2cart(np.radians(eff_phi-90),0, 1)) #Create vector that is 90 deg from the current position of the array to set as rotation axis
-    transducer_desired_aftertheta = AxelRot(transducer_desired_afterphi, -eff_theta, u2, centre_rot)#Rotate points for theta, going through centre of rotation
-    transducer_pos_new = np.transpose(transducer_desired_aftertheta)
-    return transducer_pos_new
+    if Method == 'Rascevska':
+        x = eff_x - R*np.sin(np.radians(eff_theta))*np.cos(np.radians(eff_phi))
+        y = eff_y - R*np.sin(np.radians(eff_theta))*np.sin(np.radians(eff_phi))
+        z = eff_z - R*np.cos(np.radians(eff_theta))
+        centre_rot = np.array([[x, y, z]])
+        
+        z_tr = z + R - 125
+        transducer_pos = np.array([[x, y, z_tr]])
+        transducer_pos = np.repeat(transducer_pos, 8, axis =0)
+        transducer_pos = np.transpose(transducer_pos)
+        u = [0, 0, 1]
+        transducer_desired_afterphi = AxelRot(transducer_pos, eff_phi, u, centre_rot) #Rotate points for phi, going through centre of rotation
+        u2 = np.squeeze(sph2cart(np.radians(eff_phi-90),0, 1)) #Create vector that is 90 deg from the current position of the array to set as rotation axis
+        transducer_desired_aftertheta = AxelRot(transducer_desired_afterphi, -eff_theta, u2, centre_rot)#Rotate points for theta, going through centre of rotation
+        transducer_pos_new = np.transpose(transducer_desired_aftertheta)
+        return transducer_pos_new
+    
+    else:
+        x = eff_x - R*np.sin(np.radians(eff_theta))*np.cos(np.radians(eff_phi))
+        y = eff_y - R*np.sin(np.radians(eff_theta))*np.sin(np.radians(eff_phi))
+        z = eff_z - R*np.cos(np.radians(eff_theta))
+        centre_rot = np.array([[x, y, z]])
+        
+        try:
+            import tables
+            file = tables.open_file(homePath)
+            if Method =="trans":
+                transducer_pos_home = file.root.transducer_pos_home[:]
+            elif Method =="illum":
+                transducer_pos_home = file.root.transducer_pos_home[:]
+            centre_rot_home = file.root.centre_rot_home[:]
+        except:
+            import scipy.io as sio
+            homepos = sio.loadmat(homePath)
+            if Method == "trans":
+                transducer_pos_home = homepos.get("transducer_pos_home")
+            elif Method == "illum":
+                transducer_pos_home = homepos.get("illumination_pos_home")
+            centre_rot_home = homepos.get("centre_rot_home")
+                
+        delta_cor = centre_rot - centre_rot_home
+        transducer_pos = transducer_pos_home + delta_cor
+        transducer_pos = np.transpose(transducer_pos)
+        u = [0, 0, 1]
+        transducer_desired_afterphi = AxelRot(transducer_pos, eff_phi, u, centre_rot) #Rotate points for phi, going through centre of rotation
+        u2 = np.squeeze(sph2cart(np.radians(eff_phi-90),0, 1)) #Create vector that is 90 deg from the current position of the array to set as rotation axis
+        transducer_desired_aftertheta = AxelRot(transducer_desired_afterphi, -eff_theta, u2, centre_rot)#Rotate points for theta, going through centre of rotation
+        transducer_pos_new = np.transpose(transducer_desired_aftertheta)
+        return transducer_pos_new
+
     
 def sph2cart(azimuth, elevation, r):
     coselev = np.cos(elevation)
