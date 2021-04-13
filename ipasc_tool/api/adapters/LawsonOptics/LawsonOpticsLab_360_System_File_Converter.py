@@ -40,7 +40,7 @@ Western University
 London, ON, Canada
 
 Created by: Lawrence Yip
-Last Modified 2021-04-01
+Last Modified 2021-04-12
 """
 import numpy as np
 
@@ -55,8 +55,8 @@ from ipasc_tool.api.adapters.LawsonOptics import read_LOL_import_module as LOL
 class LOLFileConverter(BaseAdapter):
 
     def __init__(self, raw_data_folder_path, scan_log_file_path, homePath, wavelength, signal_inv=True, left_shift=12,
-                 thresholding=0, photodiode=65, CheckAveraging=True, end_remove=80, numIllum = 0, R = 179.25, Method = 'trans'
-                 fluence_correc = False, scanIllumSwitch = "Scanned", fixed_illum_file_path = None):
+                 thresholding=0, photodiode=65, CheckAveraging=True, end_remove=80, numIllum = 0, R = 179.25, Method = 'trans',
+                 fluence_correc = False, EffSamp = 0, scanIllumSwitch = "Scanned", fixed_illum_file_path = None):
        
         self.raw_data_folder_path = raw_data_folder_path #absolute path?
         self.scan_log_file_path = scan_log_file_path #absolute path? 
@@ -74,6 +74,7 @@ class LOLFileConverter(BaseAdapter):
         self.R = R # end-effector to centre of rotation/centre of array in mm
         self.fluence_correc = fluence_correc
         self.Method = Method
+        self.EffSamp = EffSamp
         super().__init__()
 
     def generate_binary_data(self) -> np.ndarray:
@@ -82,7 +83,7 @@ class LOLFileConverter(BaseAdapter):
         num_scans = scan_positions.shape[0] # Determine number of scans based on log file
         # Load data 
         RFdata = LOL.import_and_process_binary(self.raw_data_folder_path, num_scans, self.signal_inv, self.left_shift,
-                 self.thresholding, self.photodiode, self.CheckAveraging, self.end_remove, self.fluence_correc)
+                 self.thresholding, self.photodiode, self.CheckAveraging, self.end_remove, self.fluence_correc, self.EffSamp)
         RFdata = np.swapaxes(RFdata,1,2) # swap axes to make it easier to reshape
         RFdata = np.reshape(RFdata,(np.shape(RFdata)[0]*np.shape(RFdata)[1],-1),order = "C") # reshape to squash scan number and detectors into one dimension
         

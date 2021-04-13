@@ -40,7 +40,7 @@ Western University
 London, ON, Canada
 
 Created by: Lawrence Yip
-Last Modified 2021-04-01
+Last Modified 2021-04-12
 """
 
 
@@ -157,16 +157,22 @@ def DAQ128settings2RF(DAQ128settings, CheckAveraging):
     return RFdata
 
 def import_and_process_binary(raw_data_folder_path, num_scans, signal_inv=False, left_shift=12,
-                 thresholding=0, photodiode=65, Averaging=True, end_remove=80, fluence_correc=False):
+                 thresholding=0, photodiode=65, Averaging=True, end_remove=80, fluence_correc=False, EffSamp = 1):
     
     #Determine initial values for sample length, number of channels, etc
     _, initial_values, _ = importPAI128(Path(raw_data_folder_path, "00000.pv3"))
     
-    if Averaging == True:
+    if Averaging == True and EffSamp <= 1:
         imData = np.zeros((num_scans, np.int32(initial_values.get(0, {}).get("NumPoints")*256), 
                           initial_values.get(0, {}).get("NumChannels")*len(initial_values)), dtype = np.single, order = "F")
-    else:
+    elif Averaging == False and EffSamp <= 1:
         imData = np.zeros((num_scans, np.int32(initial_values.get(0, {}).get("NumPoints")*256*initial_values.get(0, {}).get("NumTriggers")), 
+                          initial_values.get(0, {}).get("NumChannels")*len(initial_values)), dtype = np.single, order = "F")
+    elif Averaging == True and EffSamp > 1:
+        imData = np.zeros((num_scans, np.int32((initial_values.get(0, {}).get("NumPoints")*256)/EffSamp), 
+                          initial_values.get(0, {}).get("NumChannels")*len(initial_values)), dtype = np.single, order = "F")
+    elif Averaging == False and EffSamp >1:
+        imData = np.zeros((num_scans, np.int32((initial_values.get(0, {}).get("NumPoints")*256*initial_values.get(0, {}).get("NumTriggers"))/EffSamp), 
                           initial_values.get(0, {}).get("NumChannels")*len(initial_values)), dtype = np.single, order = "F")
     
     #Template to flip the signals since our transducers are all inverted in polarity
@@ -218,7 +224,15 @@ def import_and_process_binary(raw_data_folder_path, num_scans, signal_inv=False,
             # RFdata = RFadjusted
             RFdata = RFdata/np.max(RFdata[:, photodiode])
 
-            
+        if EffSamp > 1:
+            RFdata_temp = np.zeros((np.int32(RFdata.shape[0]/EffSamp), RFdata.shape[1]))
+            for j in range (RFdata.shape[1]):
+                RFdata_single = RFdata[:,j]
+                RFdata_single = np.array(list([sum(RFdata_single[i:i+EffSamp])//EffSamp for i in range(0,len(RFdata_single),EffSamp)]))
+                # pa_data_temp[k,:,j] = pa_data_single
+                RFdata_temp[:,j] = RFdata_single
+                
+            RFdata = RFdata_temp
             
         imData[i,:,:] = RFdata
         

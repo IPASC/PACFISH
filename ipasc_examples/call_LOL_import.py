@@ -37,7 +37,7 @@ Western University
 London, ON, Canada
 
 Created by: Lawrence Yip
-Last Modified 2021-04-01
+Last Modified 2021-04-12
 """
 # import numpy as np
 from ipasc_tool.api.adapters.LawsonOptics import \
@@ -57,7 +57,7 @@ home_pos_path = demo_file_path + "/Transducer_Position_Home.mat"
 
 converter = LawsonOpticsLab_360_System_File_Converter.LOLFileConverter(demo_file_path, log_file_path, home_pos_path,
                              [680], signal_inv=True, left_shift=12, thresholding=0, photodiode=65, CheckAveraging=True,
-                             end_remove=80, numIllum=2, Method = 'trans', fluence_correc = False, 
+                             end_remove=80, numIllum=2, Method = 'trans', fluence_correc = False, EffSamp = 0, 
                              scanIllumSwitch="Scanned", fixed_illum_file_path=None)
 
 pa_data = converter.generate_pa_data()
