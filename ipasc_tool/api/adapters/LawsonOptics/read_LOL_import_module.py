@@ -40,7 +40,7 @@ Western University
 London, ON, Canada
 
 Created by: Lawrence Yip
-Last Modified 2021-04-12
+Last Modified 2021-04-30
 """
 
 
@@ -69,7 +69,7 @@ def importPAI128(raw_data_filename):
     DAQsettings : TYPE
         DESCRIPTION. all the data, metadata and raw data outputted
     tkdata : TYPE
-        DESCRIPTION. basically unused
+        DESCRIPTION. TrakSTAR data
 
     """
     def fread(fidint, nelements, dtype): #simulate Matlab fread, and squeeze if single elements read
@@ -118,8 +118,18 @@ def importPAI128(raw_data_filename):
     #Trakstar function, only used if Trakstar is connected, untested
     tkEnabled = fread(fid,1,np.int8)
     if tkEnabled != 0:
-        tkdatasize = fread(fid,1,np.int32)
-        tkdata = fread(fid,6,np.double)
+        tkNumSensors = fread(fid,1,np.uint8)
+        tkdata = []
+        tkdatasizerow = fread(fid,1,np.uint32)
+        tkdatasizecolumn = fread(fid,1,np.uint32)
+        # tkdata = fread(fid,6,np.double)
+        for tk in range(tkdatasizerow):
+            tkdata1 = fread(fid,tkdatasizecolumn,'double')
+            if np.size(tkdata) == 0:
+                tkdata = tkdata1
+            else:
+                tkdata = np.append([tkdata], [tkdata1], axis=0);
+            
     else:
         tkdata = []
         
@@ -160,7 +170,7 @@ def import_and_process_binary(raw_data_folder_path, num_scans, signal_inv=False,
                  thresholding=0, photodiode=65, Averaging=True, end_remove=80, fluence_correc=False, EffSamp = 1):
     
     #Determine initial values for sample length, number of channels, etc
-    _, initial_values, _ = importPAI128(Path(raw_data_folder_path, "00000.pv3"))
+    _, initial_values, tkdata_initial = importPAI128(Path(raw_data_folder_path, "00000.pv3"))
     
     if Averaging == True and EffSamp <= 1:
         imData = np.zeros((num_scans, np.int32(initial_values.get(0, {}).get("NumPoints")*256), 
@@ -179,13 +189,21 @@ def import_and_process_binary(raw_data_folder_path, num_scans, signal_inv=False,
     reverseGain = -1 * np.ones((initial_values.get(0, {}).get("NumChannels")*len(initial_values), 1),dtype = np.int, order = "F") 
     reverseGain[photodiode,:] = 1
     
+    if np.size(tkdata_initial) != 0:
+        tkdataEnable = 1
+    else:
+        tkdataEnable = 0
+        
+    if tkdataEnable ==1:
+        tkdata = np.zeros((np.shape(tkdata_initial)[0],np.shape(tkdata_initial)[1],num_scans),np.double,order='F')
+    
     #Load the signals from the binary file
     # AverageFluence = None
     do_not_fluence_correct = False
     for i in range(num_scans):
         count = str(i)
         S = Path(count.zfill(5)+".pv3")
-        _, DAQsettings, _ = importPAI128(Path(raw_data_folder_path,S))
+        _, DAQsettings, tkdata_temp = importPAI128(Path(raw_data_folder_path,S))
         RFdata = DAQ128settings2RF(DAQsettings,Averaging)
         
         #Apply inversion
@@ -235,8 +253,13 @@ def import_and_process_binary(raw_data_folder_path, num_scans, signal_inv=False,
             RFdata = RFdata_temp
             
         imData[i,:,:] = RFdata
-        
-    return imData
+        if tkdataEnable ==1:
+            tkdata[:,:,i] = tkdata_temp
+    
+    if tkdataEnable ==1:
+        return imData, tkdata
+    else:
+        return imData
 
 def load_scan_log(scan_log_file_path, homePath, numIllum = 0, R = 179.25, Method = "trans"):
     """
