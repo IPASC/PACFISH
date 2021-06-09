@@ -54,7 +54,7 @@ class MetaDatum(ABC):
     represented by an instance of this class.
     """
 
-    def __init__(self, tag: str, mandatory: bool, dtype: type, unit: str = Units.NO_UNIT):
+    def __init__(self, tag: str, mandatory: bool, dtype: (type, tuple), unit: str = Units.NO_UNIT):
         """
 
         :param tag:
@@ -195,7 +195,8 @@ class NDimensionalNumpyArrayWithMElements(MetaDatum):
             return False
 
         if not isinstance(value, self.dtype):
-            raise TypeError("The given value of", self.tag, "was not of the expected data type. Expected ", self.dtype, "but was",
+            raise TypeError("The given value of", self.tag, "was not of the expected data type. Expected ", self.dtype,
+                            "but was",
                             type(value).__name__)
         if not isinstance(value, np.ndarray):
             raise TypeError("A N-Dimensional array must be of type numpy.ndarray, but was", type(value).__name__)
@@ -206,7 +207,8 @@ class NDimensionalNumpyArrayWithMElements(MetaDatum):
             if len(np.shape(value)) != len(self.elements_per_dimension):
                 dimension_elements_correct = False
             else:
-                dimension_elements_correct = False not in [val == self.elements_per_dimension[idx] for idx, val in enumerate(np.shape(value))]
+                dimension_elements_correct = False not in [val == self.elements_per_dimension[idx] for idx, val in
+                                                           enumerate(np.shape(value))]
 
         return num_dimensions_correct and dimension_elements_correct
 
@@ -220,10 +222,9 @@ class NonNegativeNumber(MetaDatum):
             return False
 
         if not isinstance(value, self.dtype):
-            raise TypeError("The given value of", self.tag, "was not of the expected data type. Expected ", self.dtype, "but was",
+            raise TypeError("The given value of", self.tag, "was not of the expected data type. Expected ", self.dtype,
+                            "but was",
                             type(value).__name__)
-        if not isinstance(value, numbers.Number):
-            raise TypeError("Expected value of", self.tag, "to be a number, but was", type(value).__name__)
 
         return value >= 0.0
 
@@ -267,8 +268,9 @@ class MetadataDeviceTags:
                                                   expected_array_dimension=1)
     ILLUMINATOR_ORIENTATION = NDimensionalNumpyArray("illuminator_orientation", False, np.ndarray, Units.METERS,
                                                      expected_array_dimension=1)
-    ILLUMINATOR_SHAPE = NDimensionalNumpyArray("illuminator_shape", False, np.ndarray, Units.METERS,
-                                               expected_array_dimension=2)
+    ILLUMINATOR_GEOMETRY = UnconstrainedMetaDatum("illuminator_geometry", False, (float, np.float, np.ndarray, str),
+                                                  Units.METERS)
+    ILLUMINATOR_GEOMETRY_TYPE = UnconstrainedMetaDatum("illuminator_geometry_type", False, str, Units.METERS)
     WAVELENGTH_RANGE = NDimensionalNumpyArray("wavelength_range", False, np.ndarray, Units.METERS,
                                               expected_array_dimension=1)
     LASER_ENERGY_PROFILE = NDimensionalNumpyArray("laser_energy_profile", False, np.ndarray, Units.JOULES,
@@ -276,7 +278,8 @@ class MetadataDeviceTags:
     LASER_STABILITY_PROFILE = NDimensionalNumpyArray("laser_stability_profile", False, np.ndarray, Units.JOULES,
                                                      expected_array_dimension=2)
     PULSE_WIDTH = NonNegativeNumber("pulse_width", False, float, Units.SECONDS)
-    BEAM_INTENSITY_PROFILE = NDimensionalNumpyArray("beam_intensity_profile", False, np.ndarray, Units.DIMENSIONLESS_UNIT,
+    BEAM_INTENSITY_PROFILE = NDimensionalNumpyArray("beam_intensity_profile", False, np.ndarray,
+                                                    Units.DIMENSIONLESS_UNIT,
                                                     expected_array_dimension=2)
     BEAM_INTENSITY_PROFILE_DISTANCE = NonNegativeNumber("beam_intensity_profile_distance", False, float, Units.METERS)
     BEAM_DIVERGENCE_ANGLES = NumberWithUpperAndLowerLimit("beam_divergence_angles", False, float, Units.RADIANS,
@@ -288,8 +291,11 @@ class MetadataDeviceTags:
                                                expected_array_dimension=1)
     DETECTOR_ORIENTATION = NDimensionalNumpyArray("detector_orientation", False, np.ndarray, Units.METERS,
                                                   expected_array_dimension=1)
-    DETECTOR_SHAPE = NDimensionalNumpyArray("detector_shape", False, np.ndarray, Units.METERS,
-                                            expected_array_dimension=2)
+    DETECTOR_GEOMETRY = UnconstrainedMetaDatum("detector_geometry", False, (float, np.float, np.ndarray, str),
+                                               Units.METERS)
+
+    DETECTOR_GEOMETRY_TYPE = UnconstrainedMetaDatum("detector_geometry_type", False, str, Units.METERS)
+
     FREQUENCY_RESPONSE = NDimensionalNumpyArray("frequency_response", False, np.ndarray,
                                                 Units.HERTZ + " / " + Units.DIMENSIONLESS_UNIT,
                                                 expected_array_dimension=2)
@@ -299,10 +305,10 @@ class MetadataDeviceTags:
 
     TAGS_GENERAL = [GENERAL, UUID, ILLUMINATORS, DETECTORS, FIELD_OF_VIEW, NUMBER_OF_ILLUMINATION_ELEMENTS,
                     NUMBER_OF_DETECTION_ELEMENTS]
-    TAGS_ILLUMINATORS = [ILLUMINATION_ELEMENT, ILLUMINATOR_POSITION, ILLUMINATOR_ORIENTATION, ILLUMINATOR_SHAPE,
+    TAGS_ILLUMINATORS = [ILLUMINATION_ELEMENT, ILLUMINATOR_POSITION, ILLUMINATOR_ORIENTATION, ILLUMINATOR_GEOMETRY,
                          WAVELENGTH_RANGE, LASER_ENERGY_PROFILE, LASER_STABILITY_PROFILE, PULSE_WIDTH,
                          BEAM_INTENSITY_PROFILE, BEAM_INTENSITY_PROFILE_DISTANCE, BEAM_DIVERGENCE_ANGLES]
-    TAGS_DETECTORS = [DETECTION_ELEMENT, DETECTOR_POSITION, DETECTOR_ORIENTATION, DETECTOR_SHAPE, FREQUENCY_RESPONSE,
+    TAGS_DETECTORS = [DETECTION_ELEMENT, DETECTOR_POSITION, DETECTOR_ORIENTATION, DETECTOR_GEOMETRY, FREQUENCY_RESPONSE,
                       ANGULAR_RESPONSE]
     TAGS = TAGS_GENERAL + TAGS_DETECTORS + TAGS_ILLUMINATORS
 

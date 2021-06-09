@@ -179,7 +179,7 @@ class PAData:
 
         :return: return value can be None, of the key was not found in the meta data dictionary.
         """
-        return self.get_illuminator_attribute_for_tag(MetadataDeviceTags.ILLUMINATOR_SHAPE, identifier)
+        return self.get_illuminator_attribute_for_tag(MetadataDeviceTags.ILLUMINATOR_GEOMETRY, identifier)
 
     def get_wavelength_range(self, identifier=None):
         """

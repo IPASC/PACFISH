@@ -53,12 +53,12 @@ quality_check_pa_data(pa_data, verbose=True, log_file_path="")
 
 write_data("demodata.hdf5", pa_data)
 
-binary = np.rot90(pa_data.binary_time_series_data[:, 500:-2500, 0, 0], -1)
-binary = binary - np.min(binary) + 1
-binary = np.log10(binary)
-plt.imshow(binary, aspect=0.08, vmin=np.percentile(binary, 1), vmax=np.percentile(binary, 99))
-plt.show()
-plt.close()
+# binary = np.rot90(pa_data.binary_time_series_data[:, 500:-2500, 0, 0], -1)
+# binary = binary - np.min(binary) + 1
+# binary = np.log10(binary)
+# plt.imshow(binary, aspect=0.08, vmin=np.percentile(binary, 1), vmax=np.percentile(binary, 99))
+# plt.show()
+# plt.close()
 
 visualize_device(pa_data.meta_data_device)
 

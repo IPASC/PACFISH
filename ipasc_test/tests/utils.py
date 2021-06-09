@@ -81,9 +81,10 @@ def create_random_illumination_element(dim_x=None, dim_y=None, dim_z=None):
         np.random.random()-0.5,
         np.random.random()-0.5,
         np.random.random()-0.5])
-    illuminator_dict[MetadataDeviceTags.ILLUMINATOR_SHAPE.tag] = np.asarray([[0.0001,
-                                                                       0.0001,
-                                                                       0.0001]])
+    illuminator_dict[MetadataDeviceTags.ILLUMINATOR_GEOMETRY.tag] = np.asarray([0.0001,
+                                                                                 0.0001,
+                                                                                 0.0001])
+    illuminator_dict[MetadataDeviceTags.ILLUMINATOR_GEOMETRY_TYPE.tag] = "CUBOID"
     min_wavelength = np.random.random() * 200 + 600
     illuminator_dict[MetadataDeviceTags.WAVELENGTH_RANGE.tag] = np.asarray([min_wavelength,
                                                                                  min_wavelength +
@@ -104,21 +105,15 @@ def create_random_detection_element(dim_x=None, dim_y=None, dim_z=None):
 
     detector_dict = dict()
     detector_dict[MetadataDeviceTags.DETECTOR_POSITION.tag] = np.asarray([np.random.random() * dim_x,
-                                                                               np.random.random() * dim_y,
-                                                                               -np.random.random() * dim_z])
+                                                                          np.random.random() * dim_y,
+                                                                          -np.random.random() * dim_z])
     detector_dict[MetadataDeviceTags.DETECTOR_ORIENTATION.tag] = np.asarray(
         [np.random.random() * dim_x - dim_x / 2,
          np.random.random() * dim_y - dim_y / 2,
          np.random.random() * dim_z - dim_z / 2])
 
-    detector_dict[MetadataDeviceTags.DETECTOR_SHAPE.tag] = np.asarray([[0.0001, 0.0001, 0.0001],
-                                                                       [0.0001, 0.0001, -0.0001],
-                                                                       [0.0001, -0.0001, -0.0001],
-                                                                       [-0.0001, 0.0001, 0.0001],
-                                                                       [-0.0001, 0.0001, -0.0001],
-                                                                       [-0.0001, -0.0001, 0.0001],
-                                                                       [-0.0001, -0.0001, -0.0001],
-                                                                       [0.0001, 0.0001, 0.0001]])
+    detector_dict[MetadataDeviceTags.DETECTOR_GEOMETRY.tag] = np.asarray([0.0001, 0.0001, 0.0001])
+    detector_dict[MetadataDeviceTags.DETECTOR_GEOMETRY_TYPE.tag] = "CUBOID"
 
     detector_dict[MetadataDeviceTags.FREQUENCY_RESPONSE.tag] = np.asarray([np.random.random(size=200),
                                                                            np.random.random(size=200)])

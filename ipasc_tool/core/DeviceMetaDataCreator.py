@@ -32,6 +32,7 @@ from ipasc_tool.core import MetadataDeviceTags
 import copy
 import numpy as np
 
+
 class IlluminationElementCreator(object):
     def __init__(self):
         self.illuminator_element_dict = dict()
@@ -54,14 +55,33 @@ class IlluminationElementCreator(object):
         """
         self.illuminator_element_dict[MetadataDeviceTags.ILLUMINATOR_ORIENTATION.tag] = orientation
 
-    def set_illuminator_shape(self, shape: np.ndarray):
+    def set_illuminator_geometry(self, shape: np.ndarray):
         """
         :param shape: is an array of three float values that describe the shape of the illuminator in the
                     x1, x2, and x3 direction.
                     The units can be found in MetadataDeviceTags.ILLUMINATOR_SHAPE.unit.
         :return: void
         """
-        self.illuminator_element_dict[MetadataDeviceTags.ILLUMINATOR_SHAPE.tag] = shape
+        self.illuminator_element_dict[MetadataDeviceTags.ILLUMINATOR_GEOMETRY.tag] = shape
+
+    def set_illuminator_geometry_type(self, illuminator_geometry_type: str):
+        """
+        :param illuminator_geometry_type: The illuminator geometry type defines how to interpret the data in the
+        illuminator geometry field. The following geometry types are currently supported:
+                “CIRCULAR” - defined by a single value that determines the radius of the circle
+                “SPHERE” - defined by a single value that determines the radius of the sphere
+                “CUBOID” - defined by three values that determine the extent of the cuboid in x, y, and z dimensions,
+                        before the position and orientation transforms.
+                “MESH” - defined by a STL-formatted string that determines the positions of points and faces before
+                        the position and orientation transforms.
+
+        :return: void
+        """
+
+        if illuminator_geometry_type not in ["CIRCULAR", "SPHERE", "CUBOID", "MESH"]:
+            raise ValueError(f"Unsupported geometry_type: {illuminator_geometry_type}")
+
+        self.illuminator_element_dict[MetadataDeviceTags.ILLUMINATOR_GEOMETRY_TYPE.tag] = illuminator_geometry_type
 
     def set_wavelength_range(self, wl_range: np.ndarray):
         """
@@ -143,13 +163,32 @@ class DetectionElementCreator(object):
         """
         self.detection_element_dict[MetadataDeviceTags.DETECTOR_ORIENTATION.tag] = orientation
 
-    def set_detector_shape(self, size: np.ndarray):
+    def set_detector_geometry_type(self, detector_geometry_type: str):
+        """
+        :param geometry_type: The detector geometry type defines how to interpret the data in the detector geometry
+        field. The following geometry types are currently supported::
+                “CIRCULAR” - defined by a single value that determines the radius of the circle
+                “SPHERE” - defined by a single value that determines the radius of the sphere
+                “CUBOID” - defined by three values that determine the extent of the cuboid in x, y, and z dimensions,
+                    before the position and orientation transforms.
+                “MESH” - defined by a STL-formatted string that determines the positions of points and faces before
+                    the position and orientation transforms.
+
+        :return: void
+        """
+
+        if detector_geometry_type not in ["CIRCULAR", "SPHERE", "CUBOID", "MESH"]:
+            raise ValueError(f"Unsupported geometry_type: {detector_geometry_type}")
+
+        self.detection_element_dict[MetadataDeviceTags.DETECTOR_GEOMETRY_TYPE.tag] = detector_geometry_type
+
+    def set_detector_geometry(self, size: np.ndarray):
         """
         :param size: a three element array [x1, x2, x3] describing the extent of the detector size in x1, x2, and x3 direction.
                     The units can be found in MetadataDeviceTags.DETECTOR_SIZE.unit.
         :return: void
         """
-        self.detection_element_dict[MetadataDeviceTags.DETECTOR_SHAPE.tag] = size
+        self.detection_element_dict[MetadataDeviceTags.DETECTOR_GEOMETRY.tag] = size
 
     def set_frequency_response(self, frequency_response):
         """

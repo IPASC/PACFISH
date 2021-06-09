@@ -130,7 +130,7 @@ class CompletenessChecker:
 
         log_string += "##Detection Elements\n\n"
 
-        detection_tags = [MetadataDeviceTags.DETECTOR_SHAPE, MetadataDeviceTags.DETECTOR_ORIENTATION,
+        detection_tags = [MetadataDeviceTags.DETECTOR_GEOMETRY, MetadataDeviceTags.DETECTOR_ORIENTATION,
                           MetadataDeviceTags.DETECTOR_POSITION, MetadataDeviceTags.FREQUENCY_RESPONSE,
                           MetadataDeviceTags.ANGULAR_RESPONSE]
 
@@ -151,7 +151,7 @@ class CompletenessChecker:
 
         log_string += "##Illumination Elements\n\n"
 
-        illumination_tags = [MetadataDeviceTags.ILLUMINATOR_SHAPE, MetadataDeviceTags.ILLUMINATOR_ORIENTATION,
+        illumination_tags = [MetadataDeviceTags.ILLUMINATOR_GEOMETRY, MetadataDeviceTags.ILLUMINATOR_ORIENTATION,
                              MetadataDeviceTags.ILLUMINATOR_POSITION, MetadataDeviceTags.WAVELENGTH_RANGE,
                              MetadataDeviceTags.LASER_ENERGY_PROFILE, MetadataDeviceTags.PULSE_WIDTH,
                              MetadataDeviceTags.LASER_STABILITY_PROFILE, MetadataDeviceTags.BEAM_INTENSITY_PROFILE,

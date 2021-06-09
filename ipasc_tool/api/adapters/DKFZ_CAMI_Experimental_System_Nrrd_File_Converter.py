@@ -46,9 +46,9 @@ class DKFZCAMIExperimentalSystemNrrdFileConverter(BaseAdapter):
         super().__init__()
 
     def generate_binary_data(self) -> np.ndarray:
-        # the CAMI_DKFZ_FILE is captured this way: [elements, ipasc_examples, frames]
+        # the CAMI_DKFZ_FILE is captured this way: [elements, time_series, frames]
         # Needs to be reshaped in order to be in line with the IPASC definition of
-        # [detectors, ipasc_examples, wavelength, frames]
+        # [detectors, time_series, wavelength, frames]
         # The sample file only contains images with a single wavelength.
         # TODO adapt for multispectral images as well
         data = np.reshape(self.data, (self.meta['sizes'][0], self.meta['sizes'][1], 1, self.meta['sizes'][2]))
@@ -66,9 +66,8 @@ class DKFZCAMIExperimentalSystemNrrdFileConverter(BaseAdapter):
             detection_element_creator = DetectionElementCreator()
             detection_element_creator.set_detector_position(np.asarray([0, cur_y_position, 0]))
             detection_element_creator.set_detector_orientation(np.asarray([0, 0, 1]))
-            detection_element_creator.set_detector_shape(np.asarray([[-0.00015, -0.00015, 0], [-0.00015, 0.00015, 0],
-                                                                     [0.00015, 0.00015, 0], [0.00015, -0.00015, 0],
-                                                                     [-0.00015, -0.00015, 0]]))
+            detection_element_creator.set_detector_geometry_type("CUBOID")
+            detection_element_creator.set_detector_geometry(np.asarray([0.0003, 0.0003, 0.0001]))
             detection_element_creator.set_frequency_response(np.asarray([np.linspace(700, 900, 100),
                                                                          np.ones(100)]))
             detection_element_creator.set_angular_response(np.asarray([np.linspace(700, 900, 100),
@@ -83,12 +82,12 @@ class DKFZCAMIExperimentalSystemNrrdFileConverter(BaseAdapter):
             illumination_element_creator.set_wavelength_range(np.asarray([700, 950, 1]))
             if y_idx == 0:
                 illumination_element_creator.set_illuminator_position(np.asarray([0.0083, 0.0192, -0.001]))
-                illumination_element_creator.set_illuminator_orientation(np.asarray([0, -0.383972, 0]))
+                illumination_element_creator.set_illuminator_orientation(np.asarray([-0.383972, 0, 1]))
             elif y_idx == 1:
                 illumination_element_creator.set_illuminator_position(np.asarray([-0.0083, 0.0192, -0.001]))
-                illumination_element_creator.set_illuminator_orientation(np.asarray([0, 0.383972, 0]))
-            illumination_element_creator.set_illuminator_shape(np.asarray([[0, -0.01225, 0], [0, 0.01225, 0],
-                                                                           [0, -0.01225, 0]]))
+                illumination_element_creator.set_illuminator_orientation(np.asarray([0.383972, 0, 1]))
+            illumination_element_creator.set_illuminator_geometry(np.asarray([0, 0.025, 0]))
+            illumination_element_creator.set_illuminator_geometry_type("CUBOID")
 
             illumination_element_creator.set_laser_energy_profile(np.asarray([np.linspace(700, 900, 100),
                                                                             np.ones(100)]))
