@@ -1,5 +1,5 @@
 import matplotlib.pylab as plt
-from matplotlib.patches import Rectangle, Polygon
+from matplotlib.patches import Rectangle, Circle
 import numpy as np
 from ipasc_tool import MetadataDeviceTags
 from ipasc_test.tests.test_meta_data import create_complete_device_metadata_dictionary
@@ -42,125 +42,88 @@ def define_boundary_values(device_dictionary: dict):
     return mins, maxs
 
 
-def add_xz_plane(device_dictionary: dict, mins, maxs):
-    fov = device_dictionary["general"][MetadataDeviceTags.FIELD_OF_VIEW.tag]
+def add_arbitrary_plane(device_dictionary: dict, mins, maxs, axes, draw_axis):
+    draw_axis.set_xlim(mins[axes[0]], maxs[axes[0]])
+    draw_axis.set_ylim(maxs[axes[1]], mins[axes[1]])
+    draw_axis.set_title(f"axes{axes[0]}{axes[1]} projection view")
+    draw_axis.set_xlabel(f"{axes[0]}-axis [m]")
+    draw_axis.set_ylabel(f"{axes[1]}-axis [m]")
 
-    ax1 = plt.subplot(131)
-    ax1.set_xlim(mins[0], maxs[0])
-    ax1.set_ylim(maxs[2], mins[2])
-    ax1.set_title("XZ projection (side view)")
+    fov = device_dictionary["general"][MetadataDeviceTags.FIELD_OF_VIEW.tag]
 
     for detector in device_dictionary["detectors"]:
         if not (MetadataDeviceTags.DETECTOR_POSITION.tag in device_dictionary["detectors"][detector] and
-                MetadataDeviceTags.DETECTOR_SHAPE.tag in device_dictionary["detectors"][detector]):
+                MetadataDeviceTags.DETECTOR_GEOMETRY.tag in device_dictionary["detectors"][detector]):
             return
-        position = device_dictionary["detectors"][detector][MetadataDeviceTags.DETECTOR_POSITION.tag]
-        shape = np.asarray(device_dictionary["detectors"][detector][MetadataDeviceTags.DETECTOR_SHAPE.tag])
+        detector_geometry_type = device_dictionary["detectors"][detector][MetadataDeviceTags.DETECTOR_GEOMETRY_TYPE.tag]
+        detector_position = device_dictionary["detectors"][detector][MetadataDeviceTags.DETECTOR_POSITION.tag]
+        detector_geometry = np.asarray(device_dictionary["detectors"][detector][MetadataDeviceTags.DETECTOR_GEOMETRY.tag])
 
-        projected_poygon = np.asarray([[position[0] + shp[0], position[2] + shp[2]] for shp in shape])
-        ax1.add_patch(Polygon(projected_poygon, color="blue", alpha=0.5, linewidth=1))
+        if detector_geometry_type == "CUBOID":
+            if detector_geometry[axes[0]] == 0:
+                detector_geometry[axes[0]] = 0.0001
+            if detector_geometry[axes[1]] == 0:
+                detector_geometry[axes[1]] = 0.0001
+            draw_axis.add_patch(Rectangle((detector_position[axes[0]] - detector_geometry[axes[0]]/2,
+                                           detector_position[axes[1]] - detector_geometry[axes[1]]/2),
+                                          detector_geometry[axes[0]], detector_geometry[axes[1]], color="blue"))
+        elif detector_geometry_type == "SHPERE" or detector_geometry_type == "CIRCLE":
+            draw_axis.add_patch(Circle((detector_position[axes[0]], detector_position[axes[1]]), detector_geometry,
+                                       color="blue"))
+        else:
+            print("UNSUPPORTED GEOMETRY TYPE FOR VISUALISATION. WILL DEFAULT TO 'x' visualisation.")
+            draw_axis.plot(detector_position[axes[0]], detector_position[axes[1]], "x", color="blue")
 
     for illuminator in device_dictionary["illuminators"]:
         if not (MetadataDeviceTags.ILLUMINATOR_POSITION.tag in device_dictionary["illuminators"][illuminator] and
-                MetadataDeviceTags.ILLUMINATOR_SHAPE.tag in device_dictionary["illuminators"][illuminator]):
+                MetadataDeviceTags.ILLUMINATOR_GEOMETRY.tag in device_dictionary["illuminators"][illuminator]):
             return
-        position = device_dictionary["illuminators"][illuminator][MetadataDeviceTags.ILLUMINATOR_POSITION.tag]
-        orientation = device_dictionary["illuminators"][illuminator][MetadataDeviceTags.ILLUMINATOR_ORIENTATION.tag]
-        divergence = device_dictionary["illuminators"][illuminator][MetadataDeviceTags.BEAM_DIVERGENCE_ANGLES.tag]
-        shape = np.asarray(device_dictionary["illuminators"][illuminator][MetadataDeviceTags.ILLUMINATOR_SHAPE.tag])
-        projected_poygon = np.asarray([[position[0] + shp[0], position[2] + shp[2]] for shp in shape])
-        ax1.add_patch(Polygon(projected_poygon, color="red", alpha=0.5, linewidth=1))
+        illuminator_position = device_dictionary["illuminators"][illuminator][MetadataDeviceTags.ILLUMINATOR_POSITION.tag]
+        illuminator_orientation = np.asarray(device_dictionary["illuminators"][illuminator][MetadataDeviceTags.ILLUMINATOR_ORIENTATION.tag])
+        illuminator_divergence = device_dictionary["illuminators"][illuminator][MetadataDeviceTags.BEAM_DIVERGENCE_ANGLES.tag]
+        illuminator_geometry = np.asarray(device_dictionary["illuminators"][illuminator][MetadataDeviceTags.ILLUMINATOR_GEOMETRY.tag])
+        illuminator_geometry_type = device_dictionary["illuminators"][illuminator][MetadataDeviceTags.ILLUMINATOR_GEOMETRY_TYPE.tag]
 
-        # TODO: Maybe we can add illuminator profiles?
-        # length = 0.01
-        # x_middle = position[0] + length * np.sin(orientation[1])
-        # z_middle = position[2] + length * np.cos(orientation[1])
-        # x_middle_1 = position[0] + length * np.sin(orientation[1] + divergence)
-        # z_middle_1 = position[2] + length * np.cos(orientation[1] + divergence)
-        # x_middle_2 = position[0] + length * np.sin(orientation[1] - divergence)
-        # z_middle_2 = position[2] + length * np.cos(orientation[1] - divergence)
-        # ax1.add_patch(Polygon([[position[0], position[2]],
-        #                        [position[0], position[2]],
-        #                        [x_middle_1, z_middle_1],
-        #                        [x_middle_2, z_middle_2],
-        #                        [position[0], position[2]]], color="yellow", alpha=0.25))
-        # ax1.add_patch(Polygon([[position[0], position[2]],
-        #                        [position[0], position[2]],
-        #                        [x_middle, z_middle],
-        #                        [position[0], position[2]]], color="orange", alpha=0.5))
+        num_mc_raycast_samples = 250
+        length_normalisation = 25
+        for ray_idx in range(num_mc_raycast_samples):
+            x_offset = (illuminator_geometry[axes[0]]) * (np.random.random() - 0.5)
+            y_offset = (illuminator_geometry[axes[1]]) * (np.random.random() - 0.5)
+            divergence_x_offset = illuminator_divergence * (np.random.random() - 0.5)
+            divergence_y_offset = illuminator_divergence * (np.random.random() - 0.5)
+            x = [illuminator_position[axes[0]] + x_offset,
+                 illuminator_position[axes[0]] + x_offset +
+                 illuminator_orientation[axes[0]] / length_normalisation
+                 + divergence_x_offset / length_normalisation]
+            y = [illuminator_position[axes[1]] + y_offset,
+                 illuminator_position[axes[1]] + y_offset + illuminator_orientation[axes[1]] / length_normalisation
+                 + divergence_y_offset / length_normalisation]
+            plt.plot(x, y, color="yellow", alpha=0.01, linewidth=10, zorder=-10)
 
+        if illuminator_geometry_type == "CUBOID":
+            if illuminator_geometry[axes[0]] == 0:
+                illuminator_geometry[axes[0]] = 0.0001
+            if illuminator_geometry[axes[1]] == 0:
+                illuminator_geometry[axes[1]] = 0.0001
+            draw_axis.add_patch(Rectangle((illuminator_position[axes[0]] - illuminator_geometry[axes[0]]/2,
+                                           illuminator_position[axes[1]] - illuminator_geometry[axes[1]]/2),
+                                          illuminator_geometry[axes[0]], illuminator_geometry[axes[1]],
+                                          color="red"))
+        elif illuminator_geometry_type == "SHPERE" or illuminator_geometry_type == "CIRCLE":
+            draw_axis.add_patch(Circle((illuminator_position[axes[0]], illuminator_position[axes[1]]),
+                                       illuminator_geometry,
+                                color="red"))
+        else:
+            print("UNSUPPORTED GEOMETRY TYPE FOR VISUALISATION. WILL DEFAULT TO 'x' visualisation.")
+            draw_axis.plot(illuminator_geometry[axes[0]], illuminator_geometry[axes[1]], "x", color="red")
 
-    ax1.add_patch(
-        Rectangle((fov[0], fov[4]), -fov[0] + fov[1], -fov[4] + fov[5],
-                  color="green", fill=False, label="Field of View"))
+    start_indexes = np.asarray(axes) * 2
+    end_indexes = start_indexes + 1
 
-
-def add_xy_plane(device_dictionary: dict, mins, maxs):
-    fov = device_dictionary["general"][MetadataDeviceTags.FIELD_OF_VIEW.tag]
-
-    ax1 = plt.subplot(132)
-    ax1.set_xlim(mins[0], maxs[0])
-    ax1.set_ylim(maxs[1], mins[1])
-    ax1.set_title("XY projection (top view)")
-
-    for detector in device_dictionary["detectors"]:
-        if not (MetadataDeviceTags.DETECTOR_POSITION.tag in device_dictionary["detectors"][detector] and
-                MetadataDeviceTags.DETECTOR_SHAPE.tag in device_dictionary["detectors"][detector]):
-            return
-        position = device_dictionary["detectors"][detector][MetadataDeviceTags.DETECTOR_POSITION.tag]
-        shape = np.asarray(device_dictionary["detectors"][detector][MetadataDeviceTags.DETECTOR_SHAPE.tag])
-        projected_poygon = np.asarray([[position[0] + shp[0], position[1] + shp[1]] for shp in shape])
-        ax1.add_patch(Polygon(projected_poygon, color="blue", alpha=0.5))
-
-    for illuminator in device_dictionary["illuminators"]:
-        if not (MetadataDeviceTags.ILLUMINATOR_POSITION.tag in device_dictionary["illuminators"][illuminator] and
-                MetadataDeviceTags.ILLUMINATOR_SHAPE.tag in device_dictionary["illuminators"][illuminator]):
-            return
-        position = device_dictionary["illuminators"][illuminator][MetadataDeviceTags.ILLUMINATOR_POSITION.tag]
-        shape = np.asarray(device_dictionary["illuminators"][illuminator][MetadataDeviceTags.ILLUMINATOR_SHAPE.tag])
-        projected_poygon = np.asarray([[position[0] + shp[0], position[1] + shp[1]] for shp in shape])
-        ax1.add_patch(Polygon(projected_poygon, color="red", alpha=0.5))
-
-    ax1.scatter(None, None, color="blue", marker="x", label="Detector Element")
-    ax1.scatter(None, None, color="red", marker="x", label="Illumination Element")
-
-    ax1.add_patch(
-        Rectangle((fov[0], fov[2]), -fov[0] + fov[1], -fov[2] + fov[3],
-                  color="green", fill=False, label="Field of View"))
-
-
-def add_yz_plane(device_dictionary: dict, mins, maxs):
-    fov = device_dictionary["general"][MetadataDeviceTags.FIELD_OF_VIEW.tag]
-
-    ax1 = plt.subplot(133)
-    ax1.set_xlim(mins[1], maxs[1])
-    ax1.set_ylim(maxs[2], mins[2])
-    ax1.set_title("YZ projection (imaging plane)")
-
-    for detector in device_dictionary["detectors"]:
-        if not (MetadataDeviceTags.DETECTOR_POSITION.tag in device_dictionary["detectors"][detector] and
-                MetadataDeviceTags.DETECTOR_SHAPE.tag in device_dictionary["detectors"][detector]):
-            return
-        position = device_dictionary["detectors"][detector][MetadataDeviceTags.DETECTOR_POSITION.tag]
-        shape = np.asarray(device_dictionary["detectors"][detector][MetadataDeviceTags.DETECTOR_SHAPE.tag])
-
-        projected_poygon = np.asarray([[position[1] + shp[1], position[2] + shp[2]] for shp in shape])
-        ax1.add_patch(Polygon(projected_poygon, color="blue", alpha=0.5))
-
-    for illuminator in device_dictionary["illuminators"]:
-        if not (MetadataDeviceTags.ILLUMINATOR_POSITION.tag in device_dictionary["illuminators"][illuminator] and
-                MetadataDeviceTags.ILLUMINATOR_SHAPE.tag in device_dictionary["illuminators"][illuminator]):
-            return
-        position = device_dictionary["illuminators"][illuminator][MetadataDeviceTags.ILLUMINATOR_POSITION.tag]
-        shape = np.asarray(device_dictionary["illuminators"][illuminator][MetadataDeviceTags.ILLUMINATOR_SHAPE.tag])
-        projected_poygon = np.asarray([[position[1] + shp[1], position[2] + shp[2]] for shp in shape])
-        ax1.add_patch(Polygon(projected_poygon, color="red", alpha=0.5))
-
-    ax1.scatter(None, None, color="blue", marker="x", label="Detector Element")
-    ax1.scatter(None, None, color="red", marker="x", label="Illumination Element")
-
-    ax1.add_patch(
-        Rectangle((fov[2], fov[4]), -fov[2] + fov[3], -fov[4] + fov[5],
+    draw_axis.add_patch(
+        Rectangle((fov[start_indexes[0]], fov[start_indexes[1]]),
+                  -fov[start_indexes[0]] + fov[end_indexes[0]],
+                  -fov[start_indexes[1]] + fov[end_indexes[1]],
                   color="green", fill=False, label="Field of View"))
 
 
@@ -168,12 +131,21 @@ def visualize_device(device_dictionary: dict, save_path: str = None):
 
     mins, maxs = define_boundary_values(device_dictionary)
 
-    fig = plt.figure(figsize=(10, 5))
-    add_xz_plane(device_dictionary, mins, maxs)
-    add_xy_plane(device_dictionary, mins, maxs)
-    add_yz_plane(device_dictionary, mins, maxs)
+    plt.figure(figsize=(10, 4))
+    plt.suptitle("Device Visualisation based on IPASC data format specifications")
+    ax = plt.subplot(1, 3, 1)
+    add_arbitrary_plane(device_dictionary, mins, maxs, axes=(0, 2), draw_axis=ax)
+    ax = plt.subplot(1, 3, 2)
+    add_arbitrary_plane(device_dictionary, mins, maxs, axes=(0, 1), draw_axis=ax)
+    ax = plt.subplot(1, 3, 3)
+    add_arbitrary_plane(device_dictionary, mins, maxs, axes=(1, 2), draw_axis=ax)
 
-    plt.legend(loc="best")
+    plt.scatter(None, None, color="blue", marker="o", label="Detector Element")
+    plt.scatter(None, None, color="red", marker="o", label="Illumination Element")
+    plt.scatter(None, None, color="green", marker="o", label="Field of View")
+    plt.scatter(None, None, color="Yellow", marker="o", label="Illumination Profile")
+    plt.legend(loc="lower right")
+    plt.tight_layout()
     if save_path is None:
         plt.show()
     else:
