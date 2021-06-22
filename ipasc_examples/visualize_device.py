@@ -83,103 +83,20 @@ def add_arbitrary_plane(device_dictionary: dict, mins, maxs, axes, draw_axis):
         illuminator_orientation = np.asarray(device_dictionary["illuminators"][illuminator][MetadataDeviceTags.ILLUMINATOR_ORIENTATION.tag])
         illuminator_divergence = device_dictionary["illuminators"][illuminator][MetadataDeviceTags.BEAM_DIVERGENCE_ANGLES.tag]
         illuminator_geometry = np.asarray(device_dictionary["illuminators"][illuminator][MetadataDeviceTags.ILLUMINATOR_GEOMETRY.tag])
+        diameter = np.sqrt(np.sum(np.asarray([a**2 for a in illuminator_geometry]))) / 2
         illuminator_geometry_type = device_dictionary["illuminators"][illuminator][MetadataDeviceTags.ILLUMINATOR_GEOMETRY_TYPE.tag]
 
-        if illuminator_geometry_type == "CUBOID":
-            if illuminator_geometry[axes[0]] == 0:
-                illuminator_geometry[axes[0]] = 0.0001
-            if illuminator_geometry[axes[1]] == 0:
-                illuminator_geometry[axes[1]] = 0.0001
 
-            x_points = [illuminator_position[0] - illuminator_geometry[0] / 2,
-                        illuminator_position[0] - illuminator_geometry[0] / 2,
-                        illuminator_position[0] - illuminator_geometry[0] / 2,
-                        illuminator_position[0] + illuminator_geometry[0] / 2,
-                        illuminator_position[0] + illuminator_geometry[0] / 2,
-                        illuminator_position[0] + illuminator_geometry[0] / 2,
-                        illuminator_position[0] + illuminator_geometry[0] / 2,
-                        illuminator_position[0] - illuminator_geometry[0] / 2]
+        draw_axis.scatter(illuminator_position[axes[0]], illuminator_position[axes[1]],
+                                       marker="+", color="red")
 
-            y_points = [illuminator_position[1] - illuminator_geometry[1] / 2,
-                        illuminator_position[1] - illuminator_geometry[1] / 2,
-                        illuminator_position[1] + illuminator_geometry[1] / 2,
-                        illuminator_position[1] + illuminator_geometry[1] / 2,
-                        illuminator_position[1] + illuminator_geometry[1] / 2,
-                        illuminator_position[1] - illuminator_geometry[1] / 2,
-                        illuminator_position[1] - illuminator_geometry[1] / 2,
-                        illuminator_position[1] + illuminator_geometry[1] / 2]
-
-            z_points = [illuminator_position[2] - illuminator_geometry[2] / 2,
-                        illuminator_position[2] + illuminator_geometry[2] / 2,
-                        illuminator_position[2] + illuminator_geometry[2] / 2,
-                        illuminator_position[2] + illuminator_geometry[2] / 2,
-                        illuminator_position[2] - illuminator_geometry[2] / 2,
-                        illuminator_position[2] - illuminator_geometry[2] / 2,
-                        illuminator_position[2] + illuminator_geometry[2] / 2,
-                        illuminator_position[2] - illuminator_geometry[2] / 2]
-
-            center_x = np.mean(x_points)
-            center_y = np.mean(y_points)
-            center_z = np.mean(z_points)
-            points = np.asarray([x_points-center_x, y_points-center_y, z_points-center_z])
-
-            if illuminator_position[2] < 0:
-                theta01 = np.arctan2(illuminator_orientation[0], illuminator_orientation[2])
-            else:
-                theta01 = np.arctan2(illuminator_orientation[2], illuminator_orientation[0])
-            R01 = np.asarray([[np.cos(theta01), -np.sin(theta01), 0], [np.sin(theta01), np.cos(theta01), 0], [0, 0, 1]])
-
-            if illuminator_position[1] < 0:
-                theta02 = np.arctan2(illuminator_orientation[0], illuminator_orientation[1])
-            else:
-                theta02 = np.arctan2(illuminator_orientation[1], illuminator_orientation[0])
-            R02 = np.asarray([[np.cos(theta02), 0, np.sin(theta02)], [0, 1, 0], [-np.sin(theta02), 0, np.cos(theta02)]])
-
-            if illuminator_position[2] < 0:
-                theta12 = np.arctan2(illuminator_orientation[1], illuminator_orientation[2])
-            else:
-                theta12 = np.arctan2(illuminator_orientation[2], illuminator_orientation[1])
-            R12 = np.asarray([[1, 0, 0], [0, np.cos(theta12), -np.sin(theta12)], [0, np.sin(theta12), np.cos(theta12)]])
-
-            points = np.asarray([np.dot(np.dot(np.dot(point, R01), R02), R12) for point in points.T]).T
-            points = [points[0] + center_x, points[1] + center_y, points[2] + center_z]
-            poly_points = [[points[axes[0]][0], points[axes[1]][0]],
-                           [points[axes[0]][1], points[axes[1]][1]],
-                           [points[axes[0]][2], points[axes[1]][2]],
-                           [points[axes[0]][3], points[axes[1]][3]],
-                           [points[axes[0]][4], points[axes[1]][4]],
-                           [points[axes[0]][5], points[axes[1]][5]],
-                           [points[axes[0]][6], points[axes[1]][6]],
-                           [points[axes[0]][7], points[axes[1]][7]],
-                           [points[axes[0]][0], points[axes[1]][0]]]
-            draw_axis.add_patch(Polygon(poly_points, color="red"))
-
-            num_mc_raycast_samples = 250
-            length_normalisation = 25
-
-            for ray_idx in range(num_mc_raycast_samples):
-                rng = (np.random.random() - 0.5)
-                x_offset = (np.max(points[axes[0]][:]) - np.min(points[axes[0]][:])) * rng
-                y_offset = (np.max(points[axes[1]][:]) - np.min(points[axes[1]][:])) * rng
-                divergence_x_offset = illuminator_divergence * (np.random.random() - 0.5)
-                divergence_y_offset = illuminator_divergence * (np.random.random() - 0.5)
-                x = [illuminator_position[axes[0]] + x_offset,
-                     illuminator_position[axes[0]] + x_offset +
-                     illuminator_orientation[axes[0]] / length_normalisation +
-                     divergence_x_offset / 20]
-                y = [illuminator_position[axes[1]] + y_offset,
-                     illuminator_position[axes[1]] + y_offset +
-                     illuminator_orientation[axes[1]] / length_normalisation +
-                     divergence_y_offset / 20]
-                plt.plot(x, y, color="yellow", alpha=0.01, linewidth=10, zorder=-10)
-
-        elif illuminator_geometry_type == "SHPERE" or illuminator_geometry_type == "CIRCLE":
-            draw_axis.add_patch(Circle((illuminator_position[axes[0]], illuminator_position[axes[1]]),
-                                       illuminator_geometry,
-                                color="red"))
-        else:
-            print("UNSUPPORTED GEOMETRY TYPE FOR VISUALISATION. WILL DEFAULT TO 'x' visualisation.")
-            draw_axis.plot(illuminator_geometry[axes[0]], illuminator_geometry[axes[1]], "x", color="red")
+        x = [illuminator_position[axes[0]],
+             illuminator_position[axes[0]] +
+             illuminator_orientation[axes[0]]/25]
+        y = [illuminator_position[axes[1]],
+             illuminator_position[axes[1]] +
+             illuminator_orientation[axes[1]]/25]
+        plt.plot(x, y, color="yellow", alpha=1, linewidth=25, zorder=-10)
 
     start_indexes = np.asarray(axes) * 2
     end_indexes = start_indexes + 1
@@ -208,9 +125,9 @@ def visualize_device(device_dictionary: dict, save_path: str = None):
     plt.axis('off')
 
     plt.scatter(None, None, color="blue", marker="o", label="Detector Element")
-    plt.scatter(None, None, color="red", marker="o", label="Illumination Element")
-    plt.scatter(None, None, color="green", marker="o", label="Field of View")
-    plt.scatter(None, None, color="Yellow", marker="o", label="Illumination Profile")
+    plt.scatter(None, None, color="red", marker="+", label="Illumination Element")
+    plt.scatter(None, None, color="green", marker="s", label="Field of View")
+    plt.scatter(None, None, color="Yellow", marker="s", label="Illumination Profile")
     plt.legend(loc="center")
     plt.tight_layout()
     if save_path is None:
