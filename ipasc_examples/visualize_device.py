@@ -1,5 +1,5 @@
 import matplotlib.pylab as plt
-from matplotlib.patches import Rectangle, Circle
+from matplotlib.patches import Rectangle, Circle, Polygon
 import numpy as np
 from ipasc_tool import MetadataDeviceTags
 from ipasc_test.tests.test_meta_data import create_complete_device_metadata_dictionary
@@ -43,6 +43,7 @@ def define_boundary_values(device_dictionary: dict):
 
 
 def add_arbitrary_plane(device_dictionary: dict, mins, maxs, axes, draw_axis):
+    print("AXES:", axes)
     draw_axis.set_xlim(mins[axes[0]], maxs[axes[0]])
     draw_axis.set_ylim(maxs[axes[1]], mins[axes[1]])
     draw_axis.set_title(f"axes{axes[0]}{axes[1]} projection view")
@@ -84,31 +85,94 @@ def add_arbitrary_plane(device_dictionary: dict, mins, maxs, axes, draw_axis):
         illuminator_geometry = np.asarray(device_dictionary["illuminators"][illuminator][MetadataDeviceTags.ILLUMINATOR_GEOMETRY.tag])
         illuminator_geometry_type = device_dictionary["illuminators"][illuminator][MetadataDeviceTags.ILLUMINATOR_GEOMETRY_TYPE.tag]
 
-        num_mc_raycast_samples = 250
-        length_normalisation = 25
-        for ray_idx in range(num_mc_raycast_samples):
-            x_offset = (illuminator_geometry[axes[0]]) * (np.random.random() - 0.5)
-            y_offset = (illuminator_geometry[axes[1]]) * (np.random.random() - 0.5)
-            divergence_x_offset = illuminator_divergence * (np.random.random() - 0.5)
-            divergence_y_offset = illuminator_divergence * (np.random.random() - 0.5)
-            x = [illuminator_position[axes[0]] + x_offset,
-                 illuminator_position[axes[0]] + x_offset +
-                 illuminator_orientation[axes[0]] / length_normalisation
-                 + divergence_x_offset / length_normalisation]
-            y = [illuminator_position[axes[1]] + y_offset,
-                 illuminator_position[axes[1]] + y_offset + illuminator_orientation[axes[1]] / length_normalisation
-                 + divergence_y_offset / length_normalisation]
-            plt.plot(x, y, color="yellow", alpha=0.01, linewidth=10, zorder=-10)
-
         if illuminator_geometry_type == "CUBOID":
             if illuminator_geometry[axes[0]] == 0:
                 illuminator_geometry[axes[0]] = 0.0001
             if illuminator_geometry[axes[1]] == 0:
                 illuminator_geometry[axes[1]] = 0.0001
-            draw_axis.add_patch(Rectangle((illuminator_position[axes[0]] - illuminator_geometry[axes[0]]/2,
-                                           illuminator_position[axes[1]] - illuminator_geometry[axes[1]]/2),
-                                          illuminator_geometry[axes[0]], illuminator_geometry[axes[1]],
-                                          color="red"))
+
+            x_points = [illuminator_position[0] - illuminator_geometry[0] / 2,
+                        illuminator_position[0] - illuminator_geometry[0] / 2,
+                        illuminator_position[0] - illuminator_geometry[0] / 2,
+                        illuminator_position[0] + illuminator_geometry[0] / 2,
+                        illuminator_position[0] + illuminator_geometry[0] / 2,
+                        illuminator_position[0] + illuminator_geometry[0] / 2,
+                        illuminator_position[0] + illuminator_geometry[0] / 2,
+                        illuminator_position[0] - illuminator_geometry[0] / 2]
+
+            y_points = [illuminator_position[1] - illuminator_geometry[1] / 2,
+                        illuminator_position[1] - illuminator_geometry[1] / 2,
+                        illuminator_position[1] + illuminator_geometry[1] / 2,
+                        illuminator_position[1] + illuminator_geometry[1] / 2,
+                        illuminator_position[1] + illuminator_geometry[1] / 2,
+                        illuminator_position[1] - illuminator_geometry[1] / 2,
+                        illuminator_position[1] - illuminator_geometry[1] / 2,
+                        illuminator_position[1] + illuminator_geometry[1] / 2]
+
+            z_points = [illuminator_position[2] - illuminator_geometry[2] / 2,
+                        illuminator_position[2] + illuminator_geometry[2] / 2,
+                        illuminator_position[2] + illuminator_geometry[2] / 2,
+                        illuminator_position[2] + illuminator_geometry[2] / 2,
+                        illuminator_position[2] - illuminator_geometry[2] / 2,
+                        illuminator_position[2] - illuminator_geometry[2] / 2,
+                        illuminator_position[2] + illuminator_geometry[2] / 2,
+                        illuminator_position[2] - illuminator_geometry[2] / 2]
+
+            center_x = np.mean(x_points)
+            center_y = np.mean(y_points)
+            center_z = np.mean(z_points)
+            points = np.asarray([x_points-center_x, y_points-center_y, z_points-center_z])
+
+            if illuminator_position[2] < 0:
+                theta01 = np.arctan2(illuminator_orientation[0], illuminator_orientation[2])
+            else:
+                theta01 = np.arctan2(illuminator_orientation[2], illuminator_orientation[0])
+            R01 = np.asarray([[np.cos(theta01), -np.sin(theta01), 0], [np.sin(theta01), np.cos(theta01), 0], [0, 0, 1]])
+
+            if illuminator_position[1] < 0:
+                theta02 = np.arctan2(illuminator_orientation[0], illuminator_orientation[1])
+            else:
+                theta02 = np.arctan2(illuminator_orientation[1], illuminator_orientation[0])
+            R02 = np.asarray([[np.cos(theta02), 0, np.sin(theta02)], [0, 1, 0], [-np.sin(theta02), 0, np.cos(theta02)]])
+
+            if illuminator_position[2] < 0:
+                theta12 = np.arctan2(illuminator_orientation[1], illuminator_orientation[2])
+            else:
+                theta12 = np.arctan2(illuminator_orientation[2], illuminator_orientation[1])
+            R12 = np.asarray([[1, 0, 0], [0, np.cos(theta12), -np.sin(theta12)], [0, np.sin(theta12), np.cos(theta12)]])
+
+            points = np.asarray([np.dot(np.dot(np.dot(point, R01), R02), R12) for point in points.T]).T
+            points = [points[0] + center_x, points[1] + center_y, points[2] + center_z]
+            poly_points = [[points[axes[0]][0], points[axes[1]][0]],
+                           [points[axes[0]][1], points[axes[1]][1]],
+                           [points[axes[0]][2], points[axes[1]][2]],
+                           [points[axes[0]][3], points[axes[1]][3]],
+                           [points[axes[0]][4], points[axes[1]][4]],
+                           [points[axes[0]][5], points[axes[1]][5]],
+                           [points[axes[0]][6], points[axes[1]][6]],
+                           [points[axes[0]][7], points[axes[1]][7]],
+                           [points[axes[0]][0], points[axes[1]][0]]]
+            draw_axis.add_patch(Polygon(poly_points, color="red"))
+
+            num_mc_raycast_samples = 250
+            length_normalisation = 25
+
+            for ray_idx in range(num_mc_raycast_samples):
+                rng = (np.random.random() - 0.5)
+                x_offset = (np.max(points[axes[0]][:]) - np.min(points[axes[0]][:])) * rng
+                y_offset = (np.max(points[axes[1]][:]) - np.min(points[axes[1]][:])) * rng
+                divergence_x_offset = illuminator_divergence * (np.random.random() - 0.5)
+                divergence_y_offset = illuminator_divergence * (np.random.random() - 0.5)
+                x = [illuminator_position[axes[0]] + x_offset,
+                     illuminator_position[axes[0]] + x_offset +
+                     illuminator_orientation[axes[0]] / length_normalisation +
+                     divergence_x_offset / 20]
+                y = [illuminator_position[axes[1]] + y_offset,
+                     illuminator_position[axes[1]] + y_offset +
+                     illuminator_orientation[axes[1]] / length_normalisation +
+                     divergence_y_offset / 20]
+                plt.plot(x, y, color="yellow", alpha=0.01, linewidth=10, zorder=-10)
+
         elif illuminator_geometry_type == "SHPERE" or illuminator_geometry_type == "CIRCLE":
             draw_axis.add_patch(Circle((illuminator_position[axes[0]], illuminator_position[axes[1]]),
                                        illuminator_geometry,
@@ -131,20 +195,23 @@ def visualize_device(device_dictionary: dict, save_path: str = None):
 
     mins, maxs = define_boundary_values(device_dictionary)
 
-    plt.figure(figsize=(10, 4))
+    plt.figure(figsize=(12, 4))
     plt.suptitle("Device Visualisation based on IPASC data format specifications")
-    ax = plt.subplot(1, 3, 1)
+    ax = plt.subplot(1, 4, 1)
     add_arbitrary_plane(device_dictionary, mins, maxs, axes=(0, 2), draw_axis=ax)
-    ax = plt.subplot(1, 3, 2)
+    ax = plt.subplot(1, 4, 2)
     add_arbitrary_plane(device_dictionary, mins, maxs, axes=(0, 1), draw_axis=ax)
-    ax = plt.subplot(1, 3, 3)
+    ax = plt.subplot(1, 4, 3)
     add_arbitrary_plane(device_dictionary, mins, maxs, axes=(1, 2), draw_axis=ax)
+
+    plt.subplot(1, 4, 4)
+    plt.axis('off')
 
     plt.scatter(None, None, color="blue", marker="o", label="Detector Element")
     plt.scatter(None, None, color="red", marker="o", label="Illumination Element")
     plt.scatter(None, None, color="green", marker="o", label="Field of View")
     plt.scatter(None, None, color="Yellow", marker="o", label="Illumination Profile")
-    plt.legend(loc="lower right")
+    plt.legend(loc="center")
     plt.tight_layout()
     if save_path is None:
         plt.show()
@@ -157,3 +224,4 @@ if __name__ == "__main__":
     dictionary = create_complete_device_metadata_dictionary()
 
     visualize_device(dictionary)
+
