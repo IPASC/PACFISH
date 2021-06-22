@@ -326,7 +326,7 @@ class MetadataAcquisitionTags:
     DIMENSIONALITY = EnumeratedString("dimensionality", True, str, permissible_strings=DIMENSIONALITY_STRINGS)
     SIZES = NonNegativeNumbersInArray("sizes", True, np.ndarray, Units.DIMENSIONLESS_UNIT)
 
-    REGION_OF_INTEREST = NDimensionalNumpyArray("region_of_interest", False, np.ndarray, Units.METERS,
+    REGIONS_OF_INTEREST = NDimensionalNumpyArray("regions_of_interest", False, np.ndarray, Units.METERS,
                                                 expected_array_dimension=2)
     PHOTOACOUSTIC_IMAGING_DEVICE = UnconstrainedMetaDatum("photoacoustic_imaging_device", False, str)
     PULSE_LASER_ENERGY = NonNegativeNumbersInArray("pulse_laser_energy", False, np.ndarray, Units.JOULES)
@@ -348,6 +348,7 @@ class MetadataAcquisitionTags:
     ASSUMED_GLOBAL_SPEED_OF_SOUND = NonNegativeNumber("assumed_global_speed_of_sound", False, float)
     AD_SAMPLING_RATE = NonNegativeNumber("ad_sampling_rate", True, float, Units.HERTZ)
     FREQUENCY_DOMAIN_FILTER = UnconstrainedMetaDatum("frequency_domain_filter", False, np.ndarray)
+    FRAMES_PER_IMAGE = NonNegativeNumber("frames_per_image", False, int)
 
     TAGS_BINARY = [DATA_TYPE, DIMENSIONALITY, SIZES]
     TAGS_CONTAINER = [UUID, ENCODING, COMPRESSION]
