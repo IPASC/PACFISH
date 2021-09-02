@@ -172,7 +172,7 @@ class PAData:
         """
         return self.get_illuminator_attribute_for_tag(MetadataDeviceTags.ILLUMINATOR_ORIENTATION, identifier)
 
-    def get_illuminator_size(self, identifier=None):
+    def get_illuminator_geometry(self, identifier=None):
         """
         The illuminator shape defines the shape of the optical fibres, so it describes  whether the illuminator is a
         point illuminator, or has a more continuous form. Illuminators can only have planar emitting surfaces.
@@ -285,16 +285,16 @@ class PAData:
 
         :return: return value can be None, of the key was not found in the meta data dictionary.
         """
-        return self.get_detector_attribute_for_tag(MetadataDeviceTags.DETECTOR_POSITION, identifier)
+        return self.get_detector_attribute_for_tag(MetadataDeviceTags.DETECTOR_ORIENTATION, identifier)
 
-    def get_detector_size(self, identifier=None):
+    def get_detector_geometry(self, identifier=None):
         """
         The element size defines the size of the detection element in 3D cartesian coordinates [x1, x2, x3]
         relative to its position and orientation.
 
         :return: return value can be None, of the key was not found in the meta data dictionary.
         """
-        return self.get_detector_attribute_for_tag(MetadataDeviceTags.DETECTOR_POSITION, identifier)
+        return self.get_detector_attribute_for_tag(MetadataDeviceTags.DETECTOR_GEOMETRY, identifier)
 
     def get_frequency_response(self, identifier=None):
         """

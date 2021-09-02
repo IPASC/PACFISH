@@ -64,9 +64,9 @@ class MetaDataTest(TestCase):
         assert self.pa_data.get_illuminator_orientation(0) is not None
 
     def test_get_illuminator_size(self):
-        assert self.pa_data.get_illuminator_size() is not None
-        assert self.pa_data.get_illuminator_size(list(self.pa_data.get_illuminator_ids())[0]) is not None
-        assert self.pa_data.get_illuminator_size(0) is not None
+        assert self.pa_data.get_illuminator_geometry() is not None
+        assert self.pa_data.get_illuminator_geometry(list(self.pa_data.get_illuminator_ids())[0]) is not None
+        assert self.pa_data.get_illuminator_geometry(0) is not None
 
     def test_get_wavelength_range(self):
         assert self.pa_data.get_wavelength_range() is not None
