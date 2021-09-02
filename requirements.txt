@@ -1,8 +1,5 @@
-numpy==1.20.3
-matplotlib==3.3.2
-h5py==2.10.0
-sphinx==2.4.4
-rst2pdf==0.98
-pynrrd==0.4.2
-coverage==5.4
-myst-parser==0.12.10
+numpy
+matplotlib
+h5py
+pynrrd
+myst-parser

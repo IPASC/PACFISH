@@ -12,6 +12,9 @@ setuptools.setup(
     author="International Photoacoustic Standardisation Consortium (IPASC)",
     description="Standardised Data Access Tool of IPASC",
     long_description=long_description,
-    packages=setuptools.find_packages(),
-    install_requires=requirements
+    long_description_content_type="text/markdown",
+    license="MIT",
+    packages=setuptools.find_packages(include=["ipasc_tool"]),
+    install_requires=requirements,
+    python_requires=">=3.7"
 )
