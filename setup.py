@@ -8,7 +8,7 @@ with open('requirements.txt', 'r') as requirements_file:
 
 setuptools.setup(
     name="ipasc_tool",
-    version="0.1.1",
+    version="0.1.2",
     author="International Photoacoustic Standardisation Consortium (IPASC)",
     description="Standardised Data Access Tool of IPASC",
     long_description=long_description,

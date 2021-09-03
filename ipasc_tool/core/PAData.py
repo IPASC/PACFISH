@@ -181,6 +181,23 @@ class PAData:
         """
         return self.get_illuminator_attribute_for_tag(MetadataDeviceTags.ILLUMINATOR_GEOMETRY, identifier)
 
+    def get_illuminator_geometry_type(self, identifier=None):
+        """
+        The illuminator geometry type defines the shape of the optical fibre (bundle) output.
+        It determines the interpretation of the data in the illuminator geometry field.
+        The following geometry types are currently supported:
+        "CIRCULAR" - defined by a single value that determines the radius of the circle
+        "SPHERE" - defined by a single value that determines the radius of the sphere
+        "CUBOID" - defined by three values that determine the extent of the cuboid in x, y,
+                   and z dimensions before the position and orientation transforms.
+        "MESH" - defined by a STL-formatted string that determines the positions of points
+                 and faces before the position and orientation transforms.
+
+
+        :return: return value can be None, of the key was not found in the meta data dictionary.
+        """
+        return self.get_illuminator_attribute_for_tag(MetadataDeviceTags.ILLUMINATOR_GEOMETRY_TYPE, identifier)
+
     def get_wavelength_range(self, identifier=None):
         """
         The wavelength range quantifies the wavelength  range that the illuminator is capable of generating by
@@ -295,6 +312,21 @@ class PAData:
         :return: return value can be None, of the key was not found in the meta data dictionary.
         """
         return self.get_detector_attribute_for_tag(MetadataDeviceTags.DETECTOR_GEOMETRY, identifier)
+
+    def get_detector_geometry_type(self, identifier=None):
+        """
+        The detector geometry type defines how to interpret the data in the detector geometry field.
+        The following geometry types are currently supported:
+        "CIRCULAR" - defined by a single value that determines the radius of the circle
+        "SPHERE" - defined by a single value that determines the radius of the sphere
+        "CUBOID" - defined by three values that determine the extent of the cuboid in x, y,
+                   and z dimensions before the position and orientation transforms.
+        "MESH" - defined by a STL-formatted string that determines the positions of points
+                 and faces before the position and orientation transforms.
+
+        :return: return value can be None, of the key was not found in the meta data dictionary.
+        """
+        return self.get_detector_attribute_for_tag(MetadataDeviceTags.DETECTOR_GEOMETRY_TYPE, identifier)
 
     def get_frequency_response(self, identifier=None):
         """
