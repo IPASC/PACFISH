@@ -222,6 +222,8 @@ class DeviceMetaDataCreator(object):
         self.device_dict[self.GENERAL] = dict()
         self.device_dict[self.ILLUMINATORS] = dict()
         self.device_dict[self.DETECTORS] = dict()
+        self.next_detector_uid = 0
+        self.next_illuminator_uid = 0
 
     def set_general_information(self, uuid: str, fov: np.ndarray):
         """
@@ -233,21 +235,21 @@ class DeviceMetaDataCreator(object):
         self.device_dict[self.GENERAL][MetadataDeviceTags.UUID.tag] = uuid
         self.device_dict[self.GENERAL][MetadataDeviceTags.FIELD_OF_VIEW.tag] = fov
 
-    def add_detection_element(self, uid: str, detection_element: dict):
+    def add_detection_element(self, detection_element: dict):
         """
-        :param uid: is a string that uniquely identifies the detection element
         :param detection_element: is a dictionary for the detection element specific parameters
         :return: void
         """
-        self.device_dict[self.DETECTORS][uid] = detection_element
+        self.device_dict[self.DETECTORS][str(self.next_detector_uid).zfill(10)] = detection_element
+        self.next_detector_uid += 1
 
-    def add_illumination_element(self, uid: str, illumination_element: dict):
+    def add_illumination_element(self, illumination_element: dict):
         """
-        :param uid: is a string that uniquely identifies the illumination element
         :param illumination_element: is a dictionary for the illumination element specific parameters
         :return: void
         """
-        self.device_dict[self.ILLUMINATORS][uid] = illumination_element
+        self.device_dict[self.ILLUMINATORS][str(self.next_illuminator_uid).zfill(10)] = illumination_element
+        self.next_illuminator_uid += 1
 
     def finalize_device_meta_data(self):
 
