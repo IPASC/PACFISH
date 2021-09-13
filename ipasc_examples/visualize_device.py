@@ -86,17 +86,45 @@ def add_arbitrary_plane(device_dictionary: dict, mins, maxs, axes, draw_axis):
         diameter = np.sqrt(np.sum(np.asarray([a**2 for a in illuminator_geometry]))) / 2
         illuminator_geometry_type = device_dictionary["illuminators"][illuminator][MetadataDeviceTags.ILLUMINATOR_GEOMETRY_TYPE.tag]
 
+        def rot_mat(angle):
+            c, s = np.cos(angle), np.sin(angle)
+            return np.array(((c, -s), (s, c)))
 
-        draw_axis.scatter(illuminator_position[axes[0]], illuminator_position[axes[1]],
+        if illuminator_geometry_type == "CUBOID":
+
+            angle = np.arctan2(illuminator_orientation[axes[0]], illuminator_orientation[axes[1]])
+
+            if axes[0] == 0 and axes[1] == 1:
+                geometry_vector = np.asarray([illuminator_geometry[axes[1]], illuminator_geometry[axes[0]]])
+            else:
+                geometry_vector = np.asarray([illuminator_geometry[axes[0]], illuminator_geometry[axes[1]]])
+            rotated_vector = np.dot(rot_mat(angle), geometry_vector)
+
+            p1 = [illuminator_position[axes[0]] - rotated_vector[0] / 2,
+                  illuminator_position[axes[1]] - rotated_vector[1] / 2]
+            p2 = [illuminator_position[axes[0]] + rotated_vector[0] / 2,
+                  illuminator_position[axes[1]] + rotated_vector[1] / 2]
+            p3 = [p2[0] + illuminator_orientation[axes[0]] + illuminator_divergence,
+                  p2[1] + illuminator_orientation[axes[1]]]
+            p4 = [p1[0] + illuminator_orientation[axes[0]] - illuminator_divergence,
+                  p1[1] + illuminator_orientation[axes[1]]]
+
+            polypoints = np.asarray([p1, p2, p3, p4, p1])
+
+            plt.gca().add_patch(plt.Polygon(xy=polypoints, fill=True, color="yellow", closed=True, alpha=0.5))
+            plt.plot([p1[0], p2[0]], [p1[1], p2[1]], color="red")
+            if np.abs(p1[0] - p2[0]) < 1e-5 and np.abs(p1[1] - p2[1]) < 1e-5:
+                draw_axis.scatter(p1[0], p1[1], marker="+", color="red")
+        else:
+            draw_axis.scatter(illuminator_position[axes[0]], illuminator_position[axes[1]],
                                        marker="+", color="red")
-
-        x = [illuminator_position[axes[0]],
-             illuminator_position[axes[0]] +
-             illuminator_orientation[axes[0]]/25]
-        y = [illuminator_position[axes[1]],
-             illuminator_position[axes[1]] +
-             illuminator_orientation[axes[1]]/25]
-        plt.plot(x, y, color="yellow", alpha=1, linewidth=25, zorder=-10)
+            x = [illuminator_position[axes[0]],
+                 illuminator_position[axes[0]] +
+                 illuminator_orientation[axes[0]]/25]
+            y = [illuminator_position[axes[1]],
+                 illuminator_position[axes[1]] +
+                 illuminator_orientation[axes[1]]/25]
+            plt.plot(x, y, color="yellow", alpha=1, linewidth=25, zorder=-10)
 
     start_indexes = np.asarray(axes) * 2
     end_indexes = start_indexes + 1
