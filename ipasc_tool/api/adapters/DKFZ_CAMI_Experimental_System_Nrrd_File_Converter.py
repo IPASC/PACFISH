@@ -73,8 +73,7 @@ class DKFZCAMIExperimentalSystemNrrdFileConverter(BaseAdapter):
             detection_element_creator.set_angular_response(np.asarray([np.linspace(700, 900, 100),
                                                                        np.ones(100)]))
 
-            device_creator.add_detection_element("detection_element_" + str(y_idx),
-                                                 detection_element_creator.get_dictionary())
+            device_creator.add_detection_element(detection_element_creator.get_dictionary())
 
         for y_idx in range(2):
             illumination_element_creator = IlluminationElementCreator()
@@ -94,8 +93,7 @@ class DKFZCAMIExperimentalSystemNrrdFileConverter(BaseAdapter):
             illumination_element_creator.set_laser_stability_profile(np.asarray([np.linspace(700, 900, 100),
                                                                                np.ones(100)]))
             illumination_element_creator.set_pulse_width(7e-9)
-            device_creator.add_illumination_element("illumination_element_" + str(y_idx),
-                                                    illumination_element_creator.get_dictionary())
+            device_creator.add_illumination_element(illumination_element_creator.get_dictionary())
 
         return device_creator.finalize_device_meta_data()
 
