@@ -1,3 +1,9 @@
+"""
+SPDX-FileCopyrightText: 2021 International Photoacoustics Standardisation Consortium (IPASC)
+SPDX-FileCopyrightText: 2021 Janek Gröhl
+SPDX-License-Identifier: BSD 3-Clause License
+"""
+
 import matplotlib.pylab as plt
 from matplotlib.patches import Rectangle, Circle, Polygon
 import numpy as np

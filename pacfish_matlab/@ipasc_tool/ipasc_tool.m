@@ -1,3 +1,7 @@
+%% SPDX-FileCopyrightText: 2021 International Photoacoustics Standardisation Consortium (IPASC)
+%% SPDX-FileCopyrightText: 2021 François Varray
+%% SPDX-License-Identifier: BSD 3-Clause License
+
 classdef ipasc_tool
     properties 
         binary_time_series_data ;
