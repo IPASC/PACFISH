@@ -268,7 +268,7 @@ class MetadataDeviceTags:
                                                   expected_array_dimension=1)
     ILLUMINATOR_ORIENTATION = NDimensionalNumpyArray("illuminator_orientation", False, np.ndarray, Units.METERS,
                                                      expected_array_dimension=1)
-    ILLUMINATOR_GEOMETRY = UnconstrainedMetaDatum("illuminator_geometry", False, (float, np.float, np.ndarray, str),
+    ILLUMINATOR_GEOMETRY = UnconstrainedMetaDatum("illuminator_geometry", False, (float, np.ndarray, str),
                                                   Units.METERS)
     ILLUMINATOR_GEOMETRY_TYPE = UnconstrainedMetaDatum("illuminator_geometry_type", False, str, Units.METERS)
     WAVELENGTH_RANGE = NDimensionalNumpyArray("wavelength_range", False, np.ndarray, Units.METERS,
@@ -291,7 +291,7 @@ class MetadataDeviceTags:
                                                expected_array_dimension=1)
     DETECTOR_ORIENTATION = NDimensionalNumpyArray("detector_orientation", False, np.ndarray, Units.METERS,
                                                   expected_array_dimension=1)
-    DETECTOR_GEOMETRY = UnconstrainedMetaDatum("detector_geometry", False, (float, np.float, np.ndarray, str),
+    DETECTOR_GEOMETRY = UnconstrainedMetaDatum("detector_geometry", False, (float, np.ndarray, str),
                                                Units.METERS)
 
     DETECTOR_GEOMETRY_TYPE = UnconstrainedMetaDatum("detector_geometry_type", False, str, Units.METERS)

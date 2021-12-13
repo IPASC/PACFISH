@@ -103,7 +103,7 @@ class DKFZCAMIExperimentalSystemNrrdFileConverter(BaseAdapter):
         elif metadata_tag == MetadataAcquisitionTags.DATA_TYPE:
             return self.meta['type']
         elif metadata_tag == MetadataAcquisitionTags.AD_SAMPLING_RATE:
-            return float(self.meta['space directions'][1][1]) / 1000000
+            return 1.0 / (float(self.meta['space directions'][1][1]) / 1000000)
         elif metadata_tag == MetadataAcquisitionTags.ACOUSTIC_COUPLING_AGENT:
             return "Water"
         elif metadata_tag == MetadataAcquisitionTags.ACQUISITION_OPTICAL_WAVELENGTHS:

@@ -29,14 +29,12 @@
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 import os
-import numpy as np
 import requests
 from ipasc_tool.api.adapters.DKFZ_CAMI_Experimental_System_Nrrd_File_Converter import \
     DKFZCAMIExperimentalSystemNrrdFileConverter
-import matplotlib.pylab as plt
 from ipasc_tool import write_data
 from ipasc_tool import quality_check_pa_data
-from ipasc_examples.visualize_device import visualize_device
+from ipasc_tool.visualize_device import visualize_device
 
 URL = "http://mitk.org/download/demos/PhotonicsWest2018/demoDataPhantomPA.nrrd"
 
@@ -60,7 +58,7 @@ write_data("demodata.hdf5", pa_data)
 # plt.show()
 # plt.close()
 
-visualize_device(pa_data.meta_data_device)
+visualize_device(pa_data.meta_data_device, title="Custom device visualisation based on IPASC data format specifications")
 
 if os.path.exists("logfile.md"):
     os.remove("logfile.md")

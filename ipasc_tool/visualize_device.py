@@ -2,7 +2,6 @@ import matplotlib.pylab as plt
 from matplotlib.patches import Rectangle, Circle, Polygon
 import numpy as np
 from ipasc_tool import MetadataDeviceTags
-from ipasc_test.tests.test_meta_data import create_complete_device_metadata_dictionary
 
 
 def define_boundary_values(device_dictionary: dict):
@@ -46,7 +45,7 @@ def add_arbitrary_plane(device_dictionary: dict, mins, maxs, axes, draw_axis):
     print("AXES:", axes)
     draw_axis.set_xlim(mins[axes[0]], maxs[axes[0]])
     draw_axis.set_ylim(maxs[axes[1]], mins[axes[1]])
-    draw_axis.set_title(f"axes{axes[0]}{axes[1]} projection view")
+    draw_axis.set_title(f"axes {axes[0]}/{axes[1]} projection view")
     draw_axis.set_xlabel(f"{axes[0]}-axis [m]")
     draw_axis.set_ylabel(f"{axes[1]}-axis [m]")
 
@@ -86,45 +85,15 @@ def add_arbitrary_plane(device_dictionary: dict, mins, maxs, axes, draw_axis):
         diameter = np.sqrt(np.sum(np.asarray([a**2 for a in illuminator_geometry]))) / 2
         illuminator_geometry_type = device_dictionary["illuminators"][illuminator][MetadataDeviceTags.ILLUMINATOR_GEOMETRY_TYPE.tag]
 
-        def rot_mat(angle):
-            c, s = np.cos(angle), np.sin(angle)
-            return np.array(((c, -s), (s, c)))
-
-        if illuminator_geometry_type == "CUBOID":
-
-            angle = np.arctan2(illuminator_orientation[axes[0]], illuminator_orientation[axes[1]])
-
-            if axes[0] == 0 and axes[1] == 1:
-                geometry_vector = np.asarray([illuminator_geometry[axes[1]], illuminator_geometry[axes[0]]])
-            else:
-                geometry_vector = np.asarray([illuminator_geometry[axes[0]], illuminator_geometry[axes[1]]])
-            rotated_vector = np.dot(rot_mat(angle), geometry_vector)
-
-            p1 = [illuminator_position[axes[0]] - rotated_vector[0] / 2,
-                  illuminator_position[axes[1]] - rotated_vector[1] / 2]
-            p2 = [illuminator_position[axes[0]] + rotated_vector[0] / 2,
-                  illuminator_position[axes[1]] + rotated_vector[1] / 2]
-            p3 = [p2[0] + illuminator_orientation[axes[0]] + illuminator_divergence,
-                  p2[1] + illuminator_orientation[axes[1]]]
-            p4 = [p1[0] + illuminator_orientation[axes[0]] - illuminator_divergence,
-                  p1[1] + illuminator_orientation[axes[1]]]
-
-            polypoints = np.asarray([p1, p2, p3, p4, p1])
-
-            plt.gca().add_patch(plt.Polygon(xy=polypoints, fill=True, color="yellow", closed=True, alpha=0.5))
-            plt.plot([p1[0], p2[0]], [p1[1], p2[1]], color="red")
-            if np.abs(p1[0] - p2[0]) < 1e-5 and np.abs(p1[1] - p2[1]) < 1e-5:
-                draw_axis.scatter(p1[0], p1[1], marker="+", color="red")
-        else:
-            draw_axis.scatter(illuminator_position[axes[0]], illuminator_position[axes[1]],
-                                       marker="+", color="red")
-            x = [illuminator_position[axes[0]],
-                 illuminator_position[axes[0]] +
-                 illuminator_orientation[axes[0]]/25]
-            y = [illuminator_position[axes[1]],
-                 illuminator_position[axes[1]] +
-                 illuminator_orientation[axes[1]]/25]
-            plt.plot(x, y, color="yellow", alpha=1, linewidth=25, zorder=-10)
+        draw_axis.scatter(illuminator_position[axes[0]], illuminator_position[axes[1]],
+                                   marker="+", color="red")
+        x = [illuminator_position[axes[0]],
+             illuminator_position[axes[0]] +
+             illuminator_orientation[axes[0]]/25]
+        y = [illuminator_position[axes[1]],
+             illuminator_position[axes[1]] +
+             illuminator_orientation[axes[1]]/25]
+        plt.plot(x, y, color="yellow", alpha=1, linewidth=25, zorder=-10)
 
     start_indexes = np.asarray(axes) * 2
     end_indexes = start_indexes + 1
@@ -136,37 +105,37 @@ def add_arbitrary_plane(device_dictionary: dict, mins, maxs, axes, draw_axis):
                   color="green", fill=False, label="Field of View"))
 
 
-def visualize_device(device_dictionary: dict, save_path: str = None):
+def visualize_device(device_dictionary: dict, save_path: str = None, title: str=None):
 
+    if title is None:
+        title = "Device Visualisation based on IPASC data format specifications"
     mins, maxs = define_boundary_values(device_dictionary)
 
-    plt.figure(figsize=(12, 4))
-    plt.suptitle("Device Visualisation based on IPASC data format specifications")
-    ax = plt.subplot(1, 4, 1)
+    plt.figure(figsize=(10, 4))
+    plt.suptitle(title)
+    ax = plt.subplot(1, 3, 1)
+    ax.axes.xaxis.set_visible(False)
+    ax.axes.yaxis.set_visible(False)
     add_arbitrary_plane(device_dictionary, mins, maxs, axes=(0, 2), draw_axis=ax)
-    ax = plt.subplot(1, 4, 2)
+    ax = plt.subplot(1, 3, 2)
+    ax.axes.xaxis.set_visible(False)
+    ax.axes.yaxis.set_visible(False)
     add_arbitrary_plane(device_dictionary, mins, maxs, axes=(0, 1), draw_axis=ax)
-    ax = plt.subplot(1, 4, 3)
+    ax = plt.subplot(1, 3, 3)
+    ax.axes.xaxis.set_visible(False)
+    ax.axes.yaxis.set_visible(False)
     add_arbitrary_plane(device_dictionary, mins, maxs, axes=(1, 2), draw_axis=ax)
 
-    plt.subplot(1, 4, 4)
-    plt.axis('off')
-
+    # plt.subplot(1, 4, 4)
+    #
+    #
     plt.scatter(None, None, color="blue", marker="o", label="Detector Element")
     plt.scatter(None, None, color="red", marker="+", label="Illumination Element")
     plt.scatter(None, None, color="green", marker="s", label="Field of View")
     plt.scatter(None, None, color="Yellow", marker="s", label="Illumination Profile")
-    plt.legend(loc="center")
+    plt.legend(loc="lower left")
     plt.tight_layout()
     if save_path is None:
         plt.show()
     else:
         plt.savefig(save_path + "figure.png", "png")
-
-
-if __name__ == "__main__":
-
-    dictionary = create_complete_device_metadata_dictionary()
-
-    visualize_device(dictionary)
-
