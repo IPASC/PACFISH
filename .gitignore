@@ -4,6 +4,8 @@ ipasc_docs/.doctrees
 ipasc_docs/.doctrees/*
 ipasc_docs/test_coverage
 
+*.nrrd
+
 **.hdf5
 **logfile.md
 
