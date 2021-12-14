@@ -26,7 +26,7 @@ class DeviceMetaDataCreatorTest(TestCase):
         self.device_dict_creator.set_general_information(test_string, test_array)
         device_dict = self.device_dict_creator.finalize_device_meta_data()
 
-        assert device_dict[self.device_dict_creator.GENERAL][MetadataDeviceTags.UUID.tag] == test_string
+        assert device_dict[self.device_dict_creator.GENERAL][MetadataDeviceTags.UNIQUE_IDENTIFIER.tag] == test_string
         assert (device_dict[self.device_dict_creator.GENERAL][MetadataDeviceTags.FIELD_OF_VIEW.tag] == test_array).all()
         
     def test_add_detection_element(self):
@@ -79,13 +79,13 @@ class IlluminationElementCreatorTest(TestCase):
         test_array = create_random_testing_parameters()['test_array']
         self.illuminator_creator.set_laser_energy_profile(test_array)
         illumination_dict = self.illuminator_creator.get_dictionary()
-        assert (illumination_dict[MetadataDeviceTags.LASER_ENERGY_PROFILE.tag] == test_array).all()
+        assert (illumination_dict[MetadataDeviceTags.BEAM_ENERGY_PROFILE.tag] == test_array).all()
     
     def test_set_laser_stability_profile(self):
         test_array = create_random_testing_parameters()['test_array']
         self.illuminator_creator.set_laser_stability_profile(test_array)
         illumination_dict = self.illuminator_creator.get_dictionary()
-        assert (illumination_dict[MetadataDeviceTags.LASER_STABILITY_PROFILE.tag] == test_array).all()
+        assert (illumination_dict[MetadataDeviceTags.BEAM_STABILITY_PROFILE.tag] == test_array).all()
     
     def test_set_pulse_width(self):    
         test_array = create_random_testing_parameters()['test_array']

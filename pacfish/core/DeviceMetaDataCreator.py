@@ -76,7 +76,7 @@ class IlluminationElementCreator(object):
                     The units can be found in MetadataDeviceTags.LASER_ENERGY_PROFILE.unit.
         :return: void
         """
-        self.illuminator_element_dict[MetadataDeviceTags.LASER_ENERGY_PROFILE.tag] = energy_profile
+        self.illuminator_element_dict[MetadataDeviceTags.BEAM_ENERGY_PROFILE.tag] = energy_profile
         
     def set_laser_stability_profile(self, stability_profile):
         """
@@ -85,7 +85,7 @@ class IlluminationElementCreator(object):
                     The units can be found in MetadataDeviceTags.LASER_STABILITY_PROFILE.unit.
         :return: void
         """
-        self.illuminator_element_dict[MetadataDeviceTags.LASER_STABILITY_PROFILE.tag] = stability_profile
+        self.illuminator_element_dict[MetadataDeviceTags.BEAM_STABILITY_PROFILE.tag] = stability_profile
 
     def set_pulse_width(self, pulse_width: float):
         """
@@ -209,7 +209,7 @@ class DeviceMetaDataCreator(object):
                     x1, x2, and x3 direction (x1, x2, x3 is defined in TODO).
         :return: void
         """
-        self.device_dict[self.GENERAL][MetadataDeviceTags.UUID.tag] = uuid
+        self.device_dict[self.GENERAL][MetadataDeviceTags.UNIQUE_IDENTIFIER.tag] = uuid
         self.device_dict[self.GENERAL][MetadataDeviceTags.FIELD_OF_VIEW.tag] = fov
 
     def add_detection_element(self, detection_element: dict):

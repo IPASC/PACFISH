@@ -83,7 +83,7 @@ class NrrdFileConverter(BaseAdapter):
             return 1.0 / (float(self.meta['space directions'][1][1]) / 1000000)
         elif metadata_tag == MetadataAcquisitionTags.ACOUSTIC_COUPLING_AGENT:
             return "Water"
-        elif metadata_tag == MetadataAcquisitionTags.ACQUISITION_OPTICAL_WAVELENGTHS:
+        elif metadata_tag == MetadataAcquisitionTags.ACQUISITION_WAVELENGTHS:
             return np.asarray([700])
         elif metadata_tag == MetadataAcquisitionTags.COMPRESSION:
             return "None"
@@ -93,7 +93,7 @@ class NrrdFileConverter(BaseAdapter):
             return "raw"
         elif metadata_tag == MetadataAcquisitionTags.SCANNING_METHOD:
             return "Freehand"
-        elif metadata_tag == MetadataAcquisitionTags.PHOTOACOUSTIC_IMAGING_DEVICE:
+        elif metadata_tag == MetadataAcquisitionTags.PHOTOACOUSTIC_IMAGING_DEVICE_REFERENCE:
             return "c771111c-36ba-425d-9f53-84b8ff092059"
         elif metadata_tag == MetadataAcquisitionTags.SIZES:
             return np.asarray(self.meta['sizes'])

@@ -26,13 +26,13 @@ class MetaDataTest(TestCase):
         device_dictionary = create_complete_device_metadata_dictionary()
         assert self.completeness_checker.check_meta_data_device(device_dictionary)
 
-        device_dictionary[MetadataDeviceTags.GENERAL.tag][MetadataDeviceTags.UUID.tag] = None
+        device_dictionary[MetadataDeviceTags.GENERAL.tag][MetadataDeviceTags.UNIQUE_IDENTIFIER.tag] = None
         assert not self.completeness_checker.check_meta_data_device(device_dictionary)
 
         device_dictionary = create_complete_device_metadata_dictionary()
         assert self.completeness_checker.check_meta_data_device(device_dictionary)
 
-        device_dictionary[MetadataDeviceTags.GENERAL.tag].pop(MetadataDeviceTags.UUID.tag)
+        device_dictionary[MetadataDeviceTags.GENERAL.tag].pop(MetadataDeviceTags.UNIQUE_IDENTIFIER.tag)
         assert not self.completeness_checker.check_meta_data_device(device_dictionary)
 
         os.remove(self.completeness_checker.save_file_name)

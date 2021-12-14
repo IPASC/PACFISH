@@ -49,14 +49,14 @@ class MetaDataTest(TestCase):
         assert self.pa_data.get_wavelength_range(0) is not None
 
     def test_get_energy_profile(self):
-        assert self.pa_data.get_energy_profile() is not None
-        assert self.pa_data.get_energy_profile(list(self.pa_data.get_illuminator_ids())[0]) is not None
-        assert self.pa_data.get_energy_profile(0) is not None
+        assert self.pa_data.get_beam_energy_profile() is not None
+        assert self.pa_data.get_beam_energy_profile(list(self.pa_data.get_illuminator_ids())[0]) is not None
+        assert self.pa_data.get_beam_energy_profile(0) is not None
 
     def test_get_stability_profile(self):
-        assert self.pa_data.get_stability_profile() is not None
-        assert self.pa_data.get_stability_profile(list(self.pa_data.get_illuminator_ids())[0]) is not None
-        assert self.pa_data.get_stability_profile(0) is not None
+        assert self.pa_data.get_beam_stability_profile() is not None
+        assert self.pa_data.get_beam_stability_profile(list(self.pa_data.get_illuminator_ids())[0]) is not None
+        assert self.pa_data.get_beam_stability_profile(0) is not None
 
     def test_get_pulse_duration(self):
         assert self.pa_data.get_pulse_width() is not None
@@ -105,15 +105,17 @@ class MetaDataTest(TestCase):
         assert self.pa_data.get_data_type() is not None
         assert self.pa_data.get_dimensionality() is not None
         assert self.pa_data.get_sizes() is not None
-        assert self.pa_data.get_device_reference() is not None
-        assert self.pa_data.get_pulse_laser_energy() is not None
-        assert self.pa_data.get_time_stamps() is not None
-        assert self.pa_data.get_wavelengths() is not None
+        assert self.pa_data.get_photoacoustic_imaging_device_reference() is not None
+        assert self.pa_data.get_pulse_energy() is not None
+        assert self.pa_data.get_measurement_time_stamps() is not None
+        assert self.pa_data.get_acquisition_wavelengths() is not None
         assert self.pa_data.get_time_gain_compensation() is not None
         assert self.pa_data.get_overall_gain() is not None
         assert self.pa_data.get_element_dependent_gain() is not None
         assert self.pa_data.get_temperature() is not None
-        assert self.pa_data.get_coupling_agent() is not None
+        assert self.pa_data.get_acoustic_coupling_agent() is not None
         assert self.pa_data.get_scanning_method() is not None
         assert self.pa_data.get_sampling_rate() is not None
-        assert self.pa_data.get_frequency_filter() is not None
+        assert self.pa_data.get_frequency_domain_filter() is not None
+        assert self.pa_data.get_measurement_spatial_pose() is not None
+        assert self.pa_data.get_measurements_per_image() is not None

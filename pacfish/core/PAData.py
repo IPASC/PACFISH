@@ -88,8 +88,8 @@ class PAData:
         The UUID is a universally unique identifier to the device description that can be referenced.
         :return: return value can be None, of no UUID was found in the meta data.
         """
-        if MetadataDeviceTags.UUID.tag in self.meta_data_device[MetadataDeviceTags.GENERAL.tag]:
-            return self.meta_data_device[MetadataDeviceTags.GENERAL.tag][MetadataDeviceTags.UUID.tag]
+        if MetadataDeviceTags.UNIQUE_IDENTIFIER.tag in self.meta_data_device[MetadataDeviceTags.GENERAL.tag]:
+            return self.meta_data_device[MetadataDeviceTags.GENERAL.tag][MetadataDeviceTags.UNIQUE_IDENTIFIER.tag]
         else:
             return None
 
@@ -186,28 +186,28 @@ class PAData:
         """
         return self.get_illuminator_attribute_for_tag(MetadataDeviceTags.WAVELENGTH_RANGE, identifier)
 
-    def get_energy_profile(self, identifier=None):
+    def get_beam_energy_profile(self, identifier=None):
         """
-        The laser energy profile field is a discretized functional of wavelength (nm) that represents the laser energy
+        The beam energy profile field is a discretized functional of wavelength (nm) that represents the light energy
         of the illuminator with regard to the wavelength. Thereby, systematic differences in multispectral image
         acquisitions can be accounted for.
 
         :return: return value can be None, of the key was not found in the meta data dictionary.
         """
-        return self.get_illuminator_attribute_for_tag(MetadataDeviceTags.LASER_ENERGY_PROFILE, identifier)
+        return self.get_illuminator_attribute_for_tag(MetadataDeviceTags.BEAM_ENERGY_PROFILE, identifier)
 
-    def get_stability_profile(self, identifier=None):
+    def get_beam_stability_profile(self, identifier=None):
         """
-        The laser  noise profile field is a functional of wavelength (nm) that represents the standard deviation
-        of the pulse-to-pulse laser energy of the illuminator with regard to the wavelength.
+        The beam noise profile field is a functional of wavelength (nm) that represents the standard deviation
+        of the pulse-to-pulse energy of the illuminator with regard to the wavelength.
 
         :return: return value can be None, of the key was not found in the meta data dictionary.
         """
-        return self.get_illuminator_attribute_for_tag(MetadataDeviceTags.LASER_STABILITY_PROFILE, identifier)
+        return self.get_illuminator_attribute_for_tag(MetadataDeviceTags.BEAM_STABILITY_PROFILE, identifier)
 
     def get_pulse_width(self, identifier=None):
         """
-        The pulse duration or pulse width describes the total length of a laser pulse, measured as the time interval
+        The pulse duration or pulse width describes the total length of a light pulse, measured as the time interval
         between the half-power points on the leading and trailing edges of the pulse.
 
         :return: return value can be None, of the key was not found in the meta data dictionary.
@@ -216,7 +216,7 @@ class PAData:
 
     def get_beam_profile(self, identifier=None):
         """
-        The beam intensity profile is a function of a spatial position that specifies the relative laser beam
+        The beam intensity profile is a function of a spatial position that specifies the relative beam
         intensity according to the planar emitting surface of the illuminator shape.
 
         :return: return value can be None, of the key was not found in the meta data dictionary.
@@ -228,11 +228,11 @@ class PAData:
         The distance from the light source for measuring its beam intensity profile.
         :return: return value can be None, of the key was not found in the meta data dictionary.
         """
-        return self.get_illuminator_attribute_for_tag(MetadataDeviceTags.BEAM_INTENSITY_PROFILE_DISTANCE)
+        return self.get_illuminator_attribute_for_tag(MetadataDeviceTags.INTENSITY_PROFILE_DISTANCE)
 
     def get_beam_divergence(self, identifier=None):
         """
-        The beam divergence angles represent the opening angles of the laser beam from the illuminator shape with
+        The beam divergence angles represent the opening angles of the beam from the illuminator shape with
         respect to the orientation vector. This angle represented by the standard deviation of the beam divergence.
 
         :return: return value can be None, of the key was not found in the meta data dictionary.
@@ -265,12 +265,16 @@ class PAData:
 
     def get_detector_position(self, identifier=None):
         """
-        The element position defines the position of the detection element centroid in 3D cartesian coordinates
-        [x1, x2, x3].
+        The positions of each detection element in 3D Cartesian coordinates [x1, x2, x3].
 
         :return: return value can be None, of the key was not found in the meta data dictionary.
         """
         return self.get_detector_attribute_for_tag(MetadataDeviceTags.DETECTOR_POSITION, identifier)
+
+    def get_regions_of_interest(self):
+        """
+        """
+        return self.get_acquisition_meta_datum(MetadataAcquisitionTags.REGIONS_OF_INTEREST)
 
     def get_detector_orientation(self, identifier=None):
         """
@@ -402,44 +406,44 @@ class PAData:
         """
         return self.get_acquisition_meta_datum(MetadataAcquisitionTags.SIZES)
 
-    def get_device_reference(self):
+    def get_photoacoustic_imaging_device_reference(self):
         """
-        A reference to the UUID of the PA imaging device description as defined in part 1.
+        A string referencing the UUID of the PA imaging device description as defined in the Device Metadata.
 
         :return: return value can be None, of the key was not found in the meta data dictionary.
         """
-        return self.get_acquisition_meta_datum(MetadataAcquisitionTags.PHOTOACOUSTIC_IMAGING_DEVICE)
+        return self.get_acquisition_meta_datum(MetadataAcquisitionTags.PHOTOACOUSTIC_IMAGING_DEVICE_REFERENCE)
 
-    def get_pulse_laser_energy(self):
+    def get_pulse_energy(self):
         """
-        The pulse laser energy field specifies the pulse-to-pulse laser energy that was measured for the acquisition
-        of the raw time series data.
-
-        :return: return value can be None, of the key was not found in the meta data dictionary.
-        """
-        return self.get_acquisition_meta_datum(MetadataAcquisitionTags.PULSE_LASER_ENERGY)
-
-    def get_time_stamps(self):
-        """
-        The frame acquisition timestamps field indicates the timestamp of the acquisition system.
+        A value specifying the pulse energy used to generate the photoacoustic signal.
+        If the pulse energies are averaged over many pulses, the average value must be specified.
 
         :return: return value can be None, of the key was not found in the meta data dictionary.
         """
-        return self.get_acquisition_meta_datum(MetadataAcquisitionTags.FRAME_ACQUISITION_TIMESTAMPS)
+        return self.get_acquisition_meta_datum(MetadataAcquisitionTags.PULSE_ENERGY)
 
-    def get_wavelengths(self):
+    def get_measurement_time_stamps(self):
         """
-        The acquisition optical wavelengths field is a 1D array that contains a list of all wavelengths used for the
-        image acquisition.
+        An array specifying the time at which a measurement was recorded.
 
         :return: return value can be None, of the key was not found in the meta data dictionary.
         """
-        return self.get_acquisition_meta_datum(MetadataAcquisitionTags.ACQUISITION_OPTICAL_WAVELENGTHS)
+        return self.get_acquisition_meta_datum(MetadataAcquisitionTags.MEASUREMENT_TIMESTAMPS)
+
+    def get_acquisition_wavelengths(self):
+        """
+        A 1D array that contains all wavelengths used for the image acquisition.
+
+        :return: return value can be None, of the key was not found in the meta data dictionary.
+        """
+        return self.get_acquisition_meta_datum(MetadataAcquisitionTags.ACQUISITION_WAVELENGTHS)
 
     def get_time_gain_compensation(self):
         """
-        The time gain compensation field is a 1D array that contains the relative factors which have been used to modify
-        the time series data to correct for the effect of attenuation.
+        An array containing relative
+        factors that have been used to correct the time series data for
+        the effect of acoustic attenuation.
 
         :return: return value can be None, of the key was not found in the meta data dictionary.
         """
@@ -447,8 +451,8 @@ class PAData:
 
     def get_overall_gain(self):
         """
-        The overall gain is a single value describing a factor that has been applied to all values of the raw time
-        series data.
+        A single value describing a factor used to
+        modify the amplitude of the raw time series data.
 
         :return: return value can be None, of the key was not found in the meta data dictionary.
         """
@@ -456,8 +460,8 @@ class PAData:
 
     def get_element_dependent_gain(self):
         """
-        The element-dependent gain field is a 2D array that contains the relative factors which have been used to
-        perform apodization.
+        An array that contains the relative factors used for apodisation or detection element-wise
+        sensitivity corrections.
 
         :return: return value can be None, of the key was not found in the meta data dictionary.
         """
@@ -465,32 +469,39 @@ class PAData:
 
     def get_temperature(self):
         """
-        The temperature control field indicates the temperature during image acquisition.
+        An array describing the temperature of the imaged space (covering both the imaged medium and
+        the coupling agent) for each measurement.
 
         :return: return value can be None, of the key was not found in the meta data dictionary.
         """
         return self.get_acquisition_meta_datum(MetadataAcquisitionTags.TEMPERATURE_CONTROL)
 
-    def get_coupling_agent(self):
+    def get_acoustic_coupling_agent(self):
         """
-        A string representation of the acoustic coupling agent that was used. For example, the following options are
-        possible: D2O, H2O and US-gel.
+        A string representing the acoustic coupling agent that is used.
 
         :return: return value can be None, of the key was not found in the meta data dictionary.
         """
         return self.get_acquisition_meta_datum(MetadataAcquisitionTags.ACOUSTIC_COUPLING_AGENT)
 
-    def get_assumed_speed_of_sound(self):
+    def get_speed_of_sound(self):
         """
-        A value representing the assumed speed of sound in the entire imaging medium, covering both the imaged medium a
-        nd the coupling agent.
+        Either a single value representing the mean
+        global speed of sound in the entire imaged medium or a 3D
+        array representing a heterogeneous speed of sound map in
+        the device coordinate system. This definition covers both the
+        imaged medium and the coupling agent.
+
         :return: return value can be None, of the key was not found in the meta data dictionary.
         """
-        return self.get_acquisition_meta_datum(MetadataAcquisitionTags.ASSUMED_GLOBAL_SPEED_OF_SOUND)
+        return self.get_acquisition_meta_datum(MetadataAcquisitionTags.SPEED_OF_SOUND)
 
     def get_scanning_method(self):
         """
-        A string representation of the scanning method that was used.
+        A string representing the scanning
+        method that is used. The following descriptions can be used:
+        (“composite_scan”, “full_scan”). This flag determines the
+        way the metadatum “measurement” is defined.
 
         :return: return value can be None, of the key was not found in the meta data dictionary.
         """
@@ -498,17 +509,36 @@ class PAData:
 
     def get_sampling_rate(self):
         """
-        The A/D sampling rate refers to the rate at which ipasc_examples of the analog signal are taken to be converted into
-        digital form.
+        A single value referring to the rate at which samples of the analogue signal are taken to be
+        converted into digital form.
 
         :return: return value can be None, of the key was not found in the meta data dictionary.
         """
         return self.get_acquisition_meta_datum(MetadataAcquisitionTags.AD_SAMPLING_RATE)
 
-    def get_frequency_filter(self):
+    def get_frequency_domain_filter(self):
         """
-         The frequency threshold levels that have been applied to filter the raw time series data.
+        The frequency threshold levels that have been applied to filter the raw time series data.
 
         :return: return value can be None, of the key was not found in the meta data dictionary.
         """
         return self.get_acquisition_meta_datum(MetadataAcquisitionTags.FREQUENCY_DOMAIN_FILTER)
+
+    def get_measurement_spatial_pose(self):
+        """
+        Coordinates describing the position and orientation changes of the acquisition system
+        relative to the measurement of reference (first measurement).
+
+        :return: return value can be None, of the key was not found in the meta data dictionary.
+        """
+        return self.get_acquisition_meta_datum(MetadataAcquisitionTags.MEASUREMENT_SPATIAL_POSES)
+
+    def get_measurements_per_image(self):
+        """
+        A single value describing
+        the number of measurements that constitute the dataset
+        corresponding to one image.
+
+        :return: return value can be None, of the key was not found in the meta data dictionary.
+        """
+        return self.get_acquisition_meta_datum(MetadataAcquisitionTags.MEASUREMENTS_PER_IMAGE)

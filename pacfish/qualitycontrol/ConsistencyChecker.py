@@ -70,7 +70,7 @@ class ConsistencyChecker:
         log_message += "#Consistency Report for Device Meta Data\n\n"
         log_message += "##General Tags\n\n"
 
-        general_tags = [MetadataDeviceTags.UUID, MetadataDeviceTags.FIELD_OF_VIEW]
+        general_tags = [MetadataDeviceTags.UNIQUE_IDENTIFIER, MetadataDeviceTags.FIELD_OF_VIEW]
         for metadatum in general_tags:
             if metadatum.tag in device_meta_data[MetadataDeviceTags.GENERAL.tag]:
                 result = metadatum.evaluate_value_range(
@@ -97,8 +97,8 @@ class ConsistencyChecker:
         log_message += "##Illumination Elements\n\n"
         illumination_tags = [MetadataDeviceTags.ILLUMINATOR_GEOMETRY, MetadataDeviceTags.ILLUMINATOR_ORIENTATION,
                              MetadataDeviceTags.ILLUMINATOR_POSITION, MetadataDeviceTags.WAVELENGTH_RANGE,
-                             MetadataDeviceTags.LASER_ENERGY_PROFILE, MetadataDeviceTags.PULSE_WIDTH,
-                             MetadataDeviceTags.LASER_STABILITY_PROFILE, MetadataDeviceTags.BEAM_INTENSITY_PROFILE,
+                             MetadataDeviceTags.BEAM_ENERGY_PROFILE, MetadataDeviceTags.PULSE_WIDTH,
+                             MetadataDeviceTags.BEAM_STABILITY_PROFILE, MetadataDeviceTags.BEAM_INTENSITY_PROFILE,
                              MetadataDeviceTags.BEAM_DIVERGENCE_ANGLES]
         for metadatum in illumination_tags:
             for illumination_dict in device_meta_data[MetadataDeviceTags.ILLUMINATORS.tag]:

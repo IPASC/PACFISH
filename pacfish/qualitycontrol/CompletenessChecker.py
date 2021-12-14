@@ -93,7 +93,7 @@ class CompletenessChecker:
 
         log_string += "##General information\n\n"
 
-        general_tags = [MetadataDeviceTags.UUID, MetadataDeviceTags.FIELD_OF_VIEW]
+        general_tags = [MetadataDeviceTags.UNIQUE_IDENTIFIER, MetadataDeviceTags.FIELD_OF_VIEW]
 
         if MetadataDeviceTags.GENERAL.tag not in device_meta_data:
             log_string += "General device meta data is missing!\n\n"
@@ -130,8 +130,8 @@ class CompletenessChecker:
 
         illumination_tags = [MetadataDeviceTags.ILLUMINATOR_GEOMETRY, MetadataDeviceTags.ILLUMINATOR_ORIENTATION,
                              MetadataDeviceTags.ILLUMINATOR_POSITION, MetadataDeviceTags.WAVELENGTH_RANGE,
-                             MetadataDeviceTags.LASER_ENERGY_PROFILE, MetadataDeviceTags.PULSE_WIDTH,
-                             MetadataDeviceTags.LASER_STABILITY_PROFILE, MetadataDeviceTags.BEAM_INTENSITY_PROFILE,
+                             MetadataDeviceTags.BEAM_ENERGY_PROFILE, MetadataDeviceTags.PULSE_WIDTH,
+                             MetadataDeviceTags.BEAM_STABILITY_PROFILE, MetadataDeviceTags.BEAM_INTENSITY_PROFILE,
                              MetadataDeviceTags.BEAM_DIVERGENCE_ANGLES]
 
         if MetadataDeviceTags.ILLUMINATORS.tag not in device_meta_data:
