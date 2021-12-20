@@ -1,7 +1,5 @@
-"""
-SPDX-FileCopyrightText: 2021 International Photoacoustics Standardisation Consortium (IPASC)
-SPDX-License-Identifier: BSD 3-Clause License
-"""
+# SPDX-FileCopyrightText: 2021 International Photoacoustics Standardisation Consortium (IPASC)
+# SPDX-License-Identifier: BSD 3-Clause License
 
 from unittest.case import TestCase
 from pacfish import PAData

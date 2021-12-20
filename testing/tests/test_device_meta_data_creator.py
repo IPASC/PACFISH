@@ -1,7 +1,5 @@
-"""
-SPDX-FileCopyrightText: 2021 International Photoacoustics Standardisation Consortium (IPASC)
-SPDX-License-Identifier: BSD 3-Clause License
-"""
+# SPDX-FileCopyrightText: 2021 International Photoacoustics Standardisation Consortium (IPASC)
+# SPDX-License-Identifier: BSD 3-Clause License
 
 from unittest.case import TestCase
 from pacfish import MetadataDeviceTags
@@ -77,13 +75,13 @@ class IlluminationElementCreatorTest(TestCase):
     
     def test_set_laser_energy_profile(self):
         test_array = create_random_testing_parameters()['test_array']
-        self.illuminator_creator.set_laser_energy_profile(test_array)
+        self.illuminator_creator.set_beam_energy_profile(test_array)
         illumination_dict = self.illuminator_creator.get_dictionary()
         assert (illumination_dict[MetadataDeviceTags.BEAM_ENERGY_PROFILE.tag] == test_array).all()
     
     def test_set_laser_stability_profile(self):
         test_array = create_random_testing_parameters()['test_array']
-        self.illuminator_creator.set_laser_stability_profile(test_array)
+        self.illuminator_creator.set_beam_stability_profile(test_array)
         illumination_dict = self.illuminator_creator.get_dictionary()
         assert (illumination_dict[MetadataDeviceTags.BEAM_STABILITY_PROFILE.tag] == test_array).all()
     
