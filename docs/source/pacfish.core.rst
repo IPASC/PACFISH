@@ -1,14 +1,10 @@
-pacfish.core package
+core
 ====================
 
 .. automodule:: pacfish.core
    :members:
    :undoc-members:
    :show-inheritance:
-
-Submodules
-----------
-
 
 .. automodule:: pacfish.core.DeviceMetaDataCreator
    :members:

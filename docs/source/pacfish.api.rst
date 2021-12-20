@@ -1,4 +1,4 @@
-pacfish.api package
+api
 ===================
 
 .. automodule:: pacfish.api
@@ -6,17 +6,10 @@ pacfish.api package
    :undoc-members:
    :show-inheritance:
 
-Subpackages
------------
-
 .. toctree::
    :maxdepth: 4
 
    pacfish.api.adapters
-
-Submodules
-----------
-
 
 .. automodule:: pacfish.api.BaseAdapter
    :members:

@@ -1,14 +1,10 @@
-pacfish.iohandler package
+iohandler
 =========================
 
 .. automodule:: pacfish.iohandler
    :members:
    :undoc-members:
    :show-inheritance:
-
-Submodules
-----------
-
 
 .. automodule:: pacfish.iohandler.file_reader
    :members:

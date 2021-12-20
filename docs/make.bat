@@ -26,6 +26,7 @@ if errorlevel 9009 (
 )
 
 sphinx-apidoc -EfTM -o %SOURCEDIR% ../pacfish
+python %SOURCEDIR%/cleanup.py
 
 %SPHINXBUILD% -M %1 %SOURCEDIR% %BUILDDIR% %SPHINXOPTS% %O%
 goto end

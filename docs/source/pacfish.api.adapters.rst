@@ -1,14 +1,10 @@
-pacfish.api.adapters package
+adapters
 ============================
 
 .. automodule:: pacfish.api.adapters
    :members:
    :undoc-members:
    :show-inheritance:
-
-Submodules
-----------
-
 
 .. automodule:: pacfish.api.adapters.Nrrd_File_Converter
    :members:

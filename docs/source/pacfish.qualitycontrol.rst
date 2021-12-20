@@ -1,14 +1,10 @@
-pacfish.qualitycontrol package
+qualitycontrol
 ==============================
 
 .. automodule:: pacfish.qualitycontrol
    :members:
    :undoc-members:
    :show-inheritance:
-
-Submodules
-----------
-
 
 .. automodule:: pacfish.qualitycontrol.CompletenessChecker
    :members:
