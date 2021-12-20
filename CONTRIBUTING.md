@@ -19,13 +19,13 @@ If you are unsure how to contribute, contact either Ben Cox, Lina Hacker, or
 Janek Gröhl (@jgroehl) for guidance. Before contributing you should be aware of
 some boundary conditions that are outlined here:
 
-### License
+## License
 The project is licensed under the BSD 3-Clause License.
 Every contributor has to make their contributions available under the same license.
 Including materials from other licenses is only possible, if the respective license is
 compatible with the BSD 3-Clause License.
 
-### Copyright
+## Copyright
 Every contributor (or their institution) will retain their copyright.
 The copyrights applicable to each file in the code will be made clear 
 explicitly using the SPDX standard in a file header:
@@ -39,7 +39,7 @@ By contributing, authors have to have the rights to actually
 contribute the code to the project and agree to the developer's
 certificate of origin:
 
-### Developer's Certificate of Origin
+## Developer's Certificate of Origin
 
 When contributing to the project, you agree to the following terms,
 stating that you have indeed the right to contribute the code
@@ -77,14 +77,14 @@ before your pull request, by adding the following line to the commit message:
 
 This is a built-in feature of git and you can automate this by using the `-s` flag.
 
-### Coding conventions
+## Coding conventions
 
 We ask all contributors to follow a couple of conventions and best pratices when contributing code:
 - Code is formatted according to the Python PEP-8 coding standard.
 - Contributors create a test case that tests their code.
 - Contributors document their code.
 
-### Practical Workflow
+## Practical Workflow
 
 Contributors open issue and create implementation on a separate branch or fork.
 Any open questions / calls for help are addressed via a meeting taking place every second week or the comment function in the issue.
