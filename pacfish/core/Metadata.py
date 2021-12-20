@@ -9,9 +9,15 @@ from abc import ABC, abstractmethod
 
 
 DIMENSIONALITY_STRINGS = ['time', 'space', 'time and space']
+"""
+The Dimenstionality_STRINGS define what the value space of the metadatum DIMENSIONALITY is.
+"""
 
 
 class Units:
+    """
+    A list of the SI and compound units that are used in the IPASC format.
+    """
     NO_UNIT = "N/A"
     DIMENSIONLESS_UNIT = "one"
     METERS = "m"
@@ -30,14 +36,28 @@ class MetaDatum(ABC):
     represented by an instance of this class.
     """
 
-    def __init__(self, tag: str, mandatory: bool, dtype: (type, tuple), unit: str = Units.NO_UNIT):
+    def __init__(self, tag: str, minimal: bool, dtype: (type, tuple), unit: str = Units.NO_UNIT):
         """
+        Instantiates a MetaDatum and sets all relevant values.
 
-        :param tag:
-        :param mandatory:
-        :param dtype:
-        :param unit:
-        :raises TypeError if one of the parameters is not of correct type.
+        Parameters
+        ----------
+        tag: str
+            The tag that corresponds to this meta datum.
+
+        minimal: bool
+            Defines if the metadatum is `minimal` (i.e. if is MUST be reported). Without the
+            minimal parameters, the time series data cannot be reconstructed into an image.
+            All parameters that are not minimal are interpreted as "report if present".
+        dtype: type, tuple
+            The data type of the meta datum. Can either be a single type or a tuple of possible types.
+        unit: str
+            The unit associated with this metadatum. Must be one of the strings defined in pacfish.Units.
+
+        Raises
+        ------
+        TypeError:
+            if one of the parameters is not of the correct type.
         """
 
         if tag is not None and isinstance(tag, str):
@@ -45,8 +65,8 @@ class MetaDatum(ABC):
         else:
             raise TypeError("tag parameter was not of type 'string'")
 
-        if mandatory is not None and isinstance(mandatory, bool):
-            self.mandatory = mandatory
+        if minimal is not None and isinstance(minimal, bool):
+            self.mandatory = minimal
         else:
             raise TypeError("mandatory parameter was not of type 'bool'")
 
@@ -59,12 +79,29 @@ class MetaDatum(ABC):
 
     @abstractmethod
     def evaluate_value_range(self, value) -> bool:
+        """
+        Evaluates if a given value fits to the acceptable value range of the MetaDatum.
+
+        Parameters
+        ----------
+        value: object
+            value to evaluate
+
+        Return
+        ------
+        bool
+            True if the given value is acceptable for the respective MetaDatum
+        """
         pass
 
 
 class UnconstrainedMetaDatum(MetaDatum):
-    def __init__(self, tag, mandatory, dtype, unit=Units.NO_UNIT):
-        super().__init__(tag, mandatory, dtype, unit)
+    """
+    This MetaDatum has no limitations on the values associated with it.
+    """
+
+    def __init__(self, tag, minimal, dtype, unit=Units.NO_UNIT):
+        super().__init__(tag, minimal, dtype, unit)
 
     def evaluate_value_range(self, value) -> bool:
         if value is None:
@@ -78,8 +115,11 @@ class UnconstrainedMetaDatum(MetaDatum):
 
 
 class NonNegativeWholeNumber(MetaDatum):
-    def __init__(self, tag, mandatory, dtype, unit=Units.NO_UNIT):
-        super().__init__(tag, mandatory, dtype, unit)
+    """
+    This MetaDatum is defined to be a non-negative whole number.
+    """
+    def __init__(self, tag, minimal, dtype, unit=Units.NO_UNIT):
+        super().__init__(tag, minimal, dtype, unit)
 
     def evaluate_value_range(self, value) -> bool:
         if value is None:
@@ -95,8 +135,11 @@ class NonNegativeWholeNumber(MetaDatum):
 
 
 class NonNegativeNumbersInArray(MetaDatum):
-    def __init__(self, tag, mandatory, dtype, unit=Units.NO_UNIT):
-        super().__init__(tag, mandatory, dtype, unit)
+    """
+    This MetaDatum is defined to be an array containing non-negative whole numbers.
+    """
+    def __init__(self, tag, minimal, dtype, unit=Units.NO_UNIT):
+        super().__init__(tag, minimal, dtype, unit)
 
     def evaluate_value_range(self, value) -> bool:
         if value is None:
@@ -116,8 +159,11 @@ class NonNegativeNumbersInArray(MetaDatum):
 
 
 class NumberWithUpperAndLowerLimit(MetaDatum):
-    def __init__(self, tag, mandatory, dtype, unit=Units.NO_UNIT, lower_limit=-np.inf, upper_limit=np.inf):
-        super().__init__(tag, mandatory, dtype, unit)
+    """
+    This MetaDatum is defined to be a whole number in between a lower and an upper bound (inclusive).
+    """
+    def __init__(self, tag, minimal, dtype, unit=Units.NO_UNIT, lower_limit=-np.inf, upper_limit=np.inf):
+        super().__init__(tag, minimal, dtype, unit)
         self.lower_limit = lower_limit
         self.upper_limit = upper_limit
 
@@ -142,8 +188,11 @@ class NumberWithUpperAndLowerLimit(MetaDatum):
 
 
 class NDimensionalNumpyArray(MetaDatum):
-    def __init__(self, tag, mandatory, dtype, unit=Units.NO_UNIT, expected_array_dimension=1):
-        super().__init__(tag, mandatory, dtype, unit)
+    """
+    This MetaDatum is defined to be an array of unconstrained numbers.
+    """
+    def __init__(self, tag, minimal, dtype, unit=Units.NO_UNIT, expected_array_dimension=1):
+        super().__init__(tag, minimal, dtype, unit)
         self.expected_array_dimension = expected_array_dimension
 
     def evaluate_value_range(self, value) -> bool:
@@ -160,9 +209,12 @@ class NDimensionalNumpyArray(MetaDatum):
 
 
 class NDimensionalNumpyArrayWithMElements(MetaDatum):
-    def __init__(self, tag, mandatory, dtype, unit=Units.NO_UNIT, expected_array_dimension=1,
+    """
+    This MetaDatum is defined to be an array with a specific dimensionality.
+    """
+    def __init__(self, tag, minimal, dtype, unit=Units.NO_UNIT, expected_array_dimension=1,
                  elements_per_dimension=None):
-        super().__init__(tag, mandatory, dtype, unit)
+        super().__init__(tag, minimal, dtype, unit)
         self.expected_array_dimension = expected_array_dimension
         self.elements_per_dimension = elements_per_dimension
 
@@ -190,8 +242,11 @@ class NDimensionalNumpyArrayWithMElements(MetaDatum):
 
 
 class NonNegativeNumber(MetaDatum):
-    def __init__(self, tag, mandatory, dtype, unit=Units.NO_UNIT):
-        super().__init__(tag, mandatory, dtype, unit)
+    """
+    This MetaDatum is defined to be a non-negative number.
+    """
+    def __init__(self, tag, minimal, dtype, unit=Units.NO_UNIT):
+        super().__init__(tag, minimal, dtype, unit)
 
     def evaluate_value_range(self, value) -> bool:
         if value is None:
@@ -206,8 +261,11 @@ class NonNegativeNumber(MetaDatum):
 
 
 class EnumeratedString(MetaDatum):
-    def __init__(self, tag, mandatory, dtype, unit=Units.NO_UNIT, permissible_strings=None):
-        super().__init__(tag, mandatory, dtype, unit)
+    """
+    This MetaDatum is defined to be a string that must be from a defined list of strings.
+    """
+    def __init__(self, tag, minimal, dtype, unit=Units.NO_UNIT, permissible_strings=None):
+        super().__init__(tag, minimal, dtype, unit)
         self.permissible_strings = permissible_strings
 
     def evaluate_value_range(self, value) -> bool:
@@ -226,7 +284,12 @@ class EnumeratedString(MetaDatum):
 
 class MetadataDeviceTags:
     """
-    This class defines the naming conventions of the
+    This class defines the MetaData that compose all information needed to describe a
+    digital twin of a photoacoustic device.
+
+    It also specifies the naming conventions of the underlying HDF5 data fields.
+    Furthermore, it is specified if a certain meta datum is minimal or not, the data type
+    is defined and the units of the metadatum are given.
     """
     # General purpose fields
     UNIQUE_IDENTIFIER = UnconstrainedMetaDatum("unique_identifier", True, str)
@@ -291,7 +354,12 @@ class MetadataDeviceTags:
 
 class MetadataAcquisitionTags:
     """
-    Binary time series data meta data tags
+    This class defines the MetaData that compose all information needed to describe the
+    measurement circumstances for a given measurement of photoacoustic time series data.
+
+    It also specifies the naming conventions of the underlying HDF5 data fields.
+    Furthermore, it is specified if a certain meta datum is minimal or not, the data type
+    is defined and the units of the metadatum are given.
     """
 
     UUID = UnconstrainedMetaDatum("uuid", True, str)
