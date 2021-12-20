@@ -1,9 +1,7 @@
-"""
-SPDX-FileCopyrightText: 2021 International Photoacoustics Standardisation Consortium (IPASC)
-SPDX-FileCopyrightText: 2021 Janek Gröhl
-SPDX-FileCopyrightText: 2021 Lina Hacker
-SPDX-License-Identifier: BSD 3-Clause License
-"""
+# SPDX-FileCopyrightText: 2021 International Photoacoustics Standardisation Consortium (IPASC)
+# SPDX-FileCopyrightText: 2021 Janek Gröhl
+# SPDX-FileCopyrightText: 2021 Lina Hacker
+# SPDX-License-Identifier: BSD 3-Clause License
 
 from abc import ABC, abstractmethod
 from pacfish.core.PAData import PAData
