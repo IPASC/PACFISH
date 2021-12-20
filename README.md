@@ -1,5 +1,7 @@
 # README
 
+[![Documentation Status](https://readthedocs.org/projects/pacfish/badge/?version=latest)](https://pacfish.readthedocs.io/en/latest/?badge=latest)
+
 In this repository we develop the photoacoustic converter for information sharing (PACFISH).
 It is a tool that enables the conversion of vendor-specific
 proprietary data formats into the IPASC data format,
