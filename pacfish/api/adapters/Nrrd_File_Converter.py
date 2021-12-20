@@ -63,10 +63,10 @@ class NrrdFileConverter(BaseAdapter):
             illumination_element_creator.set_illuminator_geometry(np.asarray([0, 0.025, 0]))
             illumination_element_creator.set_illuminator_geometry_type("CUBOID")
 
-            illumination_element_creator.set_laser_energy_profile(np.asarray([np.linspace(700, 900, 100),
-                                                                            np.ones(100)]))
-            illumination_element_creator.set_laser_stability_profile(np.asarray([np.linspace(700, 900, 100),
-                                                                               np.ones(100)]))
+            illumination_element_creator.set_beam_energy_profile(np.asarray([np.linspace(700, 900, 100),
+                                                                             np.ones(100)]))
+            illumination_element_creator.set_beam_stability_profile(np.asarray([np.linspace(700, 900, 100),
+                                                                                np.ones(100)]))
             illumination_element_creator.set_pulse_width(7e-9)
             device_creator.add_illumination_element(illumination_element_creator.get_dictionary())
 
