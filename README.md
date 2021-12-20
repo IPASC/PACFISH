@@ -1,6 +1,9 @@
 # README
 
-[![Documentation Status](https://readthedocs.org/projects/pacfish/badge/?version=latest)](https://pacfish.readthedocs.io/en/latest/?badge=latest)
+[![Documentation Status](https://readthedocs.org/projects/pacfish/badge/?version=latest)](https://pacfish.readthedocs.io/en/latest/)
+![Testing Status](https://github.com/IPASC/PACFISH/actions/workflows/continuous-integration-testing.yml/badge.svg)
+[![License: BSD 3-Clause](https://img.shields.io/badge/license-BSD%203--Clause-blue)](https://github.com/IPASC/PACFISH/blob/main/LICENSES/BSD%203-Clause)
+
 
 In this repository we develop the photoacoustic converter for information sharing (PACFISH).
 It is a tool that enables the conversion of vendor-specific
@@ -20,6 +23,7 @@ If you are a member of the research community, a photoacoustic vendor, or
 interested to contribute or in the project in general because of any other
 reasons, please contact the leadership team of the Data Acquisition and
 Management Theme of IPASC. 
+
 These are currently: Janek Gröhl, Lina Hacker, and Ben Cox.
 
 # Examples and use cases
