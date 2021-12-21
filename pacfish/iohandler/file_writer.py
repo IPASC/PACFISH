@@ -34,32 +34,14 @@ def write_data(file_path: str, pa_data: PAData, file_compression: str = None):
             if not isinstance(item, (list, dict, type(None))):
 
                 if isinstance(item, (bytes, int, np.int64, float, str, bool, np.bool_)):
-                    try:
-                        h5file[path + key] = item
-                    except (OSError, RuntimeError, ValueError):
-                        del h5file[path + key]
                         h5file[path + key] = item
                 else:
                     c = None
                     if isinstance(item, np.ndarray):
                         c = compression
-
-                    try:
-                        h5file.create_dataset(path + key, data=item, compression=c)
-                    except (OSError, RuntimeError, ValueError):
-                        del h5file[path + key]
                         h5file.create_dataset(path + key, data=item, compression=c)
             elif item is None:
-                try:
                     h5file[path + key] = "None"
-                except (OSError, RuntimeError, ValueError):
-                    del h5file[path + key]
-                    h5file[path + key] = "None"
-            elif isinstance(item, list):
-                list_dict = dict()
-                for i, list_item in enumerate(item):
-                    list_dict[str(i).zfill(10)] = list_item
-                    recursively_save_dictionaries(file, path + key + "/list/", list_dict, file_compression)
             else:
                 recursively_save_dictionaries(file, path + key + "/", item, file_compression)
 

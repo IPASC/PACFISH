@@ -27,25 +27,15 @@ def load_data(file_path:str):
         dictionary = {}
         for key, item in h5file[path].items():
             if isinstance(item, h5py._hl.dataset.Dataset):
+                dictionary[key] = None
                 if item[()] is not None:
                     dictionary[key] = item[()]
                     if isinstance(dictionary[key], bytes):
                         dictionary[key] = dictionary[key].decode("utf-8")
-                    elif isinstance(dictionary[key], np.bool_):
-                        dictionary[key] = bool(dictionary[key])
-                else:
-                    dictionary[key] = None
+                        if dictionary[key] == "None":
+                            dictionary[key] = None
+
             elif isinstance(item, h5py._hl.group.Group):
-                if key == "list":
-                    dictionary_list = [None for x in item.keys()]
-                    for listkey in sorted(item.keys()):
-                        print(listkey)
-                        if isinstance(item[listkey], h5py._hl.dataset.Dataset):
-                            dictionary_list[int(listkey)] = item[listkey][()]
-                        elif isinstance(item[listkey], h5py._hl.group.Group):
-                            dictionary_list[int(listkey)] = recursively_load_dictionaries(file, path + key + "/" + listkey + "/")
-                    dictionary = dictionary_list
-                else:
                     dictionary[key] = recursively_load_dictionaries(file, path + key + "/")
         return dictionary
 
