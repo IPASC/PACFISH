@@ -13,7 +13,7 @@ class ConsistencyChecker:
     The purpose of this class is to go beyond the capabilities of the CompletenessChecker
     and to test the consistency of the metadata.
     To this end, every meta datum is assigned a possible value range by definition.
-    The Consistency checker tests if the assigned values fall inside this value range.
+    The Consistency checker unit_tests if the assigned values fall inside this value range.
     """
 
     def __init__(self, verbose: bool = False, log_file_path: str = None):
@@ -32,7 +32,7 @@ class ConsistencyChecker:
 
     def check_binary_data(self, binary_data) -> bool:
         """
-        This method tests if the given binary data has the correct data type and
+        This method unit_tests if the given binary data has the correct data type and
         if each value in the binary data in a Number.
 
         Parameters

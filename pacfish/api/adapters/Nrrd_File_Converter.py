@@ -22,6 +22,9 @@ class NrrdFileConverter(BaseAdapter):
         self.data = data
         self.meta = meta
 
+        print(np.shape(data))
+        print(meta)
+
         super().__init__()
 
     def generate_binary_data(self) -> np.ndarray:

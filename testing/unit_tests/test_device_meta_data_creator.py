@@ -4,7 +4,7 @@ import unittest
 from unittest.case import TestCase
 from pacfish import MetadataDeviceTags
 from pacfish import DeviceMetaDataCreator, IlluminationElementCreator, DetectionElementCreator
-from testing.tests.utils import create_random_testing_parameters
+from testing.unit_tests.utils import create_random_testing_parameters
 
 
 class DeviceMetaDataCreatorTest(TestCase):

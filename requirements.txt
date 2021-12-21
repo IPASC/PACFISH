@@ -4,6 +4,5 @@ h5py
 pynrrd
 myst-parser
 coverage
-pytest
 pytest-cov
 imageio

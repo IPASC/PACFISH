@@ -3,7 +3,7 @@
 
 from unittest.case import TestCase
 from pacfish import PAData
-from testing.tests.utils import create_complete_device_metadata_dictionary, create_complete_acquisition_meta_data_dictionary
+from testing.unit_tests.utils import create_complete_device_metadata_dictionary, create_complete_acquisition_meta_data_dictionary
 import numpy as np
 
 

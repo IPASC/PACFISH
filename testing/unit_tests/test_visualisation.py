@@ -3,7 +3,7 @@
 
 from unittest.case import TestCase
 import pacfish as pf
-from testing.tests.utils import create_complete_device_metadata_dictionary
+from testing.unit_tests.utils import create_complete_device_metadata_dictionary
 import os
 import numpy as np
 import imageio
