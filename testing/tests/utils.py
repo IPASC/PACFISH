@@ -14,7 +14,7 @@ def create_complete_acquisition_meta_data_dictionary():
     dictionary[MetadataAcquisitionTags.PHOTOACOUSTIC_IMAGING_DEVICE_REFERENCE.tag] = create_random_testing_parameters()['test_string']
     dictionary[MetadataAcquisitionTags.DATA_TYPE.tag] = create_random_testing_parameters()['test_string']
     dictionary[MetadataAcquisitionTags.DIMENSIONALITY.tag] = "time"
-    dictionary[MetadataAcquisitionTags.REGIONS_OF_INTEREST.tag] = np.asarray([0, 0.001, 0, 0.001, 0, 0.001])
+    dictionary[MetadataAcquisitionTags.REGIONS_OF_INTEREST.tag] = {"region1": np.asarray([[0, 0.001, 0], [0.001, 0, 0.001]])}
     dictionary[MetadataAcquisitionTags.SIZES.tag] = np.asarray([4, 200])
     dictionary[MetadataAcquisitionTags.PULSE_ENERGY.tag] = np.asarray([2])
     dictionary[MetadataAcquisitionTags.MEASUREMENT_TIMESTAMPS.tag] = np.asarray([2])

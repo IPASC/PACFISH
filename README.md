@@ -53,7 +53,7 @@ PACFISH API.
             # IMPLEMENTATION HERE
             pass
 
-        def generate_meta_data_device(self) -> dict:
+        def generate_device_meta_data(self) -> dict:
             # IMPLEMENTATION HERE
             pass
 

@@ -28,10 +28,10 @@ class BaseAdapter(ABC):
             def generate_binary_data(self):
                 # TODO
 
-            def generate_meta_data_device(self):
+            def generate_device_meta_data(self):
                 # TODO
 
-            def set_metadata_value(self, metadata_tag: MetaDatum):
+            def set_metadata_value(self, metadatum: MetaDatum):
                 # TODO
     """
 
@@ -41,10 +41,10 @@ class BaseAdapter(ABC):
         binary_data = self.generate_binary_data()
         self.pa_data.binary_time_series_data = binary_data
 
-        meta_data = self.generate_meta_data()
+        meta_data = self.generate_acquisition_meta_data()
         self.pa_data.meta_data_acquisition = meta_data
 
-        meta_data_device = self.generate_meta_data_device()
+        meta_data_device = self.generate_device_meta_data()
         self.pa_data.meta_data_device = meta_data_device
 
 
@@ -65,7 +65,7 @@ class BaseAdapter(ABC):
         pass
 
     @abstractmethod
-    def generate_meta_data_device(self) -> dict:
+    def generate_device_meta_data(self) -> dict:
         """
         Must be implemented to define a digital twin of the photoacoustic imaging device.
         This method can be implemented using the DeviceMetaDataCreator.
@@ -79,7 +79,7 @@ class BaseAdapter(ABC):
         pass
 
     @abstractmethod
-    def set_metadata_value(self, metadata_tag: MetaDatum) -> object:
+    def set_metadata_value(self, metadatum: MetaDatum) -> object:
         """
 
         This method must be implemented to yield appropriate data for all MetaDatum elements in the
@@ -89,7 +89,7 @@ class BaseAdapter(ABC):
 
         Parameters
         ----------
-        metadata_tag: MetaDatum
+        metadatum: MetaDatum
             The MetaDatum for which to return the correct data.
 
         Return
@@ -99,7 +99,7 @@ class BaseAdapter(ABC):
         """
         pass
 
-    def generate_meta_data(self) -> dict:
+    def generate_acquisition_meta_data(self) -> dict:
         """
         Internal method
 
@@ -109,10 +109,10 @@ class BaseAdapter(ABC):
         """
         meta_data_dictionary = dict()
 
-        for metadata_enum in MetadataAcquisitionTags.TAGS:
-            target_value = self.set_metadata_value(metadata_enum)
+        for metadatum in MetadataAcquisitionTags.TAGS:
+            target_value = self.set_metadata_value(metadatum)
             if target_value is not None:
-                meta_data_dictionary[metadata_enum.tag] = target_value
+                meta_data_dictionary[metadatum.tag] = target_value
 
         return meta_data_dictionary
 

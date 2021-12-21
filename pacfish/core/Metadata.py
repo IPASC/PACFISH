@@ -370,8 +370,7 @@ class MetadataAcquisitionTags:
     DIMENSIONALITY = EnumeratedString("dimensionality", True, str, permissible_strings=DIMENSIONALITY_STRINGS)
     SIZES = NonNegativeNumbersInArray("sizes", True, np.ndarray, Units.DIMENSIONLESS_UNIT)
 
-    REGIONS_OF_INTEREST = NDimensionalNumpyArray("regions_of_interest", False, np.ndarray, Units.METERS,
-                                                 expected_array_dimension=2)
+    REGIONS_OF_INTEREST = UnconstrainedMetaDatum("regions_of_interest", False, dict, Units.METERS)
     PHOTOACOUSTIC_IMAGING_DEVICE_REFERENCE = UnconstrainedMetaDatum("photoacoustic_imaging_device_reference", False, str)
     PULSE_ENERGY = NonNegativeNumbersInArray("pulse_energy", False, np.ndarray, Units.JOULES)
     MEASUREMENT_TIMESTAMPS = NonNegativeNumbersInArray("measurement_timestamps", False,
@@ -399,5 +398,6 @@ class MetadataAcquisitionTags:
     TAGS_ACQUISITION = [PHOTOACOUSTIC_IMAGING_DEVICE_REFERENCE, PULSE_ENERGY, ACQUISITION_WAVELENGTHS,
                         TIME_GAIN_COMPENSATION, OVERALL_GAIN, ELEMENT_DEPENDENT_GAIN, TEMPERATURE_CONTROL,
                         ACOUSTIC_COUPLING_AGENT, SCANNING_METHOD, AD_SAMPLING_RATE, FREQUENCY_DOMAIN_FILTER,
-                        SPEED_OF_SOUND]
+                        SPEED_OF_SOUND, MEASUREMENTS_PER_IMAGE, REGIONS_OF_INTEREST, MEASUREMENT_TIMESTAMPS,
+                        MEASUREMENT_SPATIAL_POSES]
     TAGS = TAGS_BINARY + TAGS_ACQUISITION + TAGS_CONTAINER

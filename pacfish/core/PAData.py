@@ -411,6 +411,10 @@ class PAData:
             positions = []
             for id in self.get_illuminator_ids():
                 positions.append(self.meta_data_device[MetadataDeviceTags.ILLUMINATORS.tag][id][metadatum.tag])
+
+            if len(positions) == 0:
+                return None
+
             if metadatum.dtype == np.ndarray:
                 return np.asarray(positions)
             else:
@@ -570,7 +574,11 @@ class PAData:
             positions = []
             for id in self.get_detector_ids():
                 positions.append(self.meta_data_device[MetadataDeviceTags.DETECTORS.tag][id][metadatum.tag])
-            return np.asarray(positions)
+
+            if len(positions) == 0:
+                return None
+            else:
+                return np.asarray(positions)
 
     def get_encoding(self):
         """
@@ -805,7 +813,7 @@ class PAData:
         """
         return self.get_acquisition_meta_datum(MetadataAcquisitionTags.FREQUENCY_DOMAIN_FILTER)
 
-    def get_measurement_spatial_pose(self):
+    def get_measurement_spatial_poses(self):
         """
         Coordinates describing the position and orientation changes of the acquisition system
         relative to the measurement of reference (first measurement).

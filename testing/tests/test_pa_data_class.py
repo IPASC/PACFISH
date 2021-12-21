@@ -115,5 +115,5 @@ class MetaDataTest(TestCase):
         assert self.pa_data.get_scanning_method() is not None
         assert self.pa_data.get_sampling_rate() is not None
         assert self.pa_data.get_frequency_domain_filter() is not None
-        assert self.pa_data.get_measurement_spatial_pose() is not None
+        assert self.pa_data.get_measurement_spatial_poses() is not None
         assert self.pa_data.get_measurements_per_image() is not None

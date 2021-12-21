@@ -28,7 +28,7 @@ class NrrdFileConverter(BaseAdapter):
         data = np.reshape(self.data, (self.meta['sizes'][0], self.meta['sizes'][1], 1, self.meta['sizes'][2]))
         return data
 
-    def generate_meta_data_device(self) -> dict:
+    def generate_device_meta_data(self) -> dict:
         device_creator = DeviceMetaDataCreator()
 
         device_creator.set_general_information(uuid="c771111c-36ba-425d-9f53-84b8ff092059",
@@ -71,28 +71,28 @@ class NrrdFileConverter(BaseAdapter):
 
         return device_creator.finalize_device_meta_data()
 
-    def set_metadata_value(self, metadata_tag: MetaDatum) -> object:
-        if metadata_tag == MetadataAcquisitionTags.UUID:
+    def set_metadata_value(self, metadatum: MetaDatum) -> object:
+        if metadatum == MetadataAcquisitionTags.UUID:
             return "TestUUID"
-        elif metadata_tag == MetadataAcquisitionTags.DATA_TYPE:
+        elif metadatum == MetadataAcquisitionTags.DATA_TYPE:
             return self.meta['type']
-        elif metadata_tag == MetadataAcquisitionTags.AD_SAMPLING_RATE:
+        elif metadatum == MetadataAcquisitionTags.AD_SAMPLING_RATE:
             return 1.0 / (float(self.meta['space directions'][1][1]) / 1000000)
-        elif metadata_tag == MetadataAcquisitionTags.ACOUSTIC_COUPLING_AGENT:
+        elif metadatum == MetadataAcquisitionTags.ACOUSTIC_COUPLING_AGENT:
             return "Water"
-        elif metadata_tag == MetadataAcquisitionTags.ACQUISITION_WAVELENGTHS:
+        elif metadatum == MetadataAcquisitionTags.ACQUISITION_WAVELENGTHS:
             return np.asarray([700])
-        elif metadata_tag == MetadataAcquisitionTags.COMPRESSION:
+        elif metadatum == MetadataAcquisitionTags.COMPRESSION:
             return "None"
-        elif metadata_tag == MetadataAcquisitionTags.DIMENSIONALITY:
+        elif metadatum == MetadataAcquisitionTags.DIMENSIONALITY:
             return "time"
-        elif metadata_tag == MetadataAcquisitionTags.ENCODING:
+        elif metadatum == MetadataAcquisitionTags.ENCODING:
             return "raw"
-        elif metadata_tag == MetadataAcquisitionTags.SCANNING_METHOD:
+        elif metadatum == MetadataAcquisitionTags.SCANNING_METHOD:
             return "Freehand"
-        elif metadata_tag == MetadataAcquisitionTags.PHOTOACOUSTIC_IMAGING_DEVICE_REFERENCE:
+        elif metadatum == MetadataAcquisitionTags.PHOTOACOUSTIC_IMAGING_DEVICE_REFERENCE:
             return "c771111c-36ba-425d-9f53-84b8ff092059"
-        elif metadata_tag == MetadataAcquisitionTags.SIZES:
+        elif metadatum == MetadataAcquisitionTags.SIZES:
             return np.asarray(self.meta['sizes'])
         else:
             return None
