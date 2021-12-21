@@ -85,7 +85,7 @@ def visualize_device(device_dictionary: dict, save_path: str = None, title: str 
                 _draw_axis.add_patch(Rectangle((detector_position[_axes[0]] - detector_geometry[_axes[0]] / 2,
                                                 detector_position[_axes[1]] - detector_geometry[_axes[1]] / 2),
                                                detector_geometry[_axes[0]], detector_geometry[_axes[1]], color="blue"))
-            elif detector_geometry_type == "SHPERE" or detector_geometry_type == "CIRCLE":
+            elif detector_geometry_type == "SPHERE" or detector_geometry_type == "CIRCLE":
                 _draw_axis.add_patch(Circle((detector_position[_axes[0]], detector_position[_axes[1]]), detector_geometry,
                                             color="blue"))
             else:
@@ -155,4 +155,4 @@ def visualize_device(device_dictionary: dict, save_path: str = None, title: str 
     if save_path is None:
         plt.show()
     else:
-        plt.savefig(save_path + "figure.png", "png")
+        plt.savefig(save_path + "figure.png", dpi=300)

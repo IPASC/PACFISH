@@ -3,3 +3,4 @@ from pacfish.core import *
 from pacfish.api import *
 from pacfish.iohandler import *
 from pacfish.qualitycontrol import *
+from .visualize_device import visualize_device

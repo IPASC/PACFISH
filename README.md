@@ -1,4 +1,4 @@
-# README
+# PACFISH
 
 [![Pypi Badge](https://img.shields.io/pypi/v/pacfish)](https://pypi.org/project/pacfish/)
 [![Pypi Installs](https://img.shields.io/pypi/dw/pacfish?label=pypi%20installs)](https://pypistats.org/packages/pacfish)
