@@ -8,15 +8,21 @@ import numpy as np
 from pacfish import MetadataDeviceTags
 
 
-def visualize_device(device_dictionary: dict, save_path: str = None, title: str=None):
+def visualize_device(device_dictionary: dict, save_path: str = None, title: str = None):
     """
+    Visualises a given device from the device_dictionary.
 
+    Parameters
+    ----------
+    device_dictionary: dict
+        The dictionary containing the device description.
+    save_path: str
+        Optional save_path to save a PNG file of the visualisation to.
+    title: str
+        Optional custom title for the plot.
     """
 
     def define_boundary_values(_device_dictionary: dict):
-        """
-
-        """
         mins = np.zeros(3)
         maxs = np.ones(3) * -1000
 
@@ -53,9 +59,6 @@ def visualize_device(device_dictionary: dict, save_path: str = None, title: str=
         return mins, maxs
 
     def add_arbitrary_plane(_device_dictionary: dict, _mins, _maxs, _axes, _draw_axis):
-        """
-
-        """
         _draw_axis.set_xlim(_mins[_axes[0]], _maxs[_axes[0]])
         _draw_axis.set_ylim(_maxs[_axes[1]], _mins[_axes[1]])
         _draw_axis.set_title(f"axes {_axes[0]}/{_axes[1]} projection view")

@@ -9,32 +9,56 @@ from pacfish import MetaDatum
 
 
 class CompletenessChecker:
+    """
+    Tests a given AcquisitionMetadata dictionary or a given DeviceMetadata dictionary
+    for completeness.
+
+    For these purposes, the check_acquisition_meta_data and check_device_meta_data methods can be used::
+
+        pa_data = #TODO load pa_data here
+        cc = CompletenessChecker(verbose=True)
+        acquisition_metadata_complete = cc.check_acquisition_meta_data(pa_data.meta_data_acquisition)
+        device_metadata_complete = cc.check_device_meta_data(pa_data.meta_data_device)
+
+    """
 
     def __init__(self, verbose: bool = False, log_file_path: str = None):
         """
-        :param verbose: A flag to indicate whether the log should be printed
-                to the console.
-        :param log_file_path: If given a string with the path to where the log
-              file should be written to.
+        Parameters
+        ----------
+        verbose: bool
+            A flag to indicate whether the log should be printed to the console.
+        log_file_path: str
+            A string with the path to where the log file should be written to.
+            If 'None', then no log file is written.
         """
         self.save_file_name = "logfile.md"
         self.verbose = verbose
         self.log_file_path = log_file_path
 
-    def check_meta_data(self, meta_data_dictionary: dict) -> bool:
+    def check_acquisition_meta_data(self, meta_data_dictionary: dict) -> bool:
         """
-        This function will evaluate the completeness of the reported metadata.
+        This function will evaluate the completeness of the given acquisition metadata.
         It can be used to generate a report to the console by setting `verbose`
         to True. When setting a file path to log_file, it will also save the
         report as a txt file in the designated path.
 
-        :param meta_data_dictionary: A dictionary containing all PA image
-        meta data.
+        Parameters
+        ----------
+        meta_data_dictionary: dict
+            A dictionary containing all acquisition meta data.
 
-        :return: True, if the meta_data_dictionary is complete
+        Raises
+        ------
+        ValueError:
+            if meta_data_dictionary was None
+        TypeError:
+            if one of the arguments ws not of the correct type
 
-        :raises ValueError: if meta_data_dictionary was None
-        :raises TypeError: if one of the arguments ws not of the correct type
+        Return
+        ------
+        bool
+            True, if the meta_data_dictionary is complete
         """
 
         # Input data validation
@@ -52,7 +76,7 @@ class CompletenessChecker:
 
         log_string += "##Acquisition Meta Data\n\n"
         for metadatum in MetadataAcquisitionTags.TAGS:
-            [log, count] = check_metadatum_from_dict(meta_data_dictionary, metadatum)
+            [log, count] = CompletenessChecker.check_metadatum_from_dict(meta_data_dictionary, metadatum)
             incompletenes_count += count
             log_string += log
 
@@ -76,7 +100,30 @@ class CompletenessChecker:
 
         return incompletenes_count == 0
 
-    def check_meta_data_device(self, device_meta_data: dict):
+    def check_device_meta_data(self, device_meta_data: dict):
+        """
+        This function will evaluate the completeness of the given device metadata.
+        It can be used to generate a report to the console by setting `verbose`
+        to True. When setting a file path to log_file, it will also save the
+        report as a txt file in the designated path.
+
+        Parameters
+        ----------
+        device_meta_data: dict
+            A dictionary containing all device meta data.
+
+        Raises
+        ------
+        ValueError:
+            if meta_data_dictionary was None
+        TypeError:
+            if one of the arguments ws not of the correct type
+
+        Return
+        ------
+        bool
+            True, if the meta_data_dictionary is complete
+        """
 
         incompletenes_count = 0
 
@@ -98,8 +145,8 @@ class CompletenessChecker:
             incompletenes_count += len(general_tags)
         else:
             for general_meta_datum in general_tags:
-                [log, count] = check_metadatum_from_dict(device_meta_data[MetadataDeviceTags.GENERAL.tag],
-                                                         general_meta_datum)
+                [log, count] = CompletenessChecker.check_metadatum_from_dict(
+                    device_meta_data[MetadataDeviceTags.GENERAL.tag], general_meta_datum)
                 log_string += log
                 incompletenes_count += count
 
@@ -119,8 +166,8 @@ class CompletenessChecker:
                 log_string += ("Now analyzing detector element \"" +
                                detector_dict + "\"\n\n")
                 for detector_meta_datum in detection_tags:
-                    [log, count] = check_metadatum_from_dict(device_meta_data[MetadataDeviceTags.DETECTORS.tag][detector_dict],
-                                                             detector_meta_datum)
+                    [log, count] = CompletenessChecker.check_metadatum_from_dict(
+                        device_meta_data[MetadataDeviceTags.DETECTORS.tag][detector_dict], detector_meta_datum)
                     log_string += log
                     incompletenes_count += count
 
@@ -142,8 +189,8 @@ class CompletenessChecker:
                 log_string += ("Now analyzing illumination element \"" +
                                illuminator_dict + "\"\n\n")
                 for illuminator_meta_datum in illumination_tags:
-                    [log, count] = check_metadatum_from_dict(device_meta_data[MetadataDeviceTags.ILLUMINATORS.tag][illuminator_dict],
-                                                             illuminator_meta_datum)
+                    [log, count] = CompletenessChecker.check_metadatum_from_dict(
+                        device_meta_data[MetadataDeviceTags.ILLUMINATORS.tag][illuminator_dict], illuminator_meta_datum)
                     log_string += log
                     incompletenes_count += count
 
@@ -166,32 +213,41 @@ class CompletenessChecker:
 
         return incompletenes_count == 0
 
+    @staticmethod
+    def check_metadatum_from_dict(dictionary: dict, metadatum: MetaDatum):
+        """
+        Internal method to systematically test a metadata field.
 
-def check_metadatum_from_dict(dictionary: dict, metadatum: MetaDatum):
-    """
+        Parameters
+        ----------
+        dictionary: dict
+            The dictionary supposedly containing the metadatum at the top level
+        metadatum: MetaDatum
+            The metadatum to test
 
-    :param dictionary:
-    :param meta_datum:
-    :return: [log, count]
-    """
-    log_string = ""
-    count = 0
-    if metadatum.tag not in dictionary:
-        log_string += "* missing entry \"" + metadatum.tag + "\"\n"
-        log_string += "  * metadatum not found in dictionary\n\n"
-        count += 1
-    elif dictionary[metadatum.tag] is None:
-        log_string += "* missing entry \"" + metadatum.tag + "\"\n"
-        log_string += "  * metadatum found in dictionary\n"
-        log_string += "  * but the mapped field was None\n\n"
-        count += 1
-    elif not isinstance(dictionary[metadatum.tag], metadatum.dtype):
-        log_string += "* corrupt entry \"" + metadatum.tag + "\"\n"
-        log_string += "  * metadatum found in dictionary\n"
-        log_string += "  * and the mapped field was not None\n"
-        log_string += ("  * but the mapped field was not of type " +
-                       str(metadatum.dtype) + "\n\n")
-        count += 1
+        Return
+        ------
+        (str, int)
+            A tuple with the log string and an integer that is 0 if everything was fine and
+            1 if there was an error.
+        """
+        log_string = ""
+        count = 0
+        if metadatum.tag not in dictionary:
+            log_string += "* missing entry \"" + metadatum.tag + "\"\n"
+            log_string += "  * metadatum not found in dictionary\n\n"
+            count += 1
+        elif dictionary[metadatum.tag] is None:
+            log_string += "* missing entry \"" + metadatum.tag + "\"\n"
+            log_string += "  * metadatum found in dictionary\n"
+            log_string += "  * but the mapped field was None\n\n"
+            count += 1
+        elif not isinstance(dictionary[metadatum.tag], metadatum.dtype):
+            log_string += "* corrupt entry \"" + metadatum.tag + "\"\n"
+            log_string += "  * metadatum found in dictionary\n"
+            log_string += "  * and the mapped field was not None\n"
+            log_string += ("  * but the mapped field was not of type " +
+                           str(metadatum.dtype) + "\n\n")
+            count += 1
 
-    return [log_string, count]
-
+        return [log_string, count]

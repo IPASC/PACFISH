@@ -26,12 +26,12 @@ class CompletenessAndConsistencyTest(TestCase):
         completeness_checker = CompletenessChecker(verbose=True)
         consistency_checker = ConsistencyChecker(verbose=True)
 
-        assert completeness_checker.check_meta_data(pa_data.meta_data_acquisition)
-        assert completeness_checker.check_meta_data_device(pa_data.meta_data_device)
+        assert completeness_checker.check_acquisition_meta_data(pa_data.meta_data_acquisition)
+        assert completeness_checker.check_device_meta_data(pa_data.meta_data_device)
 
-        assert consistency_checker.check_binary(pa_data.binary_time_series_data)
-        assert consistency_checker.check_meta_data(pa_data.meta_data_acquisition)
-        assert consistency_checker.check_meta_data_device(pa_data.meta_data_device)
+        assert consistency_checker.check_binary_data(pa_data.binary_time_series_data)
+        assert consistency_checker.check_acquisition_meta_data(pa_data.meta_data_acquisition)
+        assert consistency_checker.check_device_meta_data(pa_data.meta_data_device)
 
     def test_check_a_complete_but_inconsistent_pa_data_instance(self):
         device_dict = create_complete_device_metadata_dictionary()
@@ -48,9 +48,9 @@ class CompletenessAndConsistencyTest(TestCase):
         completeness_checker = CompletenessChecker(verbose=True)
         consistency_checker = ConsistencyChecker(verbose=True)
 
-        assert completeness_checker.check_meta_data(pa_data.meta_data_acquisition)
-        assert completeness_checker.check_meta_data_device(pa_data.meta_data_device)
+        assert completeness_checker.check_acquisition_meta_data(pa_data.meta_data_acquisition)
+        assert completeness_checker.check_device_meta_data(pa_data.meta_data_device)
 
-        assert consistency_checker.check_binary(pa_data.binary_time_series_data)
-        assert consistency_checker.check_meta_data(pa_data.meta_data_acquisition) is False
-        assert consistency_checker.check_meta_data_device(pa_data.meta_data_device) is False
+        assert consistency_checker.check_binary_data(pa_data.binary_time_series_data)
+        assert consistency_checker.check_acquisition_meta_data(pa_data.meta_data_acquisition) is False
+        assert consistency_checker.check_device_meta_data(pa_data.meta_data_device) is False
