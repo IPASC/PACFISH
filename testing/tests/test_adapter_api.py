@@ -73,6 +73,33 @@ class AdapterAPITest(TestCase):
         self.assertIsNone(pa_data.get_illuminator_orientation())
         self.assertIsNone(pa_data.get_illuminator_geometry_type())
 
+    def test_adding_custom_data_fields(self):
+
+        eta = EmptyTestAdapter()
+        eta.add_custom_meta_datum_field("test1", "value1")
+        eta.add_custom_meta_datum_field("test2", 17.11)
+        eta.add_custom_meta_datum_field("test3", np.asarray([1, 2, 3, 4]))
+
+        pa_data = eta.generate_pa_data()
+
+        self.assertEqual(pa_data.get_custom_meta_datum("test1"), "value1")
+        self.assertEqual(pa_data.get_custom_meta_datum("test2"), 17.11)
+        self.assertTrue((pa_data.get_custom_meta_datum("test3") == np.asarray([1, 2, 3, 4])).all())
+
+        failed = False
+        try:
+            eta.add_custom_meta_datum_field("test1", None)
+        except ValueError:
+            failed = True
+        self.assertTrue(failed)
+
+        failed = False
+        try:
+            eta.add_custom_meta_datum_field(None, "Test1")
+        except KeyError:
+            failed = True
+        self.assertTrue(failed)
+
     def test_custom_adapter_generates_expected_output(self):
 
         class FunctioningAdapter(pf.BaseAdapter):
