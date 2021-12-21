@@ -41,7 +41,7 @@ jobs:
         pytest --cov=pacfish --cov-report=xml --cov-report=term-missing
         coverage xml
     - name: Upload to Codecov
-      if: github.repository == 'PACFISH' && matrix.python-version == 3.9
+      if: github.repository == 'IPASC/PACFISH' && matrix.python-version == 3.9 && matrix.os == 'ubuntu-latest'
       uses: codecov/codecov-action@v2
       with:
         name: pafish-pytests

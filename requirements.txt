@@ -5,3 +5,4 @@ pynrrd
 myst-parser
 coverage
 pytest
+pytest-cov
