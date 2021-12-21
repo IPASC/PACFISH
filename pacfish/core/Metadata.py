@@ -125,12 +125,9 @@ class NonNegativeWholeNumber(MetaDatum):
         if value is None:
             return False
 
-        if not isinstance(value, self.dtype):
-            raise TypeError("The given value of", self.tag, "was not of the expected data type. Expected ",
-                            self.dtype, "but was",
-                            type(value).__name__)
         if not isinstance(value, int):
-            raise TypeError("Whole numbers must be of type int, but was", type(value).__name__)
+            raise TypeError("The given value of", self.tag, "was not of the expected data type. Expected ",
+                            "int but was", type(value).__name__)
         return value >= 0
 
 
@@ -145,12 +142,9 @@ class NonNegativeNumbersInArray(MetaDatum):
         if value is None:
             return False
 
-        if not isinstance(value, self.dtype):
-            raise TypeError("The given value of", self.tag, "was not of the expected data type. Expected ",
-                            self.dtype, "but was",
-                            type(value).__name__)
         if not isinstance(value, np.ndarray):
-            raise TypeError("A sequence of numbers must be of type numpy.ndarray, but was", type(value).__name__)
+            raise TypeError("The given value of", self.tag, "was not of the expected data type. Expected ",
+                            "np.ndarray but was", type(value).__name__)
 
         for number in np.reshape(value, (-1, )):
             if number < 0:
@@ -171,18 +165,14 @@ class NumberWithUpperAndLowerLimit(MetaDatum):
         if value is None:
             return False
 
-        if not isinstance(value, self.dtype):
-            raise TypeError("The given value of", self.tag, "was not of the expected data type. Expected ",
-                            self.dtype, "but was",
-                            type(value).__name__)
         if isinstance(value, np.ndarray):
             for item in np.reshape(value, (-1, )):
                 if not self.lower_limit <= item <= self.upper_limit:
                     return False
             return True
-
         if not isinstance(value, numbers.Number):
-            raise TypeError("Expected value of", self.tag, "to be a number, but was", type(value).__name__)
+            raise TypeError("The given value of", self.tag, "was not of the expected data type. Expected ",
+                            "a number or numpy array but was", type(value).__name__)
 
         return self.lower_limit <= value <= self.upper_limit
 
@@ -199,9 +189,6 @@ class NDimensionalNumpyArray(MetaDatum):
         if value is None:
             return False
 
-        if not isinstance(value, self.dtype):
-            raise TypeError("The given value of", self.tag, "was not of the expected data type. Expected ", self.dtype, "but was",
-                            type(value).__name__)
         if not isinstance(value, np.ndarray):
             raise TypeError("A N-Dimensional array must be of type numpy.ndarray, but was", type(value).__name__)
 
@@ -222,10 +209,6 @@ class NDimensionalNumpyArrayWithMElements(MetaDatum):
         if value is None:
             return False
 
-        if not isinstance(value, self.dtype):
-            raise TypeError("The given value of", self.tag, "was not of the expected data type. Expected ", self.dtype,
-                            "but was",
-                            type(value).__name__)
         if not isinstance(value, np.ndarray):
             raise TypeError("A N-Dimensional array must be of type numpy.ndarray, but was", type(value).__name__)
 
