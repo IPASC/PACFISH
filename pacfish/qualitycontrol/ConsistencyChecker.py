@@ -63,7 +63,21 @@ class ConsistencyChecker:
         bool
             Returns `True` if all data is consistent
         """
+
         is_consistent = True
+
+        # Input data validation
+        if acquisition_meta_data is None:
+            raise ValueError("the field acquisition_meta_data must not be None!")
+
+        if not isinstance(acquisition_meta_data, dict):
+            raise TypeError("The field acquisition_meta_data was not of " +
+                            "type dict")
+
+        if len(list(acquisition_meta_data.keys())) == 0:
+            # An empty dictionary must not pass the consistency check
+            is_consistent = False
+
         num_inconsistencies = 0
         log_message = ""
         log_message += "#Consistency Report for Acquisition Meta Data\n\n"
@@ -103,6 +117,14 @@ class ConsistencyChecker:
         bool
             Returns `True` if all data is consistent
         """
+
+        # Input data validation
+        if device_meta_data is None:
+            raise ValueError("the field device_meta_data must not be None!")
+
+        if not isinstance(device_meta_data, dict):
+            raise TypeError("The field device_meta_data was not of type dict")
+
         is_consistent = True
         num_inconsistencies = 0
         log_message = ""
@@ -110,28 +132,41 @@ class ConsistencyChecker:
         log_message += "##General Tags\n\n"
 
         general_tags = [MetadataDeviceTags.UNIQUE_IDENTIFIER, MetadataDeviceTags.FIELD_OF_VIEW]
-        for metadatum in general_tags:
-            if metadatum.tag in device_meta_data[MetadataDeviceTags.GENERAL.tag]:
-                result = metadatum.evaluate_value_range(
-                    device_meta_data[MetadataDeviceTags.GENERAL.tag][metadatum.tag])
-                if result is False:
-                    is_consistent = False
-                    log_message += metadatum.tag + " was found not to be consistent.\n"
-                    num_inconsistencies += 1
+        if MetadataDeviceTags.GENERAL.tag not in device_meta_data:
+            num_inconsistencies += 1
+            is_consistent = False
+            log_message += MetadataDeviceTags.GENERAL.tag + " tags were not found in the device dictionary.\n"
+        else:
+            for metadatum in general_tags:
+                if metadatum.tag in device_meta_data[MetadataDeviceTags.GENERAL.tag]:
+                    try:
+                        result = metadatum.evaluate_value_range(
+                            device_meta_data[MetadataDeviceTags.GENERAL.tag][metadatum.tag])
+                    except TypeError:
+                        result = False
+                    if result is False:
+                        is_consistent = False
+                        log_message += metadatum.tag + " was found not to be consistent.\n"
+                        num_inconsistencies += 1
 
         log_message += "##Detection Elements\n\n"
         detection_tags = [MetadataDeviceTags.DETECTOR_GEOMETRY, MetadataDeviceTags.DETECTOR_ORIENTATION,
                           MetadataDeviceTags.DETECTOR_POSITION, MetadataDeviceTags.FREQUENCY_RESPONSE,
                           MetadataDeviceTags.ANGULAR_RESPONSE]
-        for metadatum in detection_tags:
-            for detector_dict in device_meta_data[MetadataDeviceTags.DETECTORS.tag]:
-                if metadatum.tag in device_meta_data[MetadataDeviceTags.DETECTORS.tag][detector_dict]:
-                    result = metadatum.evaluate_value_range(
-                        device_meta_data[MetadataDeviceTags.DETECTORS.tag][detector_dict][metadatum.tag])
-                    if result is False:
-                        is_consistent = False
-                        num_inconsistencies += 1
-                        log_message += metadatum.tag + " was found not to be consistent.\n"
+        if MetadataDeviceTags.DETECTORS.tag not in device_meta_data:
+            num_inconsistencies += 1
+            is_consistent = False
+            log_message += MetadataDeviceTags.DETECTORS.tag + " were not found in the device dictionary.\n"
+        else:
+            for metadatum in detection_tags:
+                for detector_dict in device_meta_data[MetadataDeviceTags.DETECTORS.tag]:
+                    if metadatum.tag in device_meta_data[MetadataDeviceTags.DETECTORS.tag][detector_dict]:
+                        result = metadatum.evaluate_value_range(
+                            device_meta_data[MetadataDeviceTags.DETECTORS.tag][detector_dict][metadatum.tag])
+                        if result is False:
+                            is_consistent = False
+                            num_inconsistencies += 1
+                            log_message += metadatum.tag + " was found not to be consistent.\n"
 
         log_message += "##Illumination Elements\n\n"
         illumination_tags = [MetadataDeviceTags.ILLUMINATOR_GEOMETRY, MetadataDeviceTags.ILLUMINATOR_ORIENTATION,
@@ -139,15 +174,20 @@ class ConsistencyChecker:
                              MetadataDeviceTags.BEAM_ENERGY_PROFILE, MetadataDeviceTags.PULSE_WIDTH,
                              MetadataDeviceTags.BEAM_STABILITY_PROFILE, MetadataDeviceTags.BEAM_INTENSITY_PROFILE,
                              MetadataDeviceTags.BEAM_DIVERGENCE_ANGLES]
-        for metadatum in illumination_tags:
-            for illumination_dict in device_meta_data[MetadataDeviceTags.ILLUMINATORS.tag]:
-                if metadatum.tag in device_meta_data[MetadataDeviceTags.ILLUMINATORS.tag][illumination_dict]:
-                    result = metadatum.evaluate_value_range(
-                        device_meta_data[MetadataDeviceTags.ILLUMINATORS.tag][illumination_dict][metadatum.tag])
-                    if result is False:
-                        is_consistent = False
-                        num_inconsistencies += 1
-                        log_message += metadatum.tag + " was found not to be consistent.\n"
+        if MetadataDeviceTags.ILLUMINATORS.tag not in device_meta_data:
+            num_inconsistencies += 1
+            is_consistent = False
+            log_message += MetadataDeviceTags.ILLUMINATORS.tag + " were not found in the device dictionary.\n"
+        else:
+            for metadatum in illumination_tags:
+                for illumination_dict in device_meta_data[MetadataDeviceTags.ILLUMINATORS.tag]:
+                    if metadatum.tag in device_meta_data[MetadataDeviceTags.ILLUMINATORS.tag][illumination_dict]:
+                        result = metadatum.evaluate_value_range(
+                            device_meta_data[MetadataDeviceTags.ILLUMINATORS.tag][illumination_dict][metadatum.tag])
+                        if result is False:
+                            is_consistent = False
+                            num_inconsistencies += 1
+                            log_message += metadatum.tag + " was found not to be consistent.\n"
 
         log_message += "##Results\n\n"
         if num_inconsistencies == 0:
