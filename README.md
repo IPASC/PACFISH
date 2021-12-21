@@ -4,6 +4,8 @@
 ![Testing Status](https://github.com/IPASC/PACFISH/actions/workflows/continuous-integration-testing.yml/badge.svg)
 [![License: BSD 3-Clause](https://img.shields.io/badge/license-BSD%203--Clause-blue)](https://github.com/IPASC/PACFISH/blob/main/LICENSES/BSD%203-Clause)
 
+[![Pypi Badge](https://img.shields.io/pypi/v/pacfish)](https://pypi.org/project/pacfish/)
+[![Pypi Installs](https://img.shields.io/pypi/dw/pacfish?label=pypi%20installs)](https://pypistats.org/packages/pacfish)
 
 In this repository we develop the photoacoustic converter for information sharing (PACFISH).
 It is a tool that enables the conversion of vendor-specific
