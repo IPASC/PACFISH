@@ -1,6 +1,6 @@
 # SPDX-FileCopyrightText: 2021 International Photoacoustics Standardisation Consortium (IPASC)
 # SPDX-License-Identifier: BSD 3-Clause License
-
+import unittest
 from unittest.case import TestCase
 from pacfish import MetadataDeviceTags
 from pacfish import DeviceMetaDataCreator, IlluminationElementCreator, DetectionElementCreator
@@ -60,6 +60,25 @@ class IlluminationElementCreatorTest(TestCase):
         self.illuminator_creator.set_illuminator_position(test_array)
         illumination_dict = self.illuminator_creator.get_dictionary()
         assert (illumination_dict[MetadataDeviceTags.ILLUMINATOR_POSITION.tag] == test_array).all()
+
+    def test_set_illuminator_orientation(self):
+        test_array = create_random_testing_parameters()['test_array']
+        self.illuminator_creator.set_illuminator_orientation(test_array)
+        illumination_dict = self.illuminator_creator.get_dictionary()
+        assert (illumination_dict[MetadataDeviceTags.ILLUMINATOR_ORIENTATION.tag] == test_array).all()
+
+    def test_set_illuminator_geometry_type(self):
+        test_array = "CIRCULAR"
+        self.illuminator_creator.set_illuminator_geometry_type(test_array)
+        illumination_dict = self.illuminator_creator.get_dictionary()
+        assert (illumination_dict[MetadataDeviceTags.ILLUMINATOR_GEOMETRY_TYPE.tag] == test_array)
+
+    @unittest.expectedFailure
+    def test_set_illuminator_geometry_type_fails(self):
+        test_array = "UNSUPPORTED"
+        self.illuminator_creator.set_illuminator_geometry_type(test_array)
+        illumination_dict = self.illuminator_creator.get_dictionary()
+        assert (illumination_dict[MetadataDeviceTags.ILLUMINATOR_GEOMETRY_TYPE.tag] == test_array)
 
     def test_set_illuminator_shape(self):
         test_array = create_random_testing_parameters()['test_array']
@@ -125,11 +144,24 @@ class DetectionElementCreatorTest(TestCase):
         detection_dict = self.detection_creator.get_dictionary()
         assert (detection_dict[MetadataDeviceTags.DETECTOR_ORIENTATION.tag] == test_array).all()
 
-    def test_set_detector_size(self):
+    def test_set_detector_geometry(self):
         test_array = create_random_testing_parameters()['test_array']
         self.detection_creator.set_detector_geometry(test_array)
         detection_dict = self.detection_creator.get_dictionary()
         assert (detection_dict[MetadataDeviceTags.DETECTOR_GEOMETRY.tag] == test_array).all()
+
+    def test_set_detector_geometry_type(self):
+        test_array = "CIRCULAR"
+        self.detection_creator.set_detector_geometry_type(test_array)
+        detection_dict = self.detection_creator.get_dictionary()
+        assert (detection_dict[MetadataDeviceTags.DETECTOR_GEOMETRY_TYPE.tag] == test_array)
+
+    @unittest.expectedFailure
+    def test_set_detector_geometry_type_fails(self):
+        test_array = "UNSUPPORTED"
+        self.detection_creator.set_detector_geometry_type(test_array)
+        detection_dict = self.detection_creator.get_dictionary()
+        assert (detection_dict[MetadataDeviceTags.DETECTOR_GEOMETRY_TYPE.tag] == test_array)
 
     def test_frequency_response(self):
         test_array = create_random_testing_parameters()['test_array']
