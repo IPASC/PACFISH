@@ -10,6 +10,30 @@ import numpy as np
 
 
 class BaseAdapter(ABC):
+    """
+    The purpose of the BaseAdapter class is to provide the framework to convert from any
+    given input data type into the IPASC format. It can be used as a basis for extension
+    for a custom Adapter.
+
+    To achieve this, one needs to inherit from BaseAdapter and implement the abstract methods::
+
+        class CustomAdapter(BaseAdapter):
+
+            def __init__():
+                # TODO do all of the loading etc here
+                # Then call the __init__ of the BaseAdapter
+                super(CustomAdapter, self).__init__()
+                # TODO Add custom parameters after calling BaseAdapter.__init__
+
+            def generate_binary_data(self):
+                # TODO
+
+            def generate_meta_data_device(self):
+                # TODO
+
+            def set_metadata_value(self, metadata_tag: MetaDatum):
+                # TODO
+    """
 
     def __init__(self):
         self.pa_data = PAData()
@@ -27,16 +51,30 @@ class BaseAdapter(ABC):
     @abstractmethod
     def generate_binary_data(self) -> np.ndarray:
         """
-        #TODO very detailed decription of how the binary meta data dump should be organized.
-        :return: numpy array
+        The binary data is the raw time series data.
+        It is internally stored as an N-dimensional numpy array.
+        The binary data must be formatted the following way:
+
+        [detectors, samples, wavelengths, measurements]
+
+        Return
+        ------
+        np.ndarray
+            A numpy array containing the binary data
         """
         pass
 
     @abstractmethod
     def generate_meta_data_device(self) -> dict:
         """
-        # TODO this method can be implemented using the DeviceMetaDataCreator
-        :return:
+        Must be implemented to define a digital twin of the photoacoustic imaging device.
+        This method can be implemented using the DeviceMetaDataCreator.
+
+        Return
+        ------
+        dict
+            A dictionary containing all key-value pair necessary to describe a digital twin of a
+            photoacoustic device.
         """
         pass
 
@@ -47,15 +85,27 @@ class BaseAdapter(ABC):
         This method must be implemented to yield appropriate data for all MetaDatum elements in the
         MetadataTags class.
 
-        :param metadata_tag:
-        :return:
+        You are given a certain meta datum nd have to return the appropriate information.
+
+        Parameters
+        ----------
+        metadata_tag: MetaDatum
+            The MetaDatum for which to return the correct data.
+
+        Return
+        ------
+        object
+            The data corresponding to the given MetaDatum
         """
         pass
 
     def generate_meta_data(self) -> dict:
         """
+        Internal method
 
-        :return:
+        Return
+        ------
+        dict
         """
         meta_data_dictionary = dict()
 
@@ -67,6 +117,19 @@ class BaseAdapter(ABC):
         return meta_data_dictionary
 
     def add_custom_meta_datum_field(self, key: str, value: object):
+        """
+        This method can be used to add a metadata field that is not reflected in the
+        standard list of metadata of the IPASC format.
+        Must be called after the __init__ method of the BaseAdapter was called.
+        The custom meta data are stored in the AcquisitionMetadata dictionary.
+
+        Parameters
+        ----------
+        key: str
+            The unique name with which the value is stored in the dictionary.
+        value: object
+            The value to store.
+        """
         if key is None:
             raise KeyError("A meta datum key must not be None.")
         if value is None:
@@ -74,7 +137,12 @@ class BaseAdapter(ABC):
         self.pa_data.meta_data_acquisition[key] = value
 
     def generate_pa_data(self) -> PAData:
+        """
+        Internal method
+
+        Return
+        ------
+        PAData
+        """
 
         return self.pa_data
-
-

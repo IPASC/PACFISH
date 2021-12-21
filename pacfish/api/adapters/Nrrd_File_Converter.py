@@ -11,6 +11,10 @@ from pacfish import DeviceMetaDataCreator, DetectionElementCreator, Illumination
 
 
 class NrrdFileConverter(BaseAdapter):
+    """
+    This converter assumes a linear transducer with 128 elements and an element pitch of 0.3mm.
+    It assumes that the NRRD file metadata contains a 'sizes', 'type' and 'space directions' field.
+    """
 
     def __init__(self, nrrd_file_path):
         self.nrrd_file_path = nrrd_file_path
@@ -21,11 +25,6 @@ class NrrdFileConverter(BaseAdapter):
         super().__init__()
 
     def generate_binary_data(self) -> np.ndarray:
-        # the CAMI_DKFZ_FILE is captured this way: [elements, time_series, frames]
-        # Needs to be reshaped in order to be in line with the IPASC definition of
-        # [detectors, time_series, wavelength, frames]
-        # The sample file only contains images with a single wavelength.
-        # TODO adapt for multispectral images as well
         data = np.reshape(self.data, (self.meta['sizes'][0], self.meta['sizes'][1], 1, self.meta['sizes'][2]))
         return data
 
