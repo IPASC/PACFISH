@@ -1,11 +1,9 @@
-"""
-SPDX-FileCopyrightText: 2021 International Photoacoustics Standardisation Consortium (IPASC)
-SPDX-License-Identifier: BSD 3-Clause License
-"""
+# SPDX-FileCopyrightText: 2021 International Photoacoustics Standardisation Consortium (IPASC)
+# SPDX-License-Identifier: BSD 3-Clause License
 
 from unittest.case import TestCase
 from pacfish import PAData
-from testing.tests.utils import create_complete_device_metadata_dictionary, create_complete_acquisition_meta_data_dictionary
+from testing.unit_tests.utils import create_complete_device_metadata_dictionary, create_complete_acquisition_meta_data_dictionary
 import numpy as np
 
 
@@ -117,5 +115,5 @@ class MetaDataTest(TestCase):
         assert self.pa_data.get_scanning_method() is not None
         assert self.pa_data.get_sampling_rate() is not None
         assert self.pa_data.get_frequency_domain_filter() is not None
-        assert self.pa_data.get_measurement_spatial_pose() is not None
+        assert self.pa_data.get_measurement_spatial_poses() is not None
         assert self.pa_data.get_measurements_per_image() is not None

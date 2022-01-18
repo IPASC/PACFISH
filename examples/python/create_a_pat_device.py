@@ -32,4 +32,4 @@ result_dictionary = device_metadata_creator.finalize_device_meta_data()
 
 completeness_checker = CompletenessChecker(verbose=True)
 
-completeness_checker.check_meta_data_device(result_dictionary)
+completeness_checker.check_device_meta_data(result_dictionary)

@@ -1,8 +1,6 @@
-"""
-SPDX-FileCopyrightText: 2021 International Photoacoustics Standardisation Consortium (IPASC)
-SPDX-FileCopyrightText: 2021 Janek Gröhl
-SPDX-License-Identifier: BSD 3-Clause License
-"""
+# SPDX-FileCopyrightText: 2021 International Photoacoustics Standardisation Consortium (IPASC)
+# SPDX-FileCopyrightText: 2021 Janek Gröhl
+# SPDX-License-Identifier: BSD 3-Clause License
 
 import numpy as np
 import nrrd
@@ -13,6 +11,10 @@ from pacfish import DeviceMetaDataCreator, DetectionElementCreator, Illumination
 
 
 class NrrdFileConverter(BaseAdapter):
+    """
+    This converter assumes a linear transducer with 128 elements and an element pitch of 0.3mm.
+    It assumes that the NRRD file metadata contains a 'sizes', 'type' and 'space directions' field.
+    """
 
     def __init__(self, nrrd_file_path):
         self.nrrd_file_path = nrrd_file_path
@@ -20,18 +22,16 @@ class NrrdFileConverter(BaseAdapter):
         self.data = data
         self.meta = meta
 
+        print(np.shape(data))
+        print(meta)
+
         super().__init__()
 
     def generate_binary_data(self) -> np.ndarray:
-        # the CAMI_DKFZ_FILE is captured this way: [elements, time_series, frames]
-        # Needs to be reshaped in order to be in line with the IPASC definition of
-        # [detectors, time_series, wavelength, frames]
-        # The sample file only contains images with a single wavelength.
-        # TODO adapt for multispectral images as well
         data = np.reshape(self.data, (self.meta['sizes'][0], self.meta['sizes'][1], 1, self.meta['sizes'][2]))
         return data
 
-    def generate_meta_data_device(self) -> dict:
+    def generate_device_meta_data(self) -> dict:
         device_creator = DeviceMetaDataCreator()
 
         device_creator.set_general_information(uuid="c771111c-36ba-425d-9f53-84b8ff092059",
@@ -65,37 +65,37 @@ class NrrdFileConverter(BaseAdapter):
             illumination_element_creator.set_illuminator_geometry(np.asarray([0, 0.025, 0]))
             illumination_element_creator.set_illuminator_geometry_type("CUBOID")
 
-            illumination_element_creator.set_laser_energy_profile(np.asarray([np.linspace(700, 900, 100),
-                                                                            np.ones(100)]))
-            illumination_element_creator.set_laser_stability_profile(np.asarray([np.linspace(700, 900, 100),
-                                                                               np.ones(100)]))
+            illumination_element_creator.set_beam_energy_profile(np.asarray([np.linspace(700, 900, 100),
+                                                                             np.ones(100)]))
+            illumination_element_creator.set_beam_stability_profile(np.asarray([np.linspace(700, 900, 100),
+                                                                                np.ones(100)]))
             illumination_element_creator.set_pulse_width(7e-9)
             device_creator.add_illumination_element(illumination_element_creator.get_dictionary())
 
         return device_creator.finalize_device_meta_data()
 
-    def set_metadata_value(self, metadata_tag: MetaDatum) -> object:
-        if metadata_tag == MetadataAcquisitionTags.UUID:
+    def set_metadata_value(self, metadatum: MetaDatum) -> object:
+        if metadatum == MetadataAcquisitionTags.UUID:
             return "TestUUID"
-        elif metadata_tag == MetadataAcquisitionTags.DATA_TYPE:
+        elif metadatum == MetadataAcquisitionTags.DATA_TYPE:
             return self.meta['type']
-        elif metadata_tag == MetadataAcquisitionTags.AD_SAMPLING_RATE:
+        elif metadatum == MetadataAcquisitionTags.AD_SAMPLING_RATE:
             return 1.0 / (float(self.meta['space directions'][1][1]) / 1000000)
-        elif metadata_tag == MetadataAcquisitionTags.ACOUSTIC_COUPLING_AGENT:
+        elif metadatum == MetadataAcquisitionTags.ACOUSTIC_COUPLING_AGENT:
             return "Water"
-        elif metadata_tag == MetadataAcquisitionTags.ACQUISITION_WAVELENGTHS:
+        elif metadatum == MetadataAcquisitionTags.ACQUISITION_WAVELENGTHS:
             return np.asarray([700])
-        elif metadata_tag == MetadataAcquisitionTags.COMPRESSION:
+        elif metadatum == MetadataAcquisitionTags.COMPRESSION:
             return "None"
-        elif metadata_tag == MetadataAcquisitionTags.DIMENSIONALITY:
+        elif metadatum == MetadataAcquisitionTags.DIMENSIONALITY:
             return "time"
-        elif metadata_tag == MetadataAcquisitionTags.ENCODING:
+        elif metadatum == MetadataAcquisitionTags.ENCODING:
             return "raw"
-        elif metadata_tag == MetadataAcquisitionTags.SCANNING_METHOD:
+        elif metadatum == MetadataAcquisitionTags.SCANNING_METHOD:
             return "Freehand"
-        elif metadata_tag == MetadataAcquisitionTags.PHOTOACOUSTIC_IMAGING_DEVICE_REFERENCE:
+        elif metadatum == MetadataAcquisitionTags.PHOTOACOUSTIC_IMAGING_DEVICE_REFERENCE:
             return "c771111c-36ba-425d-9f53-84b8ff092059"
-        elif metadata_tag == MetadataAcquisitionTags.SIZES:
+        elif metadatum == MetadataAcquisitionTags.SIZES:
             return np.asarray(self.meta['sizes'])
         else:
             return None

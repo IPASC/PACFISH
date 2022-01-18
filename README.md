@@ -1,4 +1,12 @@
-# README
+# PACFISH
+
+[![Pypi Badge](https://img.shields.io/pypi/v/pacfish)](https://pypi.org/project/pacfish/)
+[![Pypi Installs](https://img.shields.io/pypi/dw/pacfish?label=pypi%20installs)](https://pypistats.org/packages/pacfish)
+[![License: BSD 3-Clause](https://img.shields.io/badge/license-BSD%203--Clause-blue)](https://github.com/IPASC/PACFISH/blob/main/LICENSES/BSD%203-Clause)
+
+[![Documentation Status](https://readthedocs.org/projects/pacfish/badge/?version=latest)](https://pacfish.readthedocs.io/en/latest/)
+![Testing Status](https://github.com/IPASC/PACFISH/actions/workflows/continuous-integration-testing.yml/badge.svg)
+[![Code Coverage](https://codecov.io/gh/IPASC/PACFISH/branch/main/graph/badge.svg)](https://app.codecov.io/gh/IPASC/PACFISH)
 
 In this repository we develop the photoacoustic converter for information sharing (PACFISH).
 It is a tool that enables the conversion of vendor-specific
@@ -18,6 +26,7 @@ If you are a member of the research community, a photoacoustic vendor, or
 interested to contribute or in the project in general because of any other
 reasons, please contact the leadership team of the Data Acquisition and
 Management Theme of IPASC. 
+
 These are currently: Janek Gröhl, Lina Hacker, and Ben Cox.
 
 # Examples and use cases
@@ -47,7 +56,7 @@ PACFISH API.
             # IMPLEMENTATION HERE
             pass
 
-        def generate_meta_data_device(self) -> dict:
+        def generate_device_meta_data(self) -> dict:
             # IMPLEMENTATION HERE
             pass
 
