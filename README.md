@@ -31,26 +31,26 @@ These are currently: Janek Gröhl, Lina Hacker, and Ben Cox.
 
 # Examples and use cases
 
-Please look in the `ipasc_examples` folder for
+Please look in the `examples` folder for
 detailed and functional examples how to use the 
-PACFISH API.
+PACFISH API. We have examples for both `Python` and `MATLAB`.
 
 ## Use case: using the tool to read and write HDF5 files
 
-    from IPASC_DataConversionTool import iohandler as io
+    import pacfish as pf
 
     # Loading data from the hard drive
-    pa_data = io.load_data("path/to/hdf5file.hdf5")
+    pa_data = pf.load_data("path/to/hdf5file.hdf5")
     numpy_array = pa_data.binary_time_series_data
 
     # Writing of data to hard drive
-    io.write_data("path/to/new/file.hdf5", pa_data)
+    pf.write_data("path/to/new/file.hdf5", pa_data)
 
 ## Use case: Implement a conversion adapter
 
-    from IPASC_DataConversionTool.api import BaseAdapter
+    impot pacfish as pf
 
-    class DeviceSpecificAdapter(BaseAdapter):
+    class DeviceSpecificAdapter(pf.BaseAdapter):
 
         def generate_binary_data(self) -> np.ndarray:
             # IMPLEMENTATION HERE
