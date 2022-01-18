@@ -1,3 +1,6 @@
+% SPDX-FileCopyrightText: 2021 International Photoacoustics Standardisation Consortium (IPASC)
+% SPDX-License-Identifier: CC0
+
 % read with a given file in Matlab
 path = 'C:\standardised-image-reconstruction\';
 filename = '1BdSLl4BSxpxXDwWcBKKVV4nHULPe7IS8_ipasc.hdf5';
