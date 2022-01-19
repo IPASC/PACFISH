@@ -44,6 +44,7 @@ jobs:
       if: github.repository == 'IPASC/PACFISH' && matrix.python-version == 3.9 && matrix.os == 'ubuntu-latest'
       uses: codecov/codecov-action@v2
       with:
+        token: ${{ secrets.CODECOV }}
         name: pafish-pytests
         flags: pytests
         file: ./coverage.xml
