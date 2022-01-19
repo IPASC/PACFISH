@@ -13,7 +13,7 @@ classdef pa_data
     methods
         %% Constructor for the api
         function obj = pa_data(varargin)
-            file = 0;
+            file = "0";
             if (nargin==0)
                 [filename, pathname] = uigetfile({'*.hdf5','*.h5'}, 'Pick a HDF5 file to open');
                 if (isequal(filename,0) || isequal(pathname,0))
@@ -28,7 +28,7 @@ classdef pa_data
                 obj.meta_data_device = varargin{3};
             end
             
-            if file
+            if file ~= "0"
                 [binary_data, meta_acquisition, meta_device] = pacfish.load_data(file);
                 obj.binary_time_series_data = binary_data;
                 obj.meta_data = meta_acquisition;
