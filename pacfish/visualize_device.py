@@ -23,16 +23,17 @@ def visualize_device(device_dictionary: dict, save_path: str = None, title: str 
     """
 
     def define_boundary_values(_device_dictionary: dict):
-        mins = np.zeros(3)
-        maxs = np.ones(3) * -1000
+        mins = np.ones(3) * 100000
+        maxs = np.ones(3) * -100000
 
-        for illuminator in _device_dictionary["illuminators"]:
-            position = _device_dictionary["illuminators"][illuminator][MetadataDeviceTags.ILLUMINATOR_POSITION.tag]
-            for i in range(3):
-                if position[i] < mins[i]:
-                    mins[i] = position[i]
-                if position[i] > maxs[i]:
-                    maxs[i] = position[i]
+        if "illuminators" in _device_dictionary:
+            for illuminator in _device_dictionary["illuminators"]:
+                position = _device_dictionary["illuminators"][illuminator][MetadataDeviceTags.ILLUMINATOR_POSITION.tag]
+                for i in range(3):
+                    if position[i] < mins[i]:
+                        mins[i] = position[i]
+                    if position[i] > maxs[i]:
+                        maxs[i] = position[i]
 
         for detector in _device_dictionary["detectors"]:
             position = _device_dictionary["detectors"][detector][MetadataDeviceTags.DETECTOR_POSITION.tag]
@@ -92,31 +93,32 @@ def visualize_device(device_dictionary: dict, save_path: str = None, title: str 
                 print("UNSUPPORTED GEOMETRY TYPE FOR VISUALISATION. WILL DEFAULT TO 'x' visualisation.")
                 _draw_axis.plot(detector_position[_axes[0]], detector_position[_axes[1]], "x", color="blue")
 
-        for illuminator in _device_dictionary["illuminators"]:
-            if not (MetadataDeviceTags.ILLUMINATOR_POSITION.tag in _device_dictionary["illuminators"][illuminator] and
-                    MetadataDeviceTags.ILLUMINATOR_GEOMETRY.tag in _device_dictionary["illuminators"][illuminator]):
-                return
-            illuminator_position = _device_dictionary["illuminators"][illuminator][
-                MetadataDeviceTags.ILLUMINATOR_POSITION.tag]
-            illuminator_orientation = np.asarray(
-                _device_dictionary["illuminators"][illuminator][MetadataDeviceTags.ILLUMINATOR_ORIENTATION.tag])
-            illuminator_divergence = _device_dictionary["illuminators"][illuminator][
-                MetadataDeviceTags.BEAM_DIVERGENCE_ANGLES.tag]
-            illuminator_geometry = np.asarray(
-                _device_dictionary["illuminators"][illuminator][MetadataDeviceTags.ILLUMINATOR_GEOMETRY.tag])
-            diameter = np.sqrt(np.sum(np.asarray([a ** 2 for a in illuminator_geometry]))) / 2
-            illuminator_geometry_type = _device_dictionary["illuminators"][illuminator][
-                MetadataDeviceTags.ILLUMINATOR_GEOMETRY_TYPE.tag]
+        if "illuminators" in _device_dictionary:
+            for illuminator in _device_dictionary["illuminators"]:
+                if not (MetadataDeviceTags.ILLUMINATOR_POSITION.tag in _device_dictionary["illuminators"][illuminator] and
+                        MetadataDeviceTags.ILLUMINATOR_GEOMETRY.tag in _device_dictionary["illuminators"][illuminator]):
+                    return
+                illuminator_position = _device_dictionary["illuminators"][illuminator][
+                    MetadataDeviceTags.ILLUMINATOR_POSITION.tag]
+                illuminator_orientation = np.asarray(
+                    _device_dictionary["illuminators"][illuminator][MetadataDeviceTags.ILLUMINATOR_ORIENTATION.tag])
+                illuminator_divergence = _device_dictionary["illuminators"][illuminator][
+                    MetadataDeviceTags.BEAM_DIVERGENCE_ANGLES.tag]
+                illuminator_geometry = np.asarray(
+                    _device_dictionary["illuminators"][illuminator][MetadataDeviceTags.ILLUMINATOR_GEOMETRY.tag])
+                diameter = np.sqrt(np.sum(np.asarray([a ** 2 for a in illuminator_geometry]))) / 2
+                illuminator_geometry_type = _device_dictionary["illuminators"][illuminator][
+                    MetadataDeviceTags.ILLUMINATOR_GEOMETRY_TYPE.tag]
 
-            _draw_axis.scatter(illuminator_position[_axes[0]], illuminator_position[_axes[1]],
-                               marker="+", color="red")
-            x = [illuminator_position[_axes[0]],
-                 illuminator_position[_axes[0]] +
-                 illuminator_orientation[_axes[0]] / 25]
-            y = [illuminator_position[_axes[1]],
-                 illuminator_position[_axes[1]] +
-                 illuminator_orientation[_axes[1]] / 25]
-            plt.plot(x, y, color="yellow", alpha=1, linewidth=25, zorder=-10)
+                _draw_axis.scatter(illuminator_position[_axes[0]], illuminator_position[_axes[1]],
+                                   marker="+", color="red")
+                x = [illuminator_position[_axes[0]],
+                     illuminator_position[_axes[0]] +
+                     illuminator_orientation[_axes[0]] / 25]
+                y = [illuminator_position[_axes[1]],
+                     illuminator_position[_axes[1]] +
+                     illuminator_orientation[_axes[1]] / 25]
+                plt.plot(x, y, color="yellow", alpha=1, linewidth=25, zorder=-10)
 
         start_indexes = np.asarray(_axes) * 2
         end_indexes = start_indexes + 1
