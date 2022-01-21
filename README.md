@@ -27,7 +27,7 @@ export into their standard software; (2) it assists scientists to read and write
 the consensus HDF5 format; and (3) it helps the PA community to create custom adapters 
 that convert proprietary file formats into the consensus HDF5 format.
 
-<img src="https://github.com/IPASC/PACFISH/raw/main/docs/source/images/api_workflows.png" alt="API WORKFLOWS" width="450px">
+![API Workflows](https://github.com/IPASC/PACFISH/raw/main/docs/source/images/api_workflows.png)
 
 Please help IPASC by reporting any missing parameters, bugs, or issues.
 We are also looking forward to any contributions in form of adapters that 
@@ -48,7 +48,7 @@ into the IPASC data format. To create a conversion adapter,
 a Python representation of (1) the binary data, (2) the acquisition metadata 
 dictionary, and (3) the device metadata dictionary need to be implemented.
 
-<img src="https://github.com/IPASC/PACFISH/raw/main/docs/source/images/pacfish_architecture.png" alt="API WORKFLOWS" width="450px">
+![PACFISH Architecture](https://github.com/IPASC/PACFISH/raw/main/docs/source/images/pacfish_architecture.png)
 
 The core classes (_pacfish.core_ green module) represent the metadata and 
 data structure in Python. Each metadatum is described with specific device 
