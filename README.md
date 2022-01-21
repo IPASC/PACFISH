@@ -8,6 +8,8 @@
 ![Testing Status](https://github.com/IPASC/PACFISH/actions/workflows/continuous-integration-testing.yml/badge.svg)
 [![Code Coverage](https://codecov.io/gh/IPASC/PACFISH/branch/main/graph/badge.svg)](https://app.codecov.io/gh/IPASC/PACFISH)
 
+![PACFISH LOGO](https://github.com/IPASC/PACFISH/blob/main/docs/source/images/pacfish_logo.png)
+
 In this repository we develop the photoacoustic converter for information sharing (PACFISH).
 It is a tool that enables the conversion of vendor-specific
 proprietary data formats into the IPASC data format,
