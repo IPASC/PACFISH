@@ -30,6 +30,14 @@ def load_data(file_path:str):
                 dictionary[key] = None
                 if item[()] is not None:
                     dictionary[key] = item[()]
+
+                    # This is introduced to ensure compatibility with the MATLAB code...
+                    if isinstance(dictionary[key], np.ndarray):
+                        dictionary[key] = np.squeeze(dictionary[key])
+
+                        if dictionary[key].dtype == np.object_:
+                            dictionary[key] = dictionary[key].astype(np.str_)
+
                     if isinstance(dictionary[key], bytes):
                         dictionary[key] = dictionary[key].decode("utf-8")
                         if dictionary[key] == "None":
