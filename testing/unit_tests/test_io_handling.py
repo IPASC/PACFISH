@@ -6,7 +6,7 @@ import numpy as np
 from unittest.case import TestCase
 import pacfish as pf
 from testing.unit_tests.utils import create_complete_device_metadata_dictionary, \
-    create_complete_acquisition_meta_data_dictionary
+    create_complete_acquisition_meta_data_dictionary, assert_equal_dicts
 
 
 class IOHandlingTest(TestCase):
@@ -16,34 +16,6 @@ class IOHandlingTest(TestCase):
 
     def tearDown(self):
         print("tearDown")
-
-    def assertEqualsRecursive(self, a, b):
-        if isinstance(a, dict):
-            for item in a:
-                self.assertTrue(item in a)
-                self.assertTrue(item in b)
-                if isinstance(a[item], dict):
-                    self.assertEqualsRecursive(a[item], b[item])
-                else:
-                    if isinstance(a[item], np.ndarray):
-                        self.assertTrue((a[item] == b[item]).all())
-                    elif isinstance(a[item], list):
-                        for item1, item2 in zip(a[item], b[item]):
-                            self.assertEqualsRecursive(item1, item2)
-                    else:
-                        self.assertEqual(a[item], b[item])
-        elif isinstance(a, list):
-            for item1, item2 in zip(a, b):
-                self.assertEqualsRecursive(item1, item2)
-        else:
-            print(a, type(a))
-            print(b, type(b))
-            if a is None and b is None:
-                return True
-            elif isinstance(a, np.ndarray):
-                self.assertTrue((a == b).all())
-            else:
-                self.assertEqual(a, b)
 
     def test_write_and_read_random_dictionary(self):
 
@@ -65,8 +37,8 @@ class IOHandlingTest(TestCase):
             if os.path.exists("ipasc_test.hdf5"):
                 os.remove("ipasc_test.hdf5")
 
-        self.assertEqualsRecursive(pa_data.meta_data_acquisition, test_data.meta_data_acquisition)
-        self.assertEqualsRecursive(pa_data.meta_data_device, test_data.meta_data_device)
+        assert_equal_dicts(pa_data.meta_data_acquisition, test_data.meta_data_acquisition)
+        assert_equal_dicts(pa_data.meta_data_device, test_data.meta_data_device)
         self.assertTrue((pa_data.binary_time_series_data == test_data.binary_time_series_data).all())
 
     def test_write_and_read_random_dictionary_with_None_values(self):
@@ -90,8 +62,8 @@ class IOHandlingTest(TestCase):
             if os.path.exists("ipasc_test.hdf5"):
                 os.remove("ipasc_test.hdf5")
 
-        self.assertEqualsRecursive(pa_data.meta_data_acquisition, test_data.meta_data_acquisition)
-        self.assertEqualsRecursive(pa_data.meta_data_device, test_data.meta_data_device)
+        assert_equal_dicts(pa_data.meta_data_acquisition, test_data.meta_data_acquisition)
+        assert_equal_dicts(pa_data.meta_data_device, test_data.meta_data_device)
         self.assertTrue((pa_data.binary_time_series_data == test_data.binary_time_series_data).all())
 
     def test_overwrite_hdf5_file(self):
@@ -117,10 +89,10 @@ class IOHandlingTest(TestCase):
             if os.path.exists("ipasc_test.hdf5"):
                 os.remove("ipasc_test.hdf5")
 
-        self.assertEqualsRecursive(pa_data.meta_data_acquisition, test_data_1.meta_data_acquisition)
-        self.assertEqualsRecursive(pa_data.meta_data_device, test_data_1.meta_data_device)
+        assert_equal_dicts(pa_data.meta_data_acquisition, test_data_1.meta_data_acquisition)
+        assert_equal_dicts(pa_data.meta_data_device, test_data_1.meta_data_device)
         self.assertTrue((pa_data.binary_time_series_data == test_data_1.binary_time_series_data).all())
 
-        self.assertEqualsRecursive(pa_data.meta_data_acquisition, test_data_2.meta_data_acquisition)
-        self.assertEqualsRecursive(pa_data.meta_data_device, test_data_2.meta_data_device)
+        assert_equal_dicts(pa_data.meta_data_acquisition, test_data_2.meta_data_acquisition)
+        assert_equal_dicts(pa_data.meta_data_device, test_data_2.meta_data_device)
         self.assertTrue((pa_data.binary_time_series_data == test_data_2.binary_time_series_data).all())

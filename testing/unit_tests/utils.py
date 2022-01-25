@@ -132,3 +132,32 @@ def create_complete_device_metadata_dictionary(dim_x=None, dim_y=None, dim_z=Non
     }
 
     return dictionary
+
+
+def assert_equal_dicts(a, b):
+    if isinstance(a, dict):
+        for item in a:
+            assert item in a, f"{item} was not in {a}"
+            assert item in b, f"{item} was not in {b}"
+            if isinstance(a[item], dict):
+                assert_equal_dicts(a[item], b[item])
+            else:
+                if isinstance(a[item], np.ndarray):
+                    assert (a[item] == b[item]).all(), f"{a[item]} (type {type(a[item])}) was not {b[item]} (type {type(b[item])})"
+                elif isinstance(a[item], list):
+                    for item1, item2 in zip(a[item], b[item]):
+                        assert_equal_dicts(item1, item2)
+                else:
+                    assert a[item] == b[item], f"{a[item]} (type {type(a[item])}) was not {b[item]} (type {type(b[item])})"
+    elif isinstance(a, list):
+        for item1, item2 in zip(a, b):
+            assert_equal_dicts(item1, item2)
+    else:
+        print(a, type(a))
+        print(b, type(b))
+        if a is None and b is None:
+            return True
+        elif isinstance(a, np.ndarray):
+            assert (a == b).all(), f"{a} was not {b}"
+        else:
+            assert a == b, f"{a} (type {type(a)}) was not {b} (type {type(a)})"
