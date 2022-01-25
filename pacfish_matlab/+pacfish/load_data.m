@@ -57,7 +57,7 @@ function S = extract_field(S, file, location, struc)
         try
             S.(struct_name) = struct();
         catch ME
-            struct_name = ['f' name];
+            struct_name = ['deleteme' name];
             S.(struct_name) = struct();
         end
         if (isempty(struc.Groups(i).Groups))

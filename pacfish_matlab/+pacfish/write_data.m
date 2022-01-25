@@ -22,7 +22,7 @@ function save_field(filepath, dataset, data)
     if isstruct(data)
         fields = fieldnames(data);
         for k=1:length(fields)
-            ds_name = strcat(dataset, "/", fields{k});
+            ds_name = strcat(dataset, "/", erase(fields{k}, "deleteme"));
             ds_data = data.(fields{k});
             if ischar(ds_data)
                 ds_data = string(ds_data);
