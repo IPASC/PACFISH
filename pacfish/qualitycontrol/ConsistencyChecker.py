@@ -83,12 +83,14 @@ class ConsistencyChecker:
         log_message += "#Consistency Report for Acquisition Meta Data\n\n"
         for metadatum in MetadataAcquisitionTags.TAGS:
             if metadatum.tag in acquisition_meta_data:
-                result = metadatum.evaluate_value_range(acquisition_meta_data[metadatum.tag])
+                value = acquisition_meta_data[metadatum.tag]
+                result = metadatum.evaluate_value_range(value)
                 if result is False:
                     is_consistent = False
                     log_message += metadatum.tag + " was found not to be consistent.\n"
+                    log_message += f"\t had the value: {value}\n"
                     num_inconsistencies += 1
-        log_message += "##Results\n\n"
+        log_message += "\n##Results\n\n"
         if num_inconsistencies == 0:
             log_message += "No inconsistencies were found in the meta data.\n\n"
         else:

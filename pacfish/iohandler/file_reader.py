@@ -34,9 +34,9 @@ def load_data(file_path:str):
                     # This is introduced to ensure compatibility with the MATLAB code...
                     if isinstance(dictionary[key], np.ndarray):
                         dictionary[key] = np.squeeze(dictionary[key])
-
                         if dictionary[key].dtype == np.object_:
                             dictionary[key] = dictionary[key].astype(np.str_)
+                            dictionary[key] = str(dictionary[key])
 
                     if isinstance(dictionary[key], bytes):
                         dictionary[key] = dictionary[key].decode("utf-8")

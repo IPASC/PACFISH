@@ -8,7 +8,7 @@ import numpy as np
 from pacfish import MetadataDeviceTags
 
 
-def visualize_device(device_dictionary: dict, save_path: str = None, title: str = None):
+def visualize_device(device_dictionary: dict, save_path: str = None, title: str = None, only_show_xz: bool = False):
     """
     Visualises a given device from the device_dictionary.
 
@@ -20,6 +20,8 @@ def visualize_device(device_dictionary: dict, save_path: str = None, title: str 
         Optional save_path to save a PNG file of the visualisation to.
     title: str
         Optional custom title for the plot.
+    only_show_xz: bool
+        Optional bool parameter specifying if only the first window should be shown instead of all
     """
 
     def define_boundary_values(_device_dictionary: dict):
@@ -133,20 +135,27 @@ def visualize_device(device_dictionary: dict, save_path: str = None, title: str 
         title = "Device Visualisation based on IPASC data format specifications"
     mins, maxs = define_boundary_values(device_dictionary)
 
-    plt.figure(figsize=(10, 4))
+    num_subplots = 3
+    if only_show_xz:
+        num_subplots = 1
+    if only_show_xz:
+        plt.figure(figsize=(3.33, 4))
+    else:
+        plt.figure(figsize=(10, 4))
     plt.suptitle(title)
-    ax = plt.subplot(1, 3, 1)
+    ax = plt.subplot(1, num_subplots, 1)
     ax.axes.xaxis.set_visible(False)
     ax.axes.yaxis.set_visible(False)
     add_arbitrary_plane(device_dictionary, mins, maxs, _axes=(0, 2), _draw_axis=ax)
-    ax = plt.subplot(1, 3, 2)
-    ax.axes.xaxis.set_visible(False)
-    ax.axes.yaxis.set_visible(False)
-    add_arbitrary_plane(device_dictionary, mins, maxs, _axes=(0, 1), _draw_axis=ax)
-    ax = plt.subplot(1, 3, 3)
-    ax.axes.xaxis.set_visible(False)
-    ax.axes.yaxis.set_visible(False)
-    add_arbitrary_plane(device_dictionary, mins, maxs, _axes=(1, 2), _draw_axis=ax)
+    if not only_show_xz:
+        ax = plt.subplot(1, num_subplots, 2)
+        ax.axes.xaxis.set_visible(False)
+        ax.axes.yaxis.set_visible(False)
+        add_arbitrary_plane(device_dictionary, mins, maxs, _axes=(0, 1), _draw_axis=ax)
+        ax = plt.subplot(1, num_subplots, 3)
+        ax.axes.xaxis.set_visible(False)
+        ax.axes.yaxis.set_visible(False)
+        add_arbitrary_plane(device_dictionary, mins, maxs, _axes=(1, 2), _draw_axis=ax)
 
     plt.scatter(None, None, color="blue", marker="o", label="Detector Element")
     plt.scatter(None, None, color="red", marker="+", label="Illumination Element")

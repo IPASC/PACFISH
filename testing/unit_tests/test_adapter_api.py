@@ -1,12 +1,12 @@
 # SPDX-FileCopyrightText: 2021 International Photoacoustics Standardisation Consortium (IPASC)
 # SPDX-License-Identifier: BSD 3-Clause License
+
 import unittest
 from unittest.case import TestCase
 import pacfish as pf
 import numpy as np
 
-from examples.python.create_a_pat_device import illuminator
-from .utils import create_complete_device_metadata_dictionary, create_complete_acquisition_meta_data_dictionary
+from testing.unit_tests.utils import create_complete_device_metadata_dictionary, create_complete_acquisition_meta_data_dictionary
 
 from pacfish import MetaDatum
 
@@ -34,7 +34,7 @@ class AdapterAPITest(TestCase):
 
     @unittest.expectedFailure
     def test_instantiate_base_adapter(self):
-        base_adapter = pf.BaseAdapter()
+        _ = pf.BaseAdapter()
 
     def test_empty_adapter_returns_None(self):
 
@@ -132,29 +132,29 @@ class AdapterAPITest(TestCase):
 
         # Acquisition Metadata
         self.assertEqual(pa_data.get_data_UUID(),
-                          amd[pf.MetadataAcquisitionTags.UUID.tag])
+                         amd[pf.MetadataAcquisitionTags.UUID.tag])
         self.assertEqual(pa_data.get_encoding(),
-                          amd[pf.MetadataAcquisitionTags.ENCODING.tag])
+                         amd[pf.MetadataAcquisitionTags.ENCODING.tag])
         self.assertEqual(pa_data.get_compression(),
-                          amd[pf.MetadataAcquisitionTags.COMPRESSION.tag])
+                         amd[pf.MetadataAcquisitionTags.COMPRESSION.tag])
         self.assertEqual(pa_data.get_data_type(),
-                          amd[pf.MetadataAcquisitionTags.DATA_TYPE.tag])
+                         amd[pf.MetadataAcquisitionTags.DATA_TYPE.tag])
         self.assertEqual(pa_data.get_dimensionality(),
-                          amd[pf.MetadataAcquisitionTags.DIMENSIONALITY.tag])
+                         amd[pf.MetadataAcquisitionTags.DIMENSIONALITY.tag])
         self.assertTrue((pa_data.get_sizes() ==
-                          amd[pf.MetadataAcquisitionTags.SIZES.tag]).all())
+                         amd[pf.MetadataAcquisitionTags.SIZES.tag]).all())
         self.assertEqual(pa_data.get_compression(),
-                          amd[pf.MetadataAcquisitionTags.COMPRESSION.tag])
+                         amd[pf.MetadataAcquisitionTags.COMPRESSION.tag])
         self.assertEqual(pa_data.get_regions_of_interest(),
-                          amd[pf.MetadataAcquisitionTags.REGIONS_OF_INTEREST.tag])
+                         amd[pf.MetadataAcquisitionTags.REGIONS_OF_INTEREST.tag])
         self.assertEqual(pa_data.get_photoacoustic_imaging_device_reference(),
-                          amd[pf.MetadataAcquisitionTags.PHOTOACOUSTIC_IMAGING_DEVICE_REFERENCE.tag])
+                         amd[pf.MetadataAcquisitionTags.PHOTOACOUSTIC_IMAGING_DEVICE_REFERENCE.tag])
         self.assertEqual(pa_data.get_measurement_time_stamps(),
-                          amd[pf.MetadataAcquisitionTags.MEASUREMENT_TIMESTAMPS.tag])
+                         amd[pf.MetadataAcquisitionTags.MEASUREMENT_TIMESTAMPS.tag])
         self.assertTrue((pa_data.get_measurement_spatial_poses() ==
-                          amd[pf.MetadataAcquisitionTags.MEASUREMENT_SPATIAL_POSES.tag]).all())
+                         amd[pf.MetadataAcquisitionTags.MEASUREMENT_SPATIAL_POSES.tag]).all())
         self.assertEqual(pa_data.get_acquisition_wavelengths(),
-                          amd[pf.MetadataAcquisitionTags.ACQUISITION_WAVELENGTHS.tag])
+                         amd[pf.MetadataAcquisitionTags.ACQUISITION_WAVELENGTHS.tag])
         self.assertTrue((pa_data.get_time_gain_compensation() ==
                          amd[pf.MetadataAcquisitionTags.TIME_GAIN_COMPENSATION.tag]).all())
         self.assertEqual(pa_data.get_overall_gain(),
@@ -179,53 +179,53 @@ class AdapterAPITest(TestCase):
         # Detector metadata
         for detector_id in pa_data.get_detector_ids():
             self.assertTrue((pa_data.get_detector_position(detector_id) ==
-                              dmd[pf.MetadataDeviceTags.DETECTORS.tag][detector_id]
-                              [pf.MetadataDeviceTags.DETECTOR_POSITION.tag]).all())
+                             dmd[pf.MetadataDeviceTags.DETECTORS.tag][detector_id]
+                             [pf.MetadataDeviceTags.DETECTOR_POSITION.tag]).all())
             self.assertTrue((pa_data.get_detector_geometry(detector_id) ==
-                              dmd[pf.MetadataDeviceTags.DETECTORS.tag][detector_id]
-                              [pf.MetadataDeviceTags.DETECTOR_GEOMETRY.tag]).all())
+                             dmd[pf.MetadataDeviceTags.DETECTORS.tag][detector_id]
+                             [pf.MetadataDeviceTags.DETECTOR_GEOMETRY.tag]).all())
             self.assertTrue((pa_data.get_detector_orientation(detector_id) ==
-                              dmd[pf.MetadataDeviceTags.DETECTORS.tag][detector_id]
-                              [pf.MetadataDeviceTags.DETECTOR_ORIENTATION.tag]).all())
+                             dmd[pf.MetadataDeviceTags.DETECTORS.tag][detector_id]
+                             [pf.MetadataDeviceTags.DETECTOR_ORIENTATION.tag]).all())
             self.assertEqual(pa_data.get_detector_geometry_type(detector_id),
-                              dmd[pf.MetadataDeviceTags.DETECTORS.tag][detector_id]
-                              [pf.MetadataDeviceTags.DETECTOR_GEOMETRY_TYPE.tag])
+                             dmd[pf.MetadataDeviceTags.DETECTORS.tag][detector_id]
+                             [pf.MetadataDeviceTags.DETECTOR_GEOMETRY_TYPE.tag])
             self.assertTrue((pa_data.get_angular_response(detector_id) ==
-                              dmd[pf.MetadataDeviceTags.DETECTORS.tag][detector_id]
-                              [pf.MetadataDeviceTags.ANGULAR_RESPONSE.tag]).all())
+                             dmd[pf.MetadataDeviceTags.DETECTORS.tag][detector_id]
+                             [pf.MetadataDeviceTags.ANGULAR_RESPONSE.tag]).all())
             self.assertTrue((pa_data.get_frequency_response(detector_id) ==
-                              dmd[pf.MetadataDeviceTags.DETECTORS.tag][detector_id]
-                              [pf.MetadataDeviceTags.FREQUENCY_RESPONSE.tag]).all())
+                             dmd[pf.MetadataDeviceTags.DETECTORS.tag][detector_id]
+                             [pf.MetadataDeviceTags.FREQUENCY_RESPONSE.tag]).all())
 
         # Illuminator metadata
         for illuminator_id in pa_data.get_illuminator_ids():
             self.assertTrue((pa_data.get_illuminator_position(illuminator_id) ==
-                              dmd[pf.MetadataDeviceTags.ILLUMINATORS.tag][illuminator_id]
-                              [pf.MetadataDeviceTags.ILLUMINATOR_POSITION.tag]).all())
+                             dmd[pf.MetadataDeviceTags.ILLUMINATORS.tag][illuminator_id]
+                             [pf.MetadataDeviceTags.ILLUMINATOR_POSITION.tag]).all())
             self.assertTrue((pa_data.get_illuminator_geometry(illuminator_id) ==
-                              dmd[pf.MetadataDeviceTags.ILLUMINATORS.tag][illuminator_id]
-                              [pf.MetadataDeviceTags.ILLUMINATOR_GEOMETRY.tag]).all())
+                             dmd[pf.MetadataDeviceTags.ILLUMINATORS.tag][illuminator_id]
+                             [pf.MetadataDeviceTags.ILLUMINATOR_GEOMETRY.tag]).all())
             self.assertTrue((pa_data.get_illuminator_orientation(illuminator_id) ==
-                              dmd[pf.MetadataDeviceTags.ILLUMINATORS.tag][illuminator_id]
-                              [pf.MetadataDeviceTags.ILLUMINATOR_ORIENTATION.tag]).all())
+                             dmd[pf.MetadataDeviceTags.ILLUMINATORS.tag][illuminator_id]
+                             [pf.MetadataDeviceTags.ILLUMINATOR_ORIENTATION.tag]).all())
             self.assertEqual(pa_data.get_illuminator_geometry_type(illuminator_id),
-                              dmd[pf.MetadataDeviceTags.ILLUMINATORS.tag][illuminator_id]
-                              [pf.MetadataDeviceTags.ILLUMINATOR_GEOMETRY_TYPE.tag])
+                             dmd[pf.MetadataDeviceTags.ILLUMINATORS.tag][illuminator_id]
+                             [pf.MetadataDeviceTags.ILLUMINATOR_GEOMETRY_TYPE.tag])
             self.assertEqual(pa_data.get_beam_divergence(illuminator_id),
-                              dmd[pf.MetadataDeviceTags.ILLUMINATORS.tag][illuminator_id]
-                              [pf.MetadataDeviceTags.BEAM_DIVERGENCE_ANGLES.tag])
+                             dmd[pf.MetadataDeviceTags.ILLUMINATORS.tag][illuminator_id]
+                             [pf.MetadataDeviceTags.BEAM_DIVERGENCE_ANGLES.tag])
             self.assertTrue((pa_data.get_beam_energy_profile(illuminator_id) ==
-                              dmd[pf.MetadataDeviceTags.ILLUMINATORS.tag][illuminator_id]
-                              [pf.MetadataDeviceTags.BEAM_ENERGY_PROFILE.tag]).all())
+                             dmd[pf.MetadataDeviceTags.ILLUMINATORS.tag][illuminator_id]
+                             [pf.MetadataDeviceTags.BEAM_ENERGY_PROFILE.tag]).all())
             self.assertTrue((pa_data.get_beam_profile(illuminator_id) ==
-                              dmd[pf.MetadataDeviceTags.ILLUMINATORS.tag][illuminator_id]
-                              [pf.MetadataDeviceTags.BEAM_INTENSITY_PROFILE.tag]).all())
+                             dmd[pf.MetadataDeviceTags.ILLUMINATORS.tag][illuminator_id]
+                             [pf.MetadataDeviceTags.BEAM_INTENSITY_PROFILE.tag]).all())
             self.assertEqual(pa_data.get_beam_profile_distance(illuminator_id),
-                              dmd[pf.MetadataDeviceTags.ILLUMINATORS.tag][illuminator_id]
-                              [pf.MetadataDeviceTags.INTENSITY_PROFILE_DISTANCE.tag])
+                             dmd[pf.MetadataDeviceTags.ILLUMINATORS.tag][illuminator_id]
+                             [pf.MetadataDeviceTags.INTENSITY_PROFILE_DISTANCE.tag])
             self.assertTrue((pa_data.get_beam_stability_profile(illuminator_id) ==
-                              dmd[pf.MetadataDeviceTags.ILLUMINATORS.tag][illuminator_id]
-                              [pf.MetadataDeviceTags.BEAM_STABILITY_PROFILE.tag]).all())
+                             dmd[pf.MetadataDeviceTags.ILLUMINATORS.tag][illuminator_id]
+                             [pf.MetadataDeviceTags.BEAM_STABILITY_PROFILE.tag]).all())
             self.assertTrue((pa_data.get_wavelength_range(illuminator_id) ==
                              dmd[pf.MetadataDeviceTags.ILLUMINATORS.tag][illuminator_id]
                              [pf.MetadataDeviceTags.WAVELENGTH_RANGE.tag]).all())

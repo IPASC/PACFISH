@@ -125,9 +125,10 @@ class NonNegativeWholeNumber(MetaDatum):
         if value is None:
             return False
 
-        if not isinstance(value, int):
-            raise TypeError("The given value of", self.tag, "was not of the expected data type. Expected ",
-                            "int but was", type(value).__name__)
+        if not isinstance(value, (int, np.int32, np.int64, np.int16, np.int8)):
+            if not (isinstance(value, np.ndarray) and len(np.shape(value)) == 0):
+                raise TypeError("The given value of", self.tag, "was not of the expected data type. Expected ",
+                                "int but was", type(value).__name__)
         return value >= 0
 
 
@@ -192,7 +193,10 @@ class NDimensionalNumpyArray(MetaDatum):
         if not isinstance(value, np.ndarray):
             raise TypeError("A N-Dimensional array must be of type numpy.ndarray, but was", type(value).__name__)
 
-        return len(np.shape(value)) == self.expected_array_dimension
+        if len(np.shape(np.atleast_1d(value))) != self.expected_array_dimension:
+            return False
+
+        return True
 
 
 class NDimensionalNumpyArrayWithMElements(MetaDatum):
@@ -236,9 +240,10 @@ class NonNegativeNumber(MetaDatum):
             return False
 
         if not isinstance(value, self.dtype):
-            raise TypeError("The given value of", self.tag, "was not of the expected data type. Expected ", self.dtype,
-                            "but was",
-                            type(value).__name__)
+            if not (isinstance(value, np.ndarray) and len(np.shape(value))==0):
+                raise TypeError("The given value of", self.tag, "was not of the expected data type. Expected ", self.dtype,
+                                "but was",
+                                type(value).__name__)
 
         return value >= 0.0
 
@@ -371,10 +376,10 @@ class MetadataAcquisitionTags:
     TEMPERATURE_CONTROL = NonNegativeNumbersInArray("temperature_control", False, np.ndarray, Units.KELVIN)
     ACOUSTIC_COUPLING_AGENT = UnconstrainedMetaDatum("acoustic_coupling_agent", False, str)
     SCANNING_METHOD = UnconstrainedMetaDatum("scanning_method", False, str)
-    SPEED_OF_SOUND = NonNegativeNumbersInArray("speed_of_sound", False, np.ndarray, Units.METERS_PER_SECOND)
+    SPEED_OF_SOUND = UnconstrainedMetaDatum("speed_of_sound", False, (np.ndarray, float), Units.METERS_PER_SECOND)
     AD_SAMPLING_RATE = NonNegativeNumber("ad_sampling_rate", True, float, Units.HERTZ)
     FREQUENCY_DOMAIN_FILTER = UnconstrainedMetaDatum("frequency_domain_filter", False, np.ndarray)
-    MEASUREMENTS_PER_IMAGE = NonNegativeNumber("measurements_per_image", False, int)
+    MEASUREMENTS_PER_IMAGE = NonNegativeWholeNumber("measurements_per_image", False, numbers.Number)
 
     TAGS_BINARY = [DATA_TYPE, DIMENSIONALITY, SIZES]
     TAGS_CONTAINER = [UUID, ENCODING, COMPRESSION]

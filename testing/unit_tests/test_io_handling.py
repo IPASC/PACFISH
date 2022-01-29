@@ -96,3 +96,30 @@ class IOHandlingTest(TestCase):
         assert_equal_dicts(pa_data.meta_data_acquisition, test_data_2.meta_data_acquisition)
         assert_equal_dicts(pa_data.meta_data_device, test_data_2.meta_data_device)
         self.assertTrue((pa_data.binary_time_series_data == test_data_2.binary_time_series_data).all())
+
+    def test_rewrite_and_read_still_consistent(self):
+
+        device_dict = create_complete_device_metadata_dictionary()
+        acquisition_dict = create_complete_acquisition_meta_data_dictionary()
+
+        pa_data = pf.PAData(binary_time_series_data=np.zeros([256, 2048]),
+                            meta_data_acquisition=acquisition_dict,
+                            meta_data_device=device_dict)
+
+        self.assertTrue(pf.quality_check_pa_data(pa_data, verbose=True), "Not consistent BEFORE reloading...")
+
+        try:
+            pf.write_data("ipasc_test.hdf5", pa_data)
+            test_data = pf.load_data("ipasc_test.hdf5")
+        except Exception as e:
+            raise e
+        finally:
+            # clean up after ipasc_test
+            if os.path.exists("ipasc_test.hdf5"):
+                os.remove("ipasc_test.hdf5")
+
+        self.assertTrue(pf.quality_check_pa_data(test_data, verbose=True), "Not consistent AFTER reloading...")
+
+        assert_equal_dicts(pa_data.meta_data_acquisition, test_data.meta_data_acquisition)
+        assert_equal_dicts(pa_data.meta_data_device, test_data.meta_data_device)
+        self.assertTrue((pa_data.binary_time_series_data == test_data.binary_time_series_data).all())

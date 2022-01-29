@@ -573,7 +573,8 @@ class PAData:
         else:
             positions = []
             for id in self.get_detector_ids():
-                positions.append(self.meta_data_device[MetadataDeviceTags.DETECTORS.tag][id][metadatum.tag])
+                if metadatum.tag in self.meta_data_device[MetadataDeviceTags.DETECTORS.tag][id]:
+                    positions.append(self.meta_data_device[MetadataDeviceTags.DETECTORS.tag][id][metadatum.tag])
 
             if len(positions) == 0:
                 return None

@@ -27,3 +27,14 @@ class VisualisationTest(TestCase):
         self.assertTrue((np.mean(im) > 0) and (np.mean(im) < 255))
         os.remove("figure.png")
         self.assertFalse(os.path.exists("figure.png"))
+
+    def test_visualisation_runs_though_and_produces_non_empty_png_only_xz(self):
+        device_metadata = create_complete_device_metadata_dictionary()
+        pf.visualize_device(device_dictionary=device_metadata,
+                            save_path="", only_show_xz=True)
+
+        self.assertTrue(os.path.exists("figure.png"))
+        im = np.asarray(imageio.imread("figure.png"))
+        self.assertTrue((np.mean(im) > 0) and (np.mean(im) < 255))
+        os.remove("figure.png")
+        self.assertFalse(os.path.exists("figure.png"))
