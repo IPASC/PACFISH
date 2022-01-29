@@ -2,9 +2,21 @@
 %% SPDX-FileCopyrightText: 2022 Janek Gröhl
 %% SPDX-License-Identifier: BSD 3-Clause License
 
-function write_data(filepath, padata)
+function write_data(filepath, padata, varargin)
     %% Central PACFISH saving function.
     %% Saves a pa_data class into an HDF5 container.
+    
+    if isempty(varargin)
+        overwrite = 0;
+    else
+        overwrite = varargin{1};
+    end
+    
+    % delete existing file if exists and overwrite is true
+    
+    if (isfile(filepath) && overwrite)
+        delete(filepath);
+    end
     
     % test the file
     [~, ~, ext] = fileparts(filepath);

@@ -49,6 +49,14 @@ end
 
 %% Temporary function used in the constructor  
 function S = extract_field(S, file, location, struc)
+
+    for ds=1:length(struc.Datasets)
+        name = struc.Datasets(ds).Name;
+        struct_name = [name];
+        S.(struct_name) = struct();
+        S.(struct_name) = h5read(file, [location name]);
+    end
+    
     for i=1:length(struc.Groups)
         name = struc.Groups(i).Name;
         k=find(name=='/');
