@@ -38,7 +38,7 @@ classdef kwave_adapter
                 device_struct.general.field_of_view = [min(obj.sensor_definition.mask(1, :))+0.001 max(obj.sensor_definition.mask(1, :))-0.001 0 0 min(obj.sensor_definition.mask(2, :))+0.001 max(obj.sensor_definition.mask(2, :))-0.001];
             end
             for det = 1:num_detectors
-                index = strcat("deleteme", sprintf( '%010d', det ));
+                index = strcat("deleteme", sprintf( '%010d', (det-1) ));
                 device_struct.detectors.(index).detector_position = [obj.sensor_definition.mask(1, det) 0 obj.sensor_definition.mask(2, det)];
                 device_struct.detectors.(index).detector_geometry_type = "CUBOID";
                 device_struct.detectors.(index).detector_geometry = [obj.kgrid.dx obj.kgrid.dz obj.kgrid.dy];
