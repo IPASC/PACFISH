@@ -323,9 +323,8 @@ class MetadataDeviceTags:
 
     DETECTOR_GEOMETRY_TYPE = UnconstrainedMetaDatum("detector_geometry_type", False, str, Units.METERS)
 
-    FREQUENCY_RESPONSE = NDimensionalNumpyArray("frequency_response", False, np.ndarray,
-                                                Units.HERTZ + " / " + Units.DIMENSIONLESS_UNIT,
-                                                expected_array_dimension=2)
+    FREQUENCY_RESPONSE = NonNegativeNumbersInArray("frequency_response", False, np.ndarray,
+                                                Units.HERTZ + " / " + Units.DIMENSIONLESS_UNIT)
     ANGULAR_RESPONSE = NDimensionalNumpyArray("angular_response", False, np.ndarray,
                                               Units.RADIANS + " / " + Units.DIMENSIONLESS_UNIT,
                                               expected_array_dimension=2)
@@ -333,10 +332,11 @@ class MetadataDeviceTags:
     TAGS_GENERAL = [GENERAL, UNIQUE_IDENTIFIER, ILLUMINATORS, DETECTORS, FIELD_OF_VIEW, NUMBER_OF_ILLUMINATION_ELEMENTS,
                     NUMBER_OF_DETECTION_ELEMENTS]
     TAGS_ILLUMINATORS = [ILLUMINATION_ELEMENT, ILLUMINATOR_POSITION, ILLUMINATOR_ORIENTATION, ILLUMINATOR_GEOMETRY,
+                         ILLUMINATOR_GEOMETRY_TYPE,
                          WAVELENGTH_RANGE, BEAM_ENERGY_PROFILE, BEAM_STABILITY_PROFILE, PULSE_WIDTH,
                          BEAM_INTENSITY_PROFILE, INTENSITY_PROFILE_DISTANCE, BEAM_DIVERGENCE_ANGLES]
     TAGS_DETECTORS = [DETECTION_ELEMENT, DETECTOR_POSITION, DETECTOR_ORIENTATION, DETECTOR_GEOMETRY, FREQUENCY_RESPONSE,
-                      ANGULAR_RESPONSE]
+                      ANGULAR_RESPONSE, DETECTOR_GEOMETRY_TYPE]
     TAGS = TAGS_GENERAL + TAGS_DETECTORS + TAGS_ILLUMINATORS
 
 
