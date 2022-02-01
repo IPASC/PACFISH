@@ -2,8 +2,8 @@
 % SPDX-License-Identifier: CC0
 
 % read with a given file in Matlab
-path = 'C:\standardised-image-reconstruction\';
-filename = '1BdSLl4BSxpxXDwWcBKKVV4nHULPe7IS8_ipasc.hdf5';
+path = 'C:\kWave-PACFISH-export\';
+filename = 'kwave_2Dsim_circular_array_new.hdf5';
 file = [path filename];
 
 % Create an instance of the class
