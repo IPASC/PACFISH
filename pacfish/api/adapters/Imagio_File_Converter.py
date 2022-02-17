@@ -10,6 +10,7 @@ class ImagioFileConverter(BaseAdapter):
     """
 
     def __init__(self, filename):
+        self.pa_data = None
         pass
 
     def generate_binary_data(self) -> np.ndarray:
