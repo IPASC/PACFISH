@@ -9,7 +9,7 @@ class ImagioFileConverter(BaseAdapter):
     For the Seno Imagio system.
     """
 
-    def __init__(self):
+    def __init__(self, filename):
         pass
 
     def generate_binary_data(self) -> np.ndarray:
