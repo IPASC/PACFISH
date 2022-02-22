@@ -6,9 +6,10 @@ from pacfish import write_data
 from pacfish import quality_check_pa_data
 from pacfish.visualize_device import visualize_device
 
-converter = ImagioFileConverter('imagio_raw.bin')
+converter = ImagioFileConverter('examples/python/input/imagio-data-1')
 
-pa_data = converter.generate_pa_data()
+# why is generate_pa_data() noted as internal? seems external to me.
+#pa_data = converter.generate_pa_data()
 
 # write_data("imagio_ipasc.hdf5", pa_data)
 
