@@ -1,6 +1,7 @@
 import numpy as np
 import os
 import glob
+import struct
 
 from pacfish import BaseAdapter, MetaDatum
 from pacfish import MetadataAcquisitionTags
@@ -10,38 +11,20 @@ class ImagioFileConverter(BaseAdapter):
     """
     For the Seno Imagio system.
     """
-    def __init__(self, path):
+    def __init__(self, filename):
 
         #
         # TODO:
         # - how to handle corresponding ultrasound data
         # - how to handle meta-data per frame
-        # - .dat binary data format
-        meta_variables = [
-           "sNumChans",
-           "sNumSamplesPerChannel",
-           "sDataType",
-           "lFrameCounter",
-           "iSampleRate",
-           "cWavelength",
-           "fLaserEnergy",
-           "caProbeSN",
-           "LaserInfo.uiPulseCounter",
-           "Width (Pixels)",
-           "Height (Pixels)",
-           "Width (mm)",
-           "Height (mm)",
-           "Speed of Sound",
-           "Ts_us[2]",
-           ]
-        meta_files = glob.glob(path + "/**/*_meta.txt", recursive=True)
-        for meta_file in meta_files:
-            with open(meta_file) as file:
-                for line in file:
-                    for meta_var in meta_variables:
-                        if meta_var in line:
-                            s = line.strip().split() 
-                            print(meta_var + ": " + s[-1])
+        # - binary data within lom
+        with open(filename, "rb") as f:
+            data = f.read(1024)
+
+            # see OAFrameHeader.h for binary format
+            (sMagic, sVersion, iTick, lSize, lFrameCounter, sType, sDummy) = struct.unpack("<HHIIIhh", data[0:20]) 
+            caData = struct.unpack("1000B", data[20:1020])
+            lCRC = struct.unpack("i", data[1020:1024])
 
 
     def generate_binary_data(self) -> np.ndarray:
