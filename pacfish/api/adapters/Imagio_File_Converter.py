@@ -8,6 +8,19 @@ from pacfish import MetadataAcquisitionTags
 from pacfish import DeviceMetaDataCreator, DetectionElementCreator, IlluminationElementCreator
 
 class ImagioFileConverter(BaseAdapter):
+
+    # see OAFrameHeader.h
+    OAFRAMETYPE_OA = 1
+    OAFRAMETYPE_US = 2
+    OAFRAMETYPE_CONFIG = 3
+    OAFRAMETYPE_ANNOTATION = 4
+    OAFRAMETYPE_AUDIO = 5
+    OAFRAMETYPE_VERSION = 6
+    OAFRAMETYPE_PROBE = 7
+    OAFRAMETYPE_TGC = 8
+    OAFRAMETYPE_PROBE_POSITION = 9
+    OAFRAME_MAGIC = 0xbee5
+
     """
     For the Seno Imagio system.
     """
@@ -18,13 +31,29 @@ class ImagioFileConverter(BaseAdapter):
         # - how to handle corresponding ultrasound data
         # - how to handle meta-data per frame
         # - binary data within lom
+        #
+        
+        # parse the .lom file. see OAFrameHeader.h for binary format.
         with open(filename, "rb") as f:
-            data = f.read(1024)
 
-            # see OAFrameHeader.h for binary format
-            (sMagic, sVersion, iTick, lSize, lFrameCounter, sType, sDummy) = struct.unpack("<HHIIIhh", data[0:20]) 
-            caData = struct.unpack("1000B", data[20:1020])
-            lCRC = struct.unpack("i", data[1020:1024])
+            while True:
+                data = f.read(1024)
+
+                if not data:
+                    print("no data left!")
+                    break
+
+                metaData = (sMagic, sVersion, iTick, lSize, lFrameCounter, sType, sDummy) = struct.unpack("<HHIIIhh", data[0:20]) 
+                frameHeader = bytes(struct.unpack("1000B", data[20:1020]))
+                lCRC = struct.unpack("i", data[1020:1024])
+                frameData = f.read(lSize) 
+
+                if (sType == self.OAFRAMETYPE_OA):
+                    laserInfo = struct.unpack("<ddddiiffIiiiii", frameHeader[0:72]) # TODO parse out sub-fields as necessary
+                    (sNumChans, sNumSamplesPerChannel, sDataType, lFrameCounter, sProbeID, sAcquireHardwareID, iSampleRate) = struct.unpack("<hhHIhhi", frameHeader[72:90])
+                    cChannelsReceived = struct.unpack("<32B", frameHeader[90:122])
+                    s = (sFrameStatus, cWavelength, isCalibrationFrame) = struct.unpack("<HBB", frameHeader[122:126])
+                    print(s)
 
 
     def generate_binary_data(self) -> np.ndarray:
