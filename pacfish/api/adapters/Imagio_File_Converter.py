@@ -21,6 +21,8 @@ class ImagioFileConverter(BaseAdapter):
     OAFRAMETYPE_PROBE_POSITION = 9
     OAFRAME_MAGIC = 0xbee5
 
+    metadata = {}
+
     """
     For the Seno Imagio system.
     """
@@ -29,18 +31,19 @@ class ImagioFileConverter(BaseAdapter):
         #
         # TODO:
         # - how to handle corresponding ultrasound data
-        # - how to handle meta-data per frame
         # - binary data within lom
         #
         
-        # parse the .lom file. see OAFrameHeader.h for binary format.
+        # parse the Laser Optic Movie (.lom) file. see OAFrameHeader.h for binary format.
         with open(filename, "rb") as f:
+
+            self.metadata[MetadataAcquisitionTags.PULSE_ENERGY] = []
+            self.metadata[MetadataAcquisitionTags.MEASUREMENT_TIMESTAMPS] = []
 
             while True:
                 data = f.read(1024)
 
                 if not data:
-                    print("no data left!")
                     break
 
                 metaData = (sMagic, sVersion, iTick, lSize, lFrameCounter, sType, sDummy) = struct.unpack("<HHIIIhh", data[0:20]) 
@@ -52,8 +55,14 @@ class ImagioFileConverter(BaseAdapter):
                     laserInfo = struct.unpack("<ddddiiffIiiiii", frameHeader[0:72]) # TODO parse out sub-fields as necessary
                     (sNumChans, sNumSamplesPerChannel, sDataType, lFrameCounter, sProbeID, sAcquireHardwareID, iSampleRate) = struct.unpack("<hhHIhhi", frameHeader[72:90])
                     cChannelsReceived = struct.unpack("<32B", frameHeader[90:122])
-                    s = (sFrameStatus, cWavelength, isCalibrationFrame) = struct.unpack("<HBB", frameHeader[122:126])
-                    print(s)
+                    (sFrameStatus, cWavelength, isCalibrationFrame) = struct.unpack("<HBB", frameHeader[122:126])
+                    (fLaserEnergy, fGain) = struct.unpack("<ff", frameHeader[190:198])
+
+                    self.metadata[MetadataAcquisitionTags.PULSE_ENERGY].append(fLaserEnergy / 1000) # mJ -> J
+                    self.metadata[MetadataAcquisitionTags.MEASUREMENT_TIMESTAMPS].append(iTick / 1000) # msec -> sec
+
+        super().__init__()
+
 
 
     def generate_binary_data(self) -> np.ndarray:
@@ -102,5 +111,6 @@ class ImagioFileConverter(BaseAdapter):
         object
             The data corresponding to the given MetaDatum
         """
-        pass
+        if metadatum in self.metadata:
+            return self.metadata[metadatum]
 
