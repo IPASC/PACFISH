@@ -30,8 +30,7 @@ class ImagioFileConverter(BaseAdapter):
 
         #
         # TODO:
-        # - how to handle corresponding ultrasound data
-        # - binary data within lom
+        # - corresponding ultrasound data
         #
         
         # parse the Laser Optic Movie (.lom) file. see OAFrameHeader.h for binary format.
@@ -47,13 +46,23 @@ class ImagioFileConverter(BaseAdapter):
                     break
 
                 metaData = (sMagic, sVersion, iTick, lSize, lFrameCounter, sType, sDummy) = struct.unpack("<HHIIIhh", data[0:20]) 
+                if (sMagic != self.OAFRAME_MAGIC):
+                    print(f"ERROR: Unexpected magic number (read 0x{sMagic:04x}, expected 0x{self.OAFRAME_MAGIC:04x})")
                 frameHeader = bytes(struct.unpack("1000B", data[20:1020]))
                 lCRC = struct.unpack("i", data[1020:1024])
                 frameData = f.read(lSize) 
 
                 if (sType == self.OAFRAMETYPE_OA):
-                    laserInfo = struct.unpack("<ddddiiffIiiiii", frameHeader[0:72]) # TODO parse out sub-fields as necessary
+
+                    laserInfo = struct.unpack("<ddddiiffIiiiii", frameHeader[0:72]) 
                     (sNumChans, sNumSamplesPerChannel, sDataType, lFrameCounter, sProbeID, sAcquireHardwareID, iSampleRate) = struct.unpack("<hhHIhhi", frameHeader[72:90])
+
+                    a = np.frombuffer(frameData, dtype="<H")
+                    a = a.reshape((1216, sNumChans))
+                    np.set_printoptions(linewidth=1000, edgeitems=15)
+                    print(a)
+
+                    #print(f"DEBUG: {sNumSamplesPerChannel = }, {sNumChans = }")
                     cChannelsReceived = struct.unpack("<32B", frameHeader[90:122])
                     (sFrameStatus, cWavelength, isCalibrationFrame) = struct.unpack("<HBB", frameHeader[122:126])
                     (fLaserEnergy, fGain) = struct.unpack("<ff", frameHeader[190:198])
@@ -62,7 +71,6 @@ class ImagioFileConverter(BaseAdapter):
                     self.metadata[MetadataAcquisitionTags.MEASUREMENT_TIMESTAMPS].append(iTick / 1000) # msec -> sec
 
         super().__init__()
-
 
 
     def generate_binary_data(self) -> np.ndarray:
