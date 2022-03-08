@@ -2,6 +2,7 @@ import numpy as np
 import os
 import glob
 import struct
+import cv2
 
 from pacfish import BaseAdapter, MetaDatum
 from pacfish import MetadataAcquisitionTags
@@ -57,12 +58,15 @@ class ImagioFileConverter(BaseAdapter):
                     laserInfo = struct.unpack("<ddddiiffIiiiii", frameHeader[0:72]) 
                     (sNumChans, sNumSamplesPerChannel, sDataType, lFrameCounter, sProbeID, sAcquireHardwareID, iSampleRate) = struct.unpack("<hhHIhhi", frameHeader[72:90])
 
-                    a = np.frombuffer(frameData, dtype="<H")
-                    a = a.reshape((1216, sNumChans))
+                    print(f"DEBUG: {sNumSamplesPerChannel = }, {sNumChans = }, {lSize = }")
+                    a = np.frombuffer(frameData, dtype=np.uint16)
+                    a = a[:-((1216 - sNumSamplesPerChannel)*sNumChans)] # remove garbage data at end
+                    #a = a.reshape((sNumSamplesPerChannel, sNumChans))
+                    a = a.reshape((sNumChans, sNumSamplesPerChannel))
+                    cv2.imwrite("out" + str(iTick) + ".png", a)
                     np.set_printoptions(linewidth=1000, edgeitems=15)
                     print(a)
 
-                    #print(f"DEBUG: {sNumSamplesPerChannel = }, {sNumChans = }")
                     cChannelsReceived = struct.unpack("<32B", frameHeader[90:122])
                     (sFrameStatus, cWavelength, isCalibrationFrame) = struct.unpack("<HBB", frameHeader[122:126])
                     (fLaserEnergy, fGain) = struct.unpack("<ff", frameHeader[190:198])
