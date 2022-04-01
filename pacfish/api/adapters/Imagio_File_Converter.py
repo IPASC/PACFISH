@@ -58,6 +58,12 @@ class ImagioFileConverter(BaseAdapter):
                     laserInfo = struct.unpack("<ddddiiffIiiiii", frameHeader[0:72]) 
                     (sNumChans, sNumSamplesPerChannel, sDataType, lFrameCounter, sProbeID, sAcquireHardwareID, iSampleRate) = struct.unpack("<hhHIhhi", frameHeader[72:90])
 
+					# sample output
+                    #DEBUG: sNumSamplesPerChannel = 1178, sNumChans = 128, lSize = 311296
+                    #DEBUG: sNumSamplesPerChannel = 1162, sNumChans = 128, lSize = 311296
+                    #DEBUG: sNumSamplesPerChannel = 1178, sNumChans = 128, lSize = 311296
+                    #DEBUG: sNumSamplesPerChannel = 1163, sNumChans = 128, lSize = 311296
+                
                     print(f"DEBUG: {sNumSamplesPerChannel = }, {sNumChans = }, {lSize = }")
                     a = np.frombuffer(frameData, dtype=np.uint16)
                     a = a[:-((1216 - sNumSamplesPerChannel)*sNumChans)] # remove garbage data at end
