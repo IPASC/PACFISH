@@ -31,7 +31,7 @@ class ImagioFileConverter(BaseAdapter):
 
         #
         # TODO:
-        # - corresponding ultrasound data
+        # - corresponding ultrasound data as image (already that way in LOM file)
         #
         
         # parse the Laser Optic Movie (.lom) file. see OAFrameHeader.h for binary format.
@@ -41,6 +41,7 @@ class ImagioFileConverter(BaseAdapter):
             self.metadata[MetadataAcquisitionTags.MEASUREMENT_TIMESTAMPS] = []
 
             while True:
+                # make 1024 and others constant
                 data = f.read(1024)
 
                 if not data:
@@ -63,9 +64,15 @@ class ImagioFileConverter(BaseAdapter):
                     #DEBUG: sNumSamplesPerChannel = 1162, sNumChans = 128, lSize = 311296
                     #DEBUG: sNumSamplesPerChannel = 1178, sNumChans = 128, lSize = 311296
                     #DEBUG: sNumSamplesPerChannel = 1163, sNumChans = 128, lSize = 311296
+
+                    # frameData padded to 1024
+                    # TODO 
+                    # - look at sDataType and compare to StructureDump.h + SD_SIGNED 
+                    # - 311296 = 1216*128*2
+                    # - trim prior to biffer
                 
                     print(f"DEBUG: {sNumSamplesPerChannel = }, {sNumChans = }, {lSize = }")
-                    a = np.frombuffer(frameData, dtype=np.uint16)
+                    a = np.frombuffer(frameData, dtype=np.int16)
                     a = a[:-((1216 - sNumSamplesPerChannel)*sNumChans)] # remove garbage data at end
                     #a = a.reshape((sNumSamplesPerChannel, sNumChans))
                     a = a.reshape((sNumChans, sNumSamplesPerChannel))
