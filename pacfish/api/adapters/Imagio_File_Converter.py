@@ -21,6 +21,13 @@ class ImagioFileConverter(BaseAdapter):
     OAFRAMETYPE_TGC = 8
     OAFRAMETYPE_PROBE_POSITION = 9
     OAFRAME_MAGIC = 0xbee5
+    OAFRAME_HEADER_SIZE = 1024
+    OAFRAME_SUBHEADER_SIZE = 20
+    OAFRAME_CRC_SIZE = 4 
+    OAFRAME_META_LASER_INFO_OFFSET = 72
+    OAFRAME_META_SAMPLE_INFO_OFFSET = 90
+    OAFRAME_META_LASER_ENERGY_OFFSET =  190
+    OAFRAME_DATATYPE_SHORT = 2
 
     metadata = {}
 
@@ -41,23 +48,32 @@ class ImagioFileConverter(BaseAdapter):
             self.metadata[MetadataAcquisitionTags.MEASUREMENT_TIMESTAMPS] = []
 
             while True:
-                # make 1024 and others constant
-                data = f.read(1024)
+                data = f.read(self.OAFRAME_HEADER_SIZE)
 
                 if not data:
                     break
 
-                metaData = (sMagic, sVersion, iTick, lSize, lFrameCounter, sType, sDummy) = struct.unpack("<HHIIIhh", data[0:20]) 
+                metaData = (sMagic, sVersion, iTick, lSize, lFrameCounter, sType, sDummy) = struct.unpack("<HHIIIhh", data[0:self.OAFRAME_SUBHEADER_SIZE]) 
                 if (sMagic != self.OAFRAME_MAGIC):
                     print(f"ERROR: Unexpected magic number (read 0x{sMagic:04x}, expected 0x{self.OAFRAME_MAGIC:04x})")
-                frameHeader = bytes(struct.unpack("1000B", data[20:1020]))
-                lCRC = struct.unpack("i", data[1020:1024])
+
+                size = self.OAFRAME_HEADER_SIZE - self.OAFRAME_SUBHEADER_SIZE - self.OAFRAME_CRC_SIZE
+                start = self.OAFRAME_SUBHEADER_SIZE
+                end = self.OAFRAME_HEADER_SIZE - self.OAFRAME_CRC_SIZE
+                headerFrameMeta = bytes(struct.unpack(str(size) + "B", data[start:end]))
+
+                lCRC = struct.unpack("i", data[(self.OAFRAME_HEADER_SIZE - self.OAFRAME_CRC_SIZE):self.OAFRAME_HEADER_SIZE])
                 frameData = f.read(lSize) 
 
                 if (sType == self.OAFRAMETYPE_OA):
 
-                    laserInfo = struct.unpack("<ddddiiffIiiiii", frameHeader[0:72]) 
-                    (sNumChans, sNumSamplesPerChannel, sDataType, lFrameCounter, sProbeID, sAcquireHardwareID, iSampleRate) = struct.unpack("<hhHIhhi", frameHeader[72:90])
+                    (sNumChans, sNumSamplesPerChannel, sDataType, lFrameCounter, sProbeID, sAcquireHardwareID, iSampleRate) = \
+                        struct.unpack("<hhHIhhi", headerFrameMeta[self.OAFRAME_META_LASER_INFO_OFFSET:self.OAFRAME_META_SAMPLE_INFO_OFFSET])
+                    fLaserEnergy = struct.unpack("<f", headerFrameMeta[self.OAFRAME_META_LASER_ENERGY_OFFSET:(self.OAFRAME_META_LASER_ENERGY_OFFSET + 4)])[0]
+
+                    if (sDataType != self.OAFRAME_DATATYPE_SHORT):
+                        print("WARNING: Data type ({sDataType}) not as expected for frame.  Skipping to next.")
+                        continue
 
 					# sample output
                     #DEBUG: sNumSamplesPerChannel = 1178, sNumChans = 128, lSize = 311296
@@ -65,24 +81,17 @@ class ImagioFileConverter(BaseAdapter):
                     #DEBUG: sNumSamplesPerChannel = 1178, sNumChans = 128, lSize = 311296
                     #DEBUG: sNumSamplesPerChannel = 1163, sNumChans = 128, lSize = 311296
 
-                    # frameData padded to 1024
                     # TODO 
-                    # - look at sDataType and compare to StructureDump.h + SD_SIGNED 
-                    # - 311296 = 1216*128*2
                     # - trim prior to biffer
-                
-                    print(f"DEBUG: {sNumSamplesPerChannel = }, {sNumChans = }, {lSize = }")
-                    a = np.frombuffer(frameData, dtype=np.int16)
-                    a = a[:-((1216 - sNumSamplesPerChannel)*sNumChans)] # remove garbage data at end
-                    #a = a.reshape((sNumSamplesPerChannel, sNumChans))
-                    a = a.reshape((sNumChans, sNumSamplesPerChannel))
-                    cv2.imwrite("out" + str(iTick) + ".png", a)
+                    # - 311296 = total size of frameData = 1216*128*2
+                    print(f"DEBUG: {sDataType = }, {sNumSamplesPerChannel = }, {sNumChans = }, {lSize = }, {len(frameData) = }")
+                    d = np.frombuffer(frameData, dtype=np.int16)
+                    d = d[:-((1216 - sNumSamplesPerChannel)*sNumChans)]
+                    d = d.reshape((sNumChans, sNumSamplesPerChannel))
+                    cv2.imwrite("out" + str(iTick) + ".png", d)
                     np.set_printoptions(linewidth=1000, edgeitems=15)
-                    print(a)
+                    print(d)
 
-                    cChannelsReceived = struct.unpack("<32B", frameHeader[90:122])
-                    (sFrameStatus, cWavelength, isCalibrationFrame) = struct.unpack("<HBB", frameHeader[122:126])
-                    (fLaserEnergy, fGain) = struct.unpack("<ff", frameHeader[190:198])
 
                     self.metadata[MetadataAcquisitionTags.PULSE_ENERGY].append(fLaserEnergy / 1000) # mJ -> J
                     self.metadata[MetadataAcquisitionTags.MEASUREMENT_TIMESTAMPS].append(iTick / 1000) # msec -> sec
