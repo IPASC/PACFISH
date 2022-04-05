@@ -28,6 +28,7 @@ class ImagioFileConverter(BaseAdapter):
     OAFRAME_META_SAMPLE_INFO_OFFSET = 90
     OAFRAME_META_LASER_ENERGY_OFFSET =  190
     OAFRAME_DATATYPE_SHORT = 2
+    OAFRAME_MAX_SAMPLE_NUMBER = 1216
 
     metadata = {}
 
@@ -75,23 +76,14 @@ class ImagioFileConverter(BaseAdapter):
                         print("WARNING: Data type ({sDataType}) not as expected for frame.  Skipping to next.")
                         continue
 
-					# sample output
-                    #DEBUG: sNumSamplesPerChannel = 1178, sNumChans = 128, lSize = 311296
-                    #DEBUG: sNumSamplesPerChannel = 1162, sNumChans = 128, lSize = 311296
-                    #DEBUG: sNumSamplesPerChannel = 1178, sNumChans = 128, lSize = 311296
-                    #DEBUG: sNumSamplesPerChannel = 1163, sNumChans = 128, lSize = 311296
-
-                    # TODO 
-                    # - trim prior to biffer
-                    # - 311296 = total size of frameData = 1216*128*2
+                    # len(frameData) = OAFRAME_MAX_SAMPLE_NUMBER * sNumChans (128) * 2 (size of short)
                     print(f"DEBUG: {sDataType = }, {sNumSamplesPerChannel = }, {sNumChans = }, {lSize = }, {len(frameData) = }")
-                    d = np.frombuffer(frameData, dtype=np.int16)
-                    d = d[:-((1216 - sNumSamplesPerChannel)*sNumChans)]
-                    d = d.reshape((sNumChans, sNumSamplesPerChannel))
-                    cv2.imwrite("out" + str(iTick) + ".png", d)
+                    frameData = frameData[:-((self.OAFRAME_MAX_SAMPLE_NUMBER - sNumSamplesPerChannel)*sNumChans*2)] # throw away data not from the pulse (because pulses are variable length from shot to shot)
+                    self.binary_data = np.frombuffer(frameData, dtype=np.int16)
+                    self.binary_data = self.binary_data.reshape((sNumChans, sNumSamplesPerChannel))
+                    cv2.imwrite("out" + str(iTick) + ".png", self.binary_data)
                     np.set_printoptions(linewidth=1000, edgeitems=15)
-                    print(d)
-
+                    print(self.binary_data)
 
                     self.metadata[MetadataAcquisitionTags.PULSE_ENERGY].append(fLaserEnergy / 1000) # mJ -> J
                     self.metadata[MetadataAcquisitionTags.MEASUREMENT_TIMESTAMPS].append(iTick / 1000) # msec -> sec
@@ -112,7 +104,8 @@ class ImagioFileConverter(BaseAdapter):
         np.ndarray
             A numpy array containing the binary data
         """
-        pass
+        # TODO add other requested data
+        return self.binary_data
 
     def generate_device_meta_data(self) -> dict:
         """
