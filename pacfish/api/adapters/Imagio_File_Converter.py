@@ -89,9 +89,14 @@ class ImagioFileConverter(BaseAdapter):
                     self.meta[MetadataAcquisitionTags.PULSE_ENERGY].append(fLaserEnergy / 1000) # mJ -> J
                     self.meta[MetadataAcquisitionTags.MEASUREMENT_TIMESTAMPS].append(iTick / 1000) # msec -> sec
 
-            np.set_printoptions(linewidth=1000, edgeitems=15)
-            print(self.data)
+                elif (sType == self.OAFRAMETYPE_US):
+                    (w, h, ss) = struct.unpack("<iii", headerFrameMeta[28:40]) # width, height and sample size
+                    print(f"DEBUG: {len(frameData) = }, {w = }, {h = }, {ss = }")
+                    cv2.imwrite("out2" + str(iTick) + ".png", np.frombuffer(frameData[0:w*h], dtype=np.uint8).reshape(w, h))
 
+
+            np.set_printoptions(linewidth=1000, edgeitems=15)
+            #print(self.data)
 
         super().__init__()
 
