@@ -38,11 +38,6 @@ class ImagioFileConverter(BaseAdapter):
     """
     def __init__(self, filename):
 
-        #
-        # TODO:
-        # - corresponding ultrasound data as image (already that way in LOM file)
-        #
-        
         # parse through the entire Laser Optic Movie (.lom) file. see OAFrameHeader.h for binary format.
         with open(filename, "rb") as f:
 
@@ -50,6 +45,7 @@ class ImagioFileConverter(BaseAdapter):
             self.meta[MetadataAcquisitionTags.MEASUREMENT_TIMESTAMPS] = []
             self.data = []
 
+            print(f"DEBUG: Reading in Seno Imagio Optoacoustic data file '{filename}'")
             while True:
                 data = f.read(self.OAFRAME_HEADER_SIZE)
 
@@ -69,7 +65,7 @@ class ImagioFileConverter(BaseAdapter):
                 lCRC = struct.unpack("i", data[(self.OAFRAME_HEADER_SIZE - self.OAFRAME_CRC_SIZE):self.OAFRAME_HEADER_SIZE])
                 frameData = f.read(lSize) 
 
-                if (sType == self.OAFRAMETYPE_OA):
+                if (sType == self.OAFRAMETYPE_OA): # Opto-Acoustic frame
 
                     (sNumChans, sNumSamplesPerChannel, sDataType, lFrameCounter, sProbeID, sAcquireHardwareID, iSampleRate) = \
                         struct.unpack("<hhHIhhi", headerFrameMeta[self.OAFRAME_META_LASER_INFO_OFFSET:self.OAFRAME_META_SAMPLE_INFO_OFFSET])
@@ -80,22 +76,37 @@ class ImagioFileConverter(BaseAdapter):
                         print("WARNING: Data type ({sDataType}) not as expected for frame.  Skipping to next.")
                         continue
 
-                    # frameData size = OAFRAME_MAX_SAMPLE_NUMBER * sNumChans (128) * 2 (size of short)
                     print(f"DEBUG: {sDataType = }, {sNumSamplesPerChannel = }, {sNumChans = }, {lSize = }, {cWavelength = }, {len(frameData) = }")
                     frameData = frameData[:-((self.OAFRAME_MAX_SAMPLE_NUMBER - sNumSamplesPerChannel)*sNumChans*2)] # throw away data not from the pulse (because pulses are variable length from shot to shot)
                     self.data.append([cWavelength, np.frombuffer(frameData, dtype=np.int16).reshape((sNumChans, sNumSamplesPerChannel))])
-                    cv2.imwrite("out" + str(iTick) + ".png", self.data[-1][1])
+               
+                    folder = "output"
+                    if (not os.path.exists(folder)):
+                        os.mkdir(folder)
+                    file = folder + "/oa_" + str(iTick) + ".png"
+                    cv2.imwrite(file, self.data[-1][1])
+                    print(f"DEBUG: Wrote file '{file}' for OA frame with timestamp {iTick}")
 
                     self.meta[MetadataAcquisitionTags.PULSE_ENERGY].append(fLaserEnergy / 1000) # mJ -> J
                     self.meta[MetadataAcquisitionTags.MEASUREMENT_TIMESTAMPS].append(iTick / 1000) # msec -> sec
 
-                elif (sType == self.OAFRAMETYPE_US):
+                elif (sType == self.OAFRAMETYPE_US): # Ultrasound frame
+
                     (w, h, ss) = struct.unpack("<iii", headerFrameMeta[28:40]) # width, height and sample size
                     print(f"DEBUG: {len(frameData) = }, {w = }, {h = }, {ss = }")
-                    cv2.imwrite("out2" + str(iTick) + ".png", np.frombuffer(frameData[0:w*h], dtype=np.uint8).reshape(w, h))
+
+                    folder = "output"
+                    if (not os.path.exists(folder)):
+                        os.mkdir(folder)
+                    file = folder + "/us_" + str(iTick) + ".png"
+    
+                    # TODO write into ancillary array
+                    cv2.imwrite(file, np.frombuffer(frameData[0:h*w], dtype=np.uint8).reshape(h, w))
+                    print(f"DEBUG: Wrote file '{file}' for US frame with timestamp {iTick}")
 
 
-            np.set_printoptions(linewidth=1000, edgeitems=15)
+            # DEBUG
+            #np.set_printoptions(linewidth=1000, edgeitems=15)
             #print(self.data)
 
         super().__init__()
@@ -114,7 +125,6 @@ class ImagioFileConverter(BaseAdapter):
         np.ndarray
             A numpy array containing the binary data
         """
-        # TODO add other requested data
         return self.data
 
     def generate_device_meta_data(self) -> dict:
