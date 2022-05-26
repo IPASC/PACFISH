@@ -29,7 +29,6 @@ class ImagioFileConverter(BaseAdapter):
     OAFRAME_META_WAVELENGTH_OFFSET = 124
     OAFRAME_META_LASER_ENERGY_OFFSET =  190
     OAFRAME_DATATYPE_SHORT = 2
-    OAFRAME_MAX_SAMPLE_NUMBER = 1216
 
     meta = {}
 
@@ -76,8 +75,8 @@ class ImagioFileConverter(BaseAdapter):
                         print("WARNING: Data type ({sDataType}) not as expected for frame.  Skipping to next.")
                         continue
 
-                    print(f"DEBUG: {sDataType = }, {sNumSamplesPerChannel = }, {sNumChans = }, {lSize = }, {cWavelength = }, {len(frameData) = }")
-                    frameData = frameData[:-((self.OAFRAME_MAX_SAMPLE_NUMBER - sNumSamplesPerChannel)*sNumChans*2)] # throw away data not from the pulse (because pulses are variable length from shot to shot)
+                    print(f"DEBUG: Found OA frame.  {sNumSamplesPerChannel = }, {sNumChans = }, {lSize = }, {cWavelength = }, {len(frameData) = }")
+                    frameData = frameData[:sNumSamplesPerChannel*sNumChans*2] # throw away data not from the pulse (because pulses are variable length from shot to shot)
                     self.data.append([cWavelength, np.frombuffer(frameData, dtype=np.int16).reshape((sNumChans, sNumSamplesPerChannel))])
                
                     folder = "output"
@@ -93,7 +92,7 @@ class ImagioFileConverter(BaseAdapter):
                 elif (sType == self.OAFRAMETYPE_US): # Ultrasound frame
 
                     (w, h, ss) = struct.unpack("<iii", headerFrameMeta[28:40]) # width, height and sample size
-                    print(f"DEBUG: {len(frameData) = }, {w = }, {h = }, {ss = }")
+                    print(f"DEBUG: Found US frame.  {len(frameData) = }, {w = }, {h = }, {ss = }")
 
                     folder = "output"
                     if (not os.path.exists(folder)):
