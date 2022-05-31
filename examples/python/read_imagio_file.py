@@ -10,8 +10,8 @@ from pacfish import quality_check_pa_data
 input_file = './examples/python/input/I0000001.dcm.lom' # Gen2 (4 OA frames, 1 US image)
 
 # other examples
-#input_file = './examples/python/input/2021_04_19-09_48_22_0.lom' # Gen1a (many OA frames, many US images)
-#input_file = './examples/python/input/2017_12_11-10_54_55_0.lom' # Gen2 (many OA frames, many US images)
+input_file = './examples/python/input/2021_04_19-09_48_22_0.lom' # Gen1a (many OA frames, many US images)
+input_file = './examples/python/input/2017_12_11-10_54_55_0.lom' # Gen2 (many OA frames, many US images)
 
 converter = ImagioFileConverter(input_file) 
 
