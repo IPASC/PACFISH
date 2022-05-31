@@ -46,11 +46,18 @@ class ImagioFileConverter(BaseAdapter):
     def __init__(self, filename):
 
         # parse through the entire Laser Optic Movie (.lom) file. see OAFrameHeader.h for binary format.
-        with open(filename, "rb") as f:
-
+        try:
+            f = open(filename, "rb")
+        except OSError:
+            print(f"ERROR: Could not open {filename = }")
+            return
+        with f:
             self.meta[MetadataAcquisitionTags.ACQUISITION_WAVELENGTHS] = []
             self.meta[MetadataAcquisitionTags.PULSE_ENERGY] = []
             self.meta[MetadataAcquisitionTags.MEASUREMENT_TIMESTAMPS] = []
+            self.meta[MetadataAcquisitionTags.MEASUREMENTS_PER_IMAGE] = []
+            self.meta[MetadataAcquisitionTags.ULTRASOUND_IMAGE_DATA] = []
+            self.meta[MetadataAcquisitionTags.ULTRASOUND_IMAGE_TIMESTAMPS] = []
             self.data = []
 
             print(f"DEBUG: Reading in Seno Imagio Optoacoustic data file '{filename}'")
@@ -85,19 +92,16 @@ class ImagioFileConverter(BaseAdapter):
                         continue
 
                     print(f"DEBUG: Found OA frame.  {sNumSamplesPerChannel = }, {sNumChans = }, {lSize = }, {cWavelength = }, {len(frameData) = }")
-                    buf = frameData[:sNumSamplesPerChannel*sNumChans*2] # throw away data not from the pulse (because pulses are variable length from shot to shot)
-                    buf = np.frombuffer(buf, dtype=np.int16)
-                    buf = np.concatenate([buf, np.zeros((self.OAFRAME_DEFAULT_SAMPLES_PER_CHANNEL - sNumSamplesPerChannel) * sNumChans)]) # padding
-                    buf = buf.reshape((sNumChans, self.OAFRAME_DEFAULT_SAMPLES_PER_CHANNEL))
-                    self.data.append(buf)
-               
-                    folder = "output"
-                    if (not os.path.exists(folder)):
-                        os.mkdir(folder)
-                    file = folder + "/oa_" + str(iTick) + ".png"
-                    cv2.imwrite(file, self.data[-1][1])
-                    print(f"DEBUG: Wrote file '{file}' for OA frame with timestamp {iTick}")
-
+              
+                    frameData = frameData[:sNumSamplesPerChannel*sNumChans*2] # throw away data not from the pulse (because pulses are variable length from shot to shot)
+                    buf = np.frombuffer(frameData, dtype=np.int16).reshape((sNumChans, sNumSamplesPerChannel))
+                    ext_buf = []
+                    for idx, row in enumerate(buf): # add padding so it will write to HDF5
+                        ext_buf.append(np.concatenate([row, np.zeros(self.OAFRAME_DEFAULT_SAMPLES_PER_CHANNEL - sNumSamplesPerChannel)]))
+                    ext_buf = np.asarray(ext_buf)
+                    self.data.append(ext_buf)
+ 
+                    self.meta[MetadataAcquisitionTags.MEASUREMENTS_PER_IMAGE].append(sNumSamplesPerChannel)
                     self.meta[MetadataAcquisitionTags.PULSE_ENERGY].append(fLaserEnergy / 1000) # mJ -> J
                     self.meta[MetadataAcquisitionTags.MEASUREMENT_TIMESTAMPS].append(iTick / 1000) # msec -> sec
                     if (cWavelength == self.OAFRAME_WAVELENGTH_ALEXANDRITE):
@@ -112,19 +116,13 @@ class ImagioFileConverter(BaseAdapter):
 
                     (w, h, ss) = struct.unpack("<iii", headerFrameMeta[28:40]) # width, height and sample size
                     print(f"DEBUG: Found US frame.  {len(frameData) = }, {w = }, {h = }, {ss = }")
+                    buf = np.frombuffer(frameData[0:h*w], dtype=np.uint8).reshape(h, w)
+                    self.meta[MetadataAcquisitionTags.ULTRASOUND_IMAGE_DATA].append(buf)
+                    self.meta[MetadataAcquisitionTags.ULTRASOUND_IMAGE_TIMESTAMPS].append(iTick / 1000) # msec -> sec
 
-                    folder = "output"
-                    if (not os.path.exists(folder)):
-                        os.mkdir(folder)
-                    file = folder + "/us_" + str(iTick) + ".png"
-    
-                    # TODO write into ancillary array
-                    cv2.imwrite(file, np.frombuffer(frameData[0:h*w], dtype=np.uint8).reshape(h, w))
-                    print(f"DEBUG: Wrote file '{file}' for US frame with timestamp {iTick}")
-
-        self.meta[MetadataAcquisitionTags.ACQUISITION_WAVELENGTHS] = np.asarray(self.meta[MetadataAcquisitionTags.ACQUISITION_WAVELENGTHS])
-        self.meta[MetadataAcquisitionTags.PULSE_ENERGY] = np.asarray(self.meta[MetadataAcquisitionTags.PULSE_ENERGY])
-        self.meta[MetadataAcquisitionTags.MEASUREMENT_TIMESTAMPS] = np.asarray(self.meta[MetadataAcquisitionTags.MEASUREMENT_TIMESTAMPS])
+        # required for conversion to HDF5
+        for key in self.meta:
+            self.meta[key] = np.asarray(self.meta[key])
 
         super().__init__()
 
