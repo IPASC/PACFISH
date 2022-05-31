@@ -30,7 +30,15 @@ class ImagioFileConverter(BaseAdapter):
     OAFRAME_META_LASER_ENERGY_OFFSET =  190
     OAFRAME_DATATYPE_SHORT = 2
 
+    # see AcquisitionInterface.h in Seno Imagio SW
+    OAFRAME_DEFAULT_SAMPLES_PER_CHANNEL = 2048 
+
+    # see ObjectBufferMetaDataDefinitions.h
+    OAFRAME_WAVELENGTH_ALEXANDRITE = 1
+    OAFRAME_WAVELENGTH_YAG = 2
+
     meta = {}
+    data = []
 
     """
     For the Seno Imagio system.
@@ -40,6 +48,7 @@ class ImagioFileConverter(BaseAdapter):
         # parse through the entire Laser Optic Movie (.lom) file. see OAFrameHeader.h for binary format.
         with open(filename, "rb") as f:
 
+            self.meta[MetadataAcquisitionTags.ACQUISITION_WAVELENGTHS] = []
             self.meta[MetadataAcquisitionTags.PULSE_ENERGY] = []
             self.meta[MetadataAcquisitionTags.MEASUREMENT_TIMESTAMPS] = []
             self.data = []
@@ -72,12 +81,15 @@ class ImagioFileConverter(BaseAdapter):
                     fLaserEnergy = struct.unpack("<f", headerFrameMeta[self.OAFRAME_META_LASER_ENERGY_OFFSET:self.OAFRAME_META_LASER_ENERGY_OFFSET+4])[0]
 
                     if (sDataType != self.OAFRAME_DATATYPE_SHORT):
-                        print("WARNING: Data type ({sDataType}) not as expected for frame.  Skipping to next.")
+                        print("WARNING: Data type ({sDataType = }) not as expected for frame.  Skipping to next.")
                         continue
 
                     print(f"DEBUG: Found OA frame.  {sNumSamplesPerChannel = }, {sNumChans = }, {lSize = }, {cWavelength = }, {len(frameData) = }")
-                    frameData = frameData[:sNumSamplesPerChannel*sNumChans*2] # throw away data not from the pulse (because pulses are variable length from shot to shot)
-                    self.data.append([cWavelength, np.frombuffer(frameData, dtype=np.int16).reshape((sNumChans, sNumSamplesPerChannel))])
+                    buf = frameData[:sNumSamplesPerChannel*sNumChans*2] # throw away data not from the pulse (because pulses are variable length from shot to shot)
+                    buf = np.frombuffer(buf, dtype=np.int16)
+                    buf = np.concatenate([buf, np.zeros((self.OAFRAME_DEFAULT_SAMPLES_PER_CHANNEL - sNumSamplesPerChannel) * sNumChans)]) # padding
+                    buf = buf.reshape((sNumChans, self.OAFRAME_DEFAULT_SAMPLES_PER_CHANNEL))
+                    self.data.append(buf)
                
                     folder = "output"
                     if (not os.path.exists(folder)):
@@ -88,6 +100,13 @@ class ImagioFileConverter(BaseAdapter):
 
                     self.meta[MetadataAcquisitionTags.PULSE_ENERGY].append(fLaserEnergy / 1000) # mJ -> J
                     self.meta[MetadataAcquisitionTags.MEASUREMENT_TIMESTAMPS].append(iTick / 1000) # msec -> sec
+                    if (cWavelength == self.OAFRAME_WAVELENGTH_ALEXANDRITE):
+                        self.meta[MetadataAcquisitionTags.ACQUISITION_WAVELENGTHS].append(755 / 10E-9) # nanometers -> meters
+                    elif (cWavelength == self.OAFRAME_WAVELENGTH_YAG):
+                        self.meta[MetadataAcquisitionTags.ACQUISITION_WAVELENGTHS].append(1064 / 10E-9) # nanometers -> meters
+                    else:
+                        print(f"WARNING: Wavelength ({cWavelength = }) not as expected for frame.  Skipping to next")
+                        continue
 
                 elif (sType == self.OAFRAMETYPE_US): # Ultrasound frame
 
@@ -103,10 +122,9 @@ class ImagioFileConverter(BaseAdapter):
                     cv2.imwrite(file, np.frombuffer(frameData[0:h*w], dtype=np.uint8).reshape(h, w))
                     print(f"DEBUG: Wrote file '{file}' for US frame with timestamp {iTick}")
 
-
-            # DEBUG
-            #np.set_printoptions(linewidth=1000, edgeitems=15)
-            #print(self.data)
+        self.meta[MetadataAcquisitionTags.ACQUISITION_WAVELENGTHS] = np.asarray(self.meta[MetadataAcquisitionTags.ACQUISITION_WAVELENGTHS])
+        self.meta[MetadataAcquisitionTags.PULSE_ENERGY] = np.asarray(self.meta[MetadataAcquisitionTags.PULSE_ENERGY])
+        self.meta[MetadataAcquisitionTags.MEASUREMENT_TIMESTAMPS] = np.asarray(self.meta[MetadataAcquisitionTags.MEASUREMENT_TIMESTAMPS])
 
         super().__init__()
 
@@ -118,6 +136,7 @@ class ImagioFileConverter(BaseAdapter):
         The binary data must be formatted the following way:
 
         [detectors, samples, wavelengths, measurements]
+        e.g (128, 4096, 1, 13)
 
         Return
         ------
@@ -137,7 +156,9 @@ class ImagioFileConverter(BaseAdapter):
             A dictionary containing all key-value pair necessary to describe a digital twin of a
             photoacoustic device.
         """
-        pass
+        device_creator = DeviceMetaDataCreator()
+        device_creator.set_general_information(uuid="Seno Imagio", fov=np.asarray([0, 0, 0, 0, 0, 0, 0]))
+        return device_creator.finalize_device_meta_data()
 
     def set_metadata_value(self, metadatum: MetaDatum) -> object:
         """
@@ -159,4 +180,7 @@ class ImagioFileConverter(BaseAdapter):
         """
         if metadatum in self.meta:
             return self.meta[metadatum]
+        else:
+            return None
+
 

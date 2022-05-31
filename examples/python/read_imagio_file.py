@@ -10,5 +10,6 @@ converter = ImagioFileConverter('./examples/python/input/I0000001.dcm.lom')
 
 pa_data = converter.generate_pa_data()
 
-#write_data("imagio_ipasc.hdf5", pa_data)
+write_data("imagio_ipasc.hdf5", pa_data)
+
 
