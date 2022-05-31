@@ -133,8 +133,8 @@ class ImagioFileConverter(BaseAdapter):
         It is internally stored as an N-dimensional numpy array.
         The binary data must be formatted the following way:
 
-        [detectors, samples, wavelengths, measurements]
-        e.g (128, 4096, 1, 13)
+        [detectors, samples]
+        e.g (128, 2048)
 
         Return
         ------
@@ -154,8 +154,25 @@ class ImagioFileConverter(BaseAdapter):
             A dictionary containing all key-value pair necessary to describe a digital twin of a
             photoacoustic device.
         """
+
         device_creator = DeviceMetaDataCreator()
-        device_creator.set_general_information(uuid="Seno Imagio", fov=np.asarray([0, 0, 0, 0, 0, 0, 0]))
+
+        # TODO
+        # - fov
+        #    is an array of six float values that describe the extent of the field of view of the device in the
+        #    x1, x2, and x3 directions: [x1_start, x1_end, x2_start, x2_end, x3_start, x3_end].
+        device_creator.set_general_information(uuid="a522bad9-f9a4-43b3-a8c3-80cde9e21d2e", fov=np.asarray([0, 0, 0, 0, 0, 0, 0]))
+        
+        for element_idx in range(128):
+            detection_element_creator = DetectionElementCreator()
+            detection_element_creator.set_detector_position(np.asarray([0, element_idx, 0]))
+            device_creator.add_detection_element(detection_element_creator.get_dictionary())
+
+        for wavelength in [755, 1064]: # nanometers
+            illumination_element_creator = IlluminationElementCreator()
+            illumination_element_creator.set_wavelength_range(np.asarray([wavelength, wavelength, 1]))
+            device_creator.add_illumination_element(illumination_element_creator.get_dictionary())
+
         return device_creator.finalize_device_meta_data()
 
     def set_metadata_value(self, metadatum: MetaDatum) -> object:
