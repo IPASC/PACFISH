@@ -26,4 +26,3 @@ class DeviceMetaDataCreatorTest(TestCase):
 
         if os.path.exists("demodata.nrrd"):
             os.remove("demodata.nrrd")
-
