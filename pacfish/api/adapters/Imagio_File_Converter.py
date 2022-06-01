@@ -36,6 +36,8 @@ class ImagioFileConverter(BaseAdapter):
     # see ObjectBufferMetaDataDefinitions.h
     OAFRAME_WAVELENGTH_ALEXANDRITE = 1
     OAFRAME_WAVELENGTH_YAG = 2
+    
+    uuid = "a522bad9-f9a4-43b3-a8c3-80cde9e21d2e"
 
     meta = {}
     data = []
@@ -55,7 +57,6 @@ class ImagioFileConverter(BaseAdapter):
             self.meta[MetadataAcquisitionTags.ACQUISITION_WAVELENGTHS] = []
             self.meta[MetadataAcquisitionTags.PULSE_ENERGY] = []
             self.meta[MetadataAcquisitionTags.MEASUREMENT_TIMESTAMPS] = []
-            self.meta[MetadataAcquisitionTags.MEASUREMENTS_PER_IMAGE] = []
             self.meta[MetadataAcquisitionTags.ULTRASOUND_IMAGE_DATA] = []
             self.meta[MetadataAcquisitionTags.ULTRASOUND_IMAGE_TIMESTAMPS] = []
             self.data = []
@@ -101,7 +102,6 @@ class ImagioFileConverter(BaseAdapter):
                     ext_buf = np.asarray(ext_buf)
                     self.data.append(ext_buf)
  
-                    self.meta[MetadataAcquisitionTags.MEASUREMENTS_PER_IMAGE].append(sNumSamplesPerChannel)
                     self.meta[MetadataAcquisitionTags.PULSE_ENERGY].append(fLaserEnergy / 1000) # mJ -> J
                     self.meta[MetadataAcquisitionTags.MEASUREMENT_TIMESTAMPS].append(iTick / 1000) # msec -> sec
                     if (cWavelength == self.OAFRAME_WAVELENGTH_ALEXANDRITE):
@@ -123,6 +123,28 @@ class ImagioFileConverter(BaseAdapter):
         # required for conversion to HDF5
         for key in self.meta:
             self.meta[key] = np.asarray(self.meta[key])
+
+        self.meta[MetadataAcquisitionTags.ENCODING] = "raw"
+        self.meta[MetadataAcquisitionTags.COMPRESSION] = "none"
+        self.meta[MetadataAcquisitionTags.DATA_TYPE] = "unsigned short"
+        self.meta[MetadataAcquisitionTags.DIMENSIONALITY] = "time"
+        self.meta[MetadataAcquisitionTags.SIZES] = np.asarray([sNumChans, self.OAFRAME_DEFAULT_SAMPLES_PER_CHANNEL])
+        self.meta[MetadataAcquisitionTags.MEASUREMENTS_PER_IMAGE] = self.OAFRAME_DEFAULT_SAMPLES_PER_CHANNEL
+        self.meta[MetadataAcquisitionTags.PHOTOACOUSTIC_IMAGING_DEVICE_REFERENCE] = self.uuid
+        self.meta[MetadataAcquisitionTags.UUID] = self.uuid
+
+        # TODO ask Bryan
+        self.meta[MetadataAcquisitionTags.AD_SAMPLING_RATE] = 0.0 
+        self.meta[MetadataAcquisitionTags.TIME_GAIN_COMPENSATION] = np.asarray([]) 
+        self.meta[MetadataAcquisitionTags.OVERALL_GAIN] = 1.0 
+        self.meta[MetadataAcquisitionTags.ELEMENT_DEPENDENT_GAIN] = np.asarray([]) 
+        self.meta[MetadataAcquisitionTags.ACOUSTIC_COUPLING_AGENT] = "gel"
+        self.meta[MetadataAcquisitionTags.SCANNING_METHOD] = ""
+        self.meta[MetadataAcquisitionTags.FREQUENCY_DOMAIN_FILTER] = np.asarray([])
+        self.meta[MetadataAcquisitionTags.SPEED_OF_SOUND] = 0.0 
+        self.meta[MetadataAcquisitionTags.REGIONS_OF_INTEREST] = {}
+        self.meta[MetadataAcquisitionTags.MEASUREMENT_SPATIAL_POSES] = np.asarray([[0],[0]])
+        self.meta[MetadataAcquisitionTags.TEMPERATURE_CONTROL] = np.asarray([])
 
         super().__init__()
 
@@ -157,20 +179,43 @@ class ImagioFileConverter(BaseAdapter):
 
         device_creator = DeviceMetaDataCreator()
 
-        # TODO
+        # TODO ask Bryan
+        
         # - fov
         #    is an array of six float values that describe the extent of the field of view of the device in the
         #    x1, x2, and x3 directions: [x1_start, x1_end, x2_start, x2_end, x3_start, x3_end].
-        device_creator.set_general_information(uuid="a522bad9-f9a4-43b3-a8c3-80cde9e21d2e", fov=np.asarray([0, 0, 0, 0, 0, 0, 0]))
-        
+        device_creator.set_general_information(
+            uuid=self.uuid,
+            fov=np.asarray([0, 0, 0, 0, 0, 0]))
+
         for element_idx in range(128):
             detection_element_creator = DetectionElementCreator()
             detection_element_creator.set_detector_position(np.asarray([0, element_idx, 0]))
+            detection_element_creator.set_detector_geometry_type("CUBOID")
+            detection_element_creator.set_detector_geometry(np.asarray([0.0000, 0.0000, 0.0000]))
+            detection_element_creator.set_detector_orientation(np.asarray([0, 0, 1]))
+            detection_element_creator.set_frequency_response(np.asarray([np.linspace(700, 900, 100),
+                                                                         np.ones(100)]))
+            detection_element_creator.set_angular_response(np.asarray([np.linspace(700, 900, 100),
+                                                                       np.ones(100)]))
             device_creator.add_detection_element(detection_element_creator.get_dictionary())
 
         for wavelength in [755, 1064]: # nanometers
             illumination_element_creator = IlluminationElementCreator()
             illumination_element_creator.set_wavelength_range(np.asarray([wavelength, wavelength, 1]))
+            illumination_element_creator.set_illuminator_geometry(np.asarray([0, 0, 0]))
+            illumination_element_creator.set_illuminator_geometry_type("CUBOID")
+            illumination_element_creator.set_illuminator_orientation(np.asarray([0, 0, 1]))
+            illumination_element_creator.set_illuminator_position(np.asarray([0, 0, 1]))
+            illumination_element_creator.set_beam_energy_profile(np.asarray([np.linspace(700, 900, 100),
+                                                                             np.ones(100)]))
+            illumination_element_creator.set_beam_stability_profile(np.asarray([np.linspace(700, 900, 100),
+                                                                                np.ones(100)]))
+            illumination_element_creator.set_beam_intensity_profile(np.asarray([np.linspace(700, 900, 100),
+                                                                                np.ones(100)]))
+            illumination_element_creator.set_pulse_width(0.0)
+            illumination_element_creator.set_beam_divergence_angles(0.0)
+            device_creator.add_illumination_element(illumination_element_creator.get_dictionary())
             device_creator.add_illumination_element(illumination_element_creator.get_dictionary())
 
         return device_creator.finalize_device_meta_data()
