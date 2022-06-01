@@ -36,7 +36,8 @@ class ImagioFileConverter(BaseAdapter):
     # see ObjectBufferMetaDataDefinitions.h
     OAFRAME_WAVELENGTH_ALEXANDRITE = 1
     OAFRAME_WAVELENGTH_YAG = 2
-    
+
+    # randomly generated (v4)
     uuid = "a522bad9-f9a4-43b3-a8c3-80cde9e21d2e"
 
     meta = {}
