@@ -31,17 +31,19 @@ pathlib.Path(folder).mkdir(parents=True, exist_ok=True)
 output_png = True # disable if needed
 if (output_png):
     timestamps = pa_data.get_measurement_time_stamps()
+    wavelengths = pa_data.get_acquisition_wavelengths()
     for idx, oa_frame in enumerate(pa_data.binary_time_series_data):
-        iTick = timestamps[idx]
-        file = folder + "/oa_" + str(iTick) + ".png"
+        iTick = str(int(timestamps[idx] * 1E3)) + "_msec"
+        wavelength = str(int(wavelengths[idx] * 1E9)) + "_nm"
+        file = folder + "/oa_" + str(iTick) + "_" + wavelength + ".png"
         cv2.imwrite(file, oa_frame)
-        print(f"DEBUG: Wrote file '{file}' for OA frame with timestamp {iTick}")
+        print(f"DEBUG: Wrote file '{file}' for OA frame")
 
     for idx, us_image in enumerate(pa_data.meta_data_acquisition['ultrasound_image_data']):
-        iTick = pa_data.meta_data_acquisition['ultrasound_image_timestamps'][idx]
+        iTick = str(int(pa_data.meta_data_acquisition['ultrasound_image_timestamps'][idx]*1E3)) + "_msec"
         file = folder + "/us_" + str(iTick) + ".png"
         cv2.imwrite(file, us_image)
-        print(f"DEBUG: Wrote file '{file}' for US frame with timestamp {iTick}")
+        print(f"DEBUG: Wrote file '{file}' for US frame")
 
 file = folder + "/" + os.path.basename(input_file) + "_imagio_ipasc.hdf5"
 write_data(file, pa_data)

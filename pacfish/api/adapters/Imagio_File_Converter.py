@@ -99,7 +99,7 @@ class ImagioFileConverter(BaseAdapter):
                         print("WARNING: Data type ({sDataType = }) not as expected for frame.  Skipping to next.")
                         continue
 
-                    print(f"INFO: Found OA frame.  {sNumSamplesPerChannel = }, {sNumChans = }, {lSize = }, {cWavelength = }, {len(frameData) = }")
+                    print(f"INFO: Found OA frame.  {sNumSamplesPerChannel = }, {sNumChans = }, {lSize = }, {cWavelength = }, {len(frameData) = }, {iTick = }")
            
                     # parse out the raw OA frame data
                     frameData = frameData[:sNumSamplesPerChannel*sNumChans*2] # throw away data not from the pulse (because pulses are variable length from shot to shot)
@@ -113,9 +113,9 @@ class ImagioFileConverter(BaseAdapter):
                     self.meta[MetadataAcquisitionTags.PULSE_ENERGY].append(fLaserEnergy / 1000) # mJ -> J
                     self.meta[MetadataAcquisitionTags.MEASUREMENT_TIMESTAMPS].append(iTick / 1000) # msec -> sec
                     if (cWavelength == self.OAFRAME_WAVELENGTH_ALEXANDRITE):
-                        self.meta[MetadataAcquisitionTags.ACQUISITION_WAVELENGTHS].append(755 / 10E-9) # nanometers -> meters
+                        self.meta[MetadataAcquisitionTags.ACQUISITION_WAVELENGTHS].append(755 * 1E-9) # nanometers -> meters
                     elif (cWavelength == self.OAFRAME_WAVELENGTH_YAG):
-                        self.meta[MetadataAcquisitionTags.ACQUISITION_WAVELENGTHS].append(1064 / 10E-9) # nanometers -> meters
+                        self.meta[MetadataAcquisitionTags.ACQUISITION_WAVELENGTHS].append(1064 * 1E-9) # nanometers -> meters
                     else:
                         print(f"WARNING: Wavelength ({cWavelength = }) not as expected for frame.  Skipping to next")
                         continue
