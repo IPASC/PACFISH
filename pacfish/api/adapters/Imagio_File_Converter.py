@@ -107,7 +107,7 @@ class ImagioFileConverter(BaseAdapter):
                     ext_buf = []
                     for idx, row in enumerate(buf): # add padding so it will write to HDF5
                         ext_buf.append(np.concatenate([row, np.zeros(self.OAFRAME_DEFAULT_SAMPLES_PER_CHANNEL - sNumSamplesPerChannel)]))
-                    ext_buf = np.asarray(ext_buf)
+                    ext_buf = np.asarray(ext_buf, dtype=np.int16) 
                     self.data.append(ext_buf)
  
                     self.meta[MetadataAcquisitionTags.PULSE_ENERGY].append(fLaserEnergy / 1000) # mJ -> J
