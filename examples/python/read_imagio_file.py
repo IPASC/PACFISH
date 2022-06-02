@@ -1,3 +1,9 @@
+#
+# This file reads an example Laser Optic Movie (LOM) produced by the Seno (https://senomedical.com/) 
+# Imagio System and produces an IPASC-compatible HDF5 file.  In addition, if enabled, graphical 
+# representations of the data are written as .png files.
+#
+
 import os
 import numpy as np
 import cv2
@@ -37,7 +43,7 @@ if (output_png):
         cv2.imwrite(file, us_image)
         print(f"DEBUG: Wrote file '{file}' for US frame with timestamp {iTick}")
 
-file = folder + "/imagio_ipasc.hdf5"
+file = folder + "/" + os.path.basename(input_file) + "_imagio_ipasc.hdf5"
 write_data(file, pa_data)
 print(f"DEBUG: Wrote file '{file}' with IPASC HDF5 data")
 

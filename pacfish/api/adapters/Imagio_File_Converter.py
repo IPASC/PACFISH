@@ -1,3 +1,9 @@
+#
+# This file extends the base PACFISH device class for the Seno (https://senomedical.com/) 
+# Imagio System.  The class initializer reads in a Laser Optic Movie (LOM), which contains raw
+# Photoacoustic ("Optoacoustic" in Seno terminology) and Ultrasound frames.  
+#
+
 import numpy as np
 import os
 import glob
@@ -33,11 +39,11 @@ class ImagioFileConverter(BaseAdapter):
     # see AcquisitionInterface.h in Seno Imagio SW
     OAFRAME_DEFAULT_SAMPLES_PER_CHANNEL = 2048 
 
-    # see ObjectBufferMetaDataDefinitions.h
+    # see ObjectBufferMetaDataDefinitions.h in Seno Imagio SW
     OAFRAME_WAVELENGTH_ALEXANDRITE = 1
     OAFRAME_WAVELENGTH_YAG = 2
 
-    # randomly generated (v4)
+    # generated via https://www.uuidgenerator.net/version4
     uuid = "a522bad9-f9a4-43b3-a8c3-80cde9e21d2e"
 
     meta = {}
@@ -48,7 +54,7 @@ class ImagioFileConverter(BaseAdapter):
     """
     def __init__(self, filename):
 
-        # parse through the entire Laser Optic Movie (.lom) file. see OAFrameHeader.h for binary format.
+        # parse through the entire Laser Optic Movie (.lom) file. see OAFrameHeader.h in the Imagio SW for the binary format.
         try:
             f = open(filename, "rb")
         except OSError:
@@ -62,7 +68,7 @@ class ImagioFileConverter(BaseAdapter):
             self.meta[MetadataAcquisitionTags.ULTRASOUND_IMAGE_TIMESTAMPS] = []
             self.data = []
 
-            print(f"DEBUG: Reading in Seno Imagio Optoacoustic data file '{filename}'")
+            print(f"INFO: Reading in Seno Imagio Optoacoustic data file '{filename}'")
             while True:
                 data = f.read(self.OAFRAME_HEADER_SIZE)
 
@@ -93,8 +99,8 @@ class ImagioFileConverter(BaseAdapter):
                         print("WARNING: Data type ({sDataType = }) not as expected for frame.  Skipping to next.")
                         continue
 
-                    print(f"DEBUG: Found OA frame.  {sNumSamplesPerChannel = }, {sNumChans = }, {lSize = }, {cWavelength = }, {len(frameData) = }")
-              
+                    print(f"INFO: Found OA frame.  {sNumSamplesPerChannel = }, {sNumChans = }, {lSize = }, {cWavelength = }, {len(frameData) = }")
+             
                     frameData = frameData[:sNumSamplesPerChannel*sNumChans*2] # throw away data not from the pulse (because pulses are variable length from shot to shot)
                     buf = np.frombuffer(frameData, dtype=np.int16).reshape((sNumChans, sNumSamplesPerChannel))
                     ext_buf = []
@@ -116,7 +122,7 @@ class ImagioFileConverter(BaseAdapter):
                 elif (sType == self.OAFRAMETYPE_US): # Ultrasound frame
 
                     (w, h, ss) = struct.unpack("<iii", headerFrameMeta[28:40]) # width, height and sample size
-                    print(f"DEBUG: Found US frame.  {len(frameData) = }, {w = }, {h = }, {ss = }")
+                    print(f"INFO: Found US frame.  {len(frameData) = }, {w = }, {h = }, {ss = }")
                     buf = np.frombuffer(frameData[0:h*w], dtype=np.uint8).reshape(h, w)
                     self.meta[MetadataAcquisitionTags.ULTRASOUND_IMAGE_DATA].append(buf)
                     self.meta[MetadataAcquisitionTags.ULTRASOUND_IMAGE_TIMESTAMPS].append(iTick / 1000) # msec -> sec
@@ -125,27 +131,27 @@ class ImagioFileConverter(BaseAdapter):
         for key in self.meta:
             self.meta[key] = np.asarray(self.meta[key])
 
-        self.meta[MetadataAcquisitionTags.ENCODING] = "raw"
-        self.meta[MetadataAcquisitionTags.COMPRESSION] = "none"
-        self.meta[MetadataAcquisitionTags.DATA_TYPE] = "unsigned short"
-        self.meta[MetadataAcquisitionTags.DIMENSIONALITY] = "time"
-        self.meta[MetadataAcquisitionTags.SIZES] = np.asarray([sNumChans, self.OAFRAME_DEFAULT_SAMPLES_PER_CHANNEL])
-        self.meta[MetadataAcquisitionTags.MEASUREMENTS_PER_IMAGE] = self.OAFRAME_DEFAULT_SAMPLES_PER_CHANNEL
-        self.meta[MetadataAcquisitionTags.PHOTOACOUSTIC_IMAGING_DEVICE_REFERENCE] = self.uuid
-        self.meta[MetadataAcquisitionTags.UUID] = self.uuid
-
-        # TODO ask Bryan
-        self.meta[MetadataAcquisitionTags.AD_SAMPLING_RATE] = 0.0 
-        self.meta[MetadataAcquisitionTags.TIME_GAIN_COMPENSATION] = np.asarray([]) 
-        self.meta[MetadataAcquisitionTags.OVERALL_GAIN] = 1.0 
-        self.meta[MetadataAcquisitionTags.ELEMENT_DEPENDENT_GAIN] = np.asarray([]) 
-        self.meta[MetadataAcquisitionTags.ACOUSTIC_COUPLING_AGENT] = "gel"
-        self.meta[MetadataAcquisitionTags.SCANNING_METHOD] = ""
-        self.meta[MetadataAcquisitionTags.FREQUENCY_DOMAIN_FILTER] = np.asarray([])
-        self.meta[MetadataAcquisitionTags.SPEED_OF_SOUND] = 0.0 
-        self.meta[MetadataAcquisitionTags.REGIONS_OF_INTEREST] = {}
-        self.meta[MetadataAcquisitionTags.MEASUREMENT_SPATIAL_POSES] = np.asarray([[0],[0]])
-        self.meta[MetadataAcquisitionTags.TEMPERATURE_CONTROL] = np.asarray([])
+#        self.meta[MetadataAcquisitionTags.ENCODING] = "raw"
+#        self.meta[MetadataAcquisitionTags.COMPRESSION] = "none"
+#        self.meta[MetadataAcquisitionTags.DATA_TYPE] = "unsigned short"
+#        self.meta[MetadataAcquisitionTags.DIMENSIONALITY] = "time"
+#        self.meta[MetadataAcquisitionTags.SIZES] = np.asarray([sNumChans, self.OAFRAME_DEFAULT_SAMPLES_PER_CHANNEL])
+#        self.meta[MetadataAcquisitionTags.MEASUREMENTS_PER_IMAGE] = self.OAFRAME_DEFAULT_SAMPLES_PER_CHANNEL
+#        self.meta[MetadataAcquisitionTags.PHOTOACOUSTIC_IMAGING_DEVICE_REFERENCE] = self.uuid
+#        self.meta[MetadataAcquisitionTags.UUID] = self.uuid
+#
+#        # TODO ask Bryan
+#        self.meta[MetadataAcquisitionTags.AD_SAMPLING_RATE] = 0.0 
+#        self.meta[MetadataAcquisitionTags.TIME_GAIN_COMPENSATION] = np.asarray([]) 
+#        self.meta[MetadataAcquisitionTags.OVERALL_GAIN] = 1.0 
+#        self.meta[MetadataAcquisitionTags.ELEMENT_DEPENDENT_GAIN] = np.asarray([]) 
+#        self.meta[MetadataAcquisitionTags.ACOUSTIC_COUPLING_AGENT] = "gel"
+#        self.meta[MetadataAcquisitionTags.SCANNING_METHOD] = ""
+#        self.meta[MetadataAcquisitionTags.FREQUENCY_DOMAIN_FILTER] = np.asarray([])
+#        self.meta[MetadataAcquisitionTags.SPEED_OF_SOUND] = 0.0 
+#        self.meta[MetadataAcquisitionTags.REGIONS_OF_INTEREST] = {}
+#        self.meta[MetadataAcquisitionTags.MEASUREMENT_SPATIAL_POSES] = np.asarray([[0],[0]])
+#        self.meta[MetadataAcquisitionTags.TEMPERATURE_CONTROL] = np.asarray([])
 
         super().__init__()
 
@@ -188,38 +194,38 @@ class ImagioFileConverter(BaseAdapter):
         device_creator.set_general_information(
             uuid=self.uuid,
             fov=np.asarray([0, 0, 0, 0, 0, 0]))
-
-        for element_idx in range(128):
-            detection_element_creator = DetectionElementCreator()
-            detection_element_creator.set_detector_position(np.asarray([0, element_idx, 0]))
-            detection_element_creator.set_detector_geometry_type("CUBOID")
-            detection_element_creator.set_detector_geometry(np.asarray([0.0000, 0.0000, 0.0000]))
-            detection_element_creator.set_detector_orientation(np.asarray([0, 0, 1]))
-            detection_element_creator.set_frequency_response(np.asarray([np.linspace(700, 900, 100),
-                                                                         np.ones(100)]))
-            detection_element_creator.set_angular_response(np.asarray([np.linspace(700, 900, 100),
-                                                                       np.ones(100)]))
-            device_creator.add_detection_element(detection_element_creator.get_dictionary())
-
-        for wavelength in [755, 1064]: # nanometers
-            illumination_element_creator = IlluminationElementCreator()
-            illumination_element_creator.set_wavelength_range(np.asarray([wavelength, wavelength, 1]))
-            illumination_element_creator.set_illuminator_geometry(np.asarray([0, 0, 0]))
-            illumination_element_creator.set_illuminator_geometry_type("CUBOID")
-            illumination_element_creator.set_illuminator_orientation(np.asarray([0, 0, 1]))
-            illumination_element_creator.set_illuminator_position(np.asarray([0, 0, 1]))
-            illumination_element_creator.set_beam_energy_profile(np.asarray([np.linspace(700, 900, 100),
-                                                                             np.ones(100)]))
-            illumination_element_creator.set_beam_stability_profile(np.asarray([np.linspace(700, 900, 100),
-                                                                                np.ones(100)]))
-            illumination_element_creator.set_beam_intensity_profile(np.asarray([np.linspace(700, 900, 100),
-                                                                                np.ones(100)]))
-            illumination_element_creator.set_pulse_width(0.0)
-            illumination_element_creator.set_beam_divergence_angles(0.0)
-            device_creator.add_illumination_element(illumination_element_creator.get_dictionary())
-            device_creator.add_illumination_element(illumination_element_creator.get_dictionary())
-
-        return device_creator.finalize_device_meta_data()
+#
+#        for element_idx in range(128):
+#            detection_element_creator = DetectionElementCreator()
+#            detection_element_creator.set_detector_position(np.asarray([0, element_idx, 0]))
+#            detection_element_creator.set_detector_geometry_type("CUBOID")
+#            detection_element_creator.set_detector_geometry(np.asarray([0.0000, 0.0000, 0.0000]))
+#            detection_element_creator.set_detector_orientation(np.asarray([0, 0, 1]))
+#            detection_element_creator.set_frequency_response(np.asarray([np.linspace(700, 900, 100),
+#                                                                         np.ones(100)]))
+#            detection_element_creator.set_angular_response(np.asarray([np.linspace(700, 900, 100),
+#                                                                       np.ones(100)]))
+#            device_creator.add_detection_element(detection_element_creator.get_dictionary())
+#
+#        for wavelength in [755, 1064]: # nanometers
+#            illumination_element_creator = IlluminationElementCreator()
+#            illumination_element_creator.set_wavelength_range(np.asarray([wavelength, wavelength, 1]))
+#            illumination_element_creator.set_illuminator_geometry(np.asarray([0, 0, 0]))
+#            illumination_element_creator.set_illuminator_geometry_type("CUBOID")
+#            illumination_element_creator.set_illuminator_orientation(np.asarray([0, 0, 1]))
+#            illumination_element_creator.set_illuminator_position(np.asarray([0, 0, 1]))
+#            illumination_element_creator.set_beam_energy_profile(np.asarray([np.linspace(700, 900, 100),
+#                                                                             np.ones(100)]))
+#            illumination_element_creator.set_beam_stability_profile(np.asarray([np.linspace(700, 900, 100),
+#                                                                                np.ones(100)]))
+#            illumination_element_creator.set_beam_intensity_profile(np.asarray([np.linspace(700, 900, 100),
+#                                                                                np.ones(100)]))
+#            illumination_element_creator.set_pulse_width(0.0)
+#            illumination_element_creator.set_beam_divergence_angles(0.0)
+#            device_creator.add_illumination_element(illumination_element_creator.get_dictionary())
+#            device_creator.add_illumination_element(illumination_element_creator.get_dictionary())
+#
+        return device_creator.finalize_device_meta_data()  
 
     def set_metadata_value(self, metadatum: MetaDatum) -> object:
         """
