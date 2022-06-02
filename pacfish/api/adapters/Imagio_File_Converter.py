@@ -100,7 +100,8 @@ class ImagioFileConverter(BaseAdapter):
                         continue
 
                     print(f"INFO: Found OA frame.  {sNumSamplesPerChannel = }, {sNumChans = }, {lSize = }, {cWavelength = }, {len(frameData) = }")
-             
+           
+                    # parse out the raw OA frame data
                     frameData = frameData[:sNumSamplesPerChannel*sNumChans*2] # throw away data not from the pulse (because pulses are variable length from shot to shot)
                     buf = np.frombuffer(frameData, dtype=np.int16).reshape((sNumChans, sNumSamplesPerChannel))
                     ext_buf = []
@@ -131,15 +132,16 @@ class ImagioFileConverter(BaseAdapter):
         for key in self.meta:
             self.meta[key] = np.asarray(self.meta[key])
 
-#        self.meta[MetadataAcquisitionTags.ENCODING] = "raw"
-#        self.meta[MetadataAcquisitionTags.COMPRESSION] = "none"
-#        self.meta[MetadataAcquisitionTags.DATA_TYPE] = "unsigned short"
-#        self.meta[MetadataAcquisitionTags.DIMENSIONALITY] = "time"
-#        self.meta[MetadataAcquisitionTags.SIZES] = np.asarray([sNumChans, self.OAFRAME_DEFAULT_SAMPLES_PER_CHANNEL])
-#        self.meta[MetadataAcquisitionTags.MEASUREMENTS_PER_IMAGE] = self.OAFRAME_DEFAULT_SAMPLES_PER_CHANNEL
-#        self.meta[MetadataAcquisitionTags.PHOTOACOUSTIC_IMAGING_DEVICE_REFERENCE] = self.uuid
-#        self.meta[MetadataAcquisitionTags.UUID] = self.uuid
-#
+        # fill out remainder of metadata
+        self.meta[MetadataAcquisitionTags.ENCODING] = "raw"
+        self.meta[MetadataAcquisitionTags.COMPRESSION] = "none"
+        self.meta[MetadataAcquisitionTags.DATA_TYPE] = "unsigned short"
+        self.meta[MetadataAcquisitionTags.DIMENSIONALITY] = "time"
+        self.meta[MetadataAcquisitionTags.SIZES] = np.asarray([sNumChans, self.OAFRAME_DEFAULT_SAMPLES_PER_CHANNEL])
+        self.meta[MetadataAcquisitionTags.MEASUREMENTS_PER_IMAGE] = self.OAFRAME_DEFAULT_SAMPLES_PER_CHANNEL
+        self.meta[MetadataAcquisitionTags.PHOTOACOUSTIC_IMAGING_DEVICE_REFERENCE] = self.uuid
+        self.meta[MetadataAcquisitionTags.UUID] = self.uuid
+
 #        # TODO ask Bryan
 #        self.meta[MetadataAcquisitionTags.AD_SAMPLING_RATE] = 0.0 
 #        self.meta[MetadataAcquisitionTags.TIME_GAIN_COMPENSATION] = np.asarray([]) 
