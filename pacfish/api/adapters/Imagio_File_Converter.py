@@ -142,18 +142,18 @@ class ImagioFileConverter(BaseAdapter):
         self.meta[MetadataAcquisitionTags.PHOTOACOUSTIC_IMAGING_DEVICE_REFERENCE] = self.uuid
         self.meta[MetadataAcquisitionTags.UUID] = self.uuid
 
-#        # TODO ask Bryan
-#        self.meta[MetadataAcquisitionTags.AD_SAMPLING_RATE] = 0.0 
-#        self.meta[MetadataAcquisitionTags.TIME_GAIN_COMPENSATION] = np.asarray([]) 
-#        self.meta[MetadataAcquisitionTags.OVERALL_GAIN] = 1.0 
-#        self.meta[MetadataAcquisitionTags.ELEMENT_DEPENDENT_GAIN] = np.asarray([]) 
-#        self.meta[MetadataAcquisitionTags.ACOUSTIC_COUPLING_AGENT] = "gel"
-#        self.meta[MetadataAcquisitionTags.SCANNING_METHOD] = ""
-#        self.meta[MetadataAcquisitionTags.FREQUENCY_DOMAIN_FILTER] = np.asarray([])
-#        self.meta[MetadataAcquisitionTags.SPEED_OF_SOUND] = 0.0 
-#        self.meta[MetadataAcquisitionTags.REGIONS_OF_INTEREST] = {}
-#        self.meta[MetadataAcquisitionTags.MEASUREMENT_SPATIAL_POSES] = np.asarray([[0],[0]])
-#        self.meta[MetadataAcquisitionTags.TEMPERATURE_CONTROL] = np.asarray([])
+        # TODO ask Bryan
+        self.meta[MetadataAcquisitionTags.AD_SAMPLING_RATE] = 0.0 
+        self.meta[MetadataAcquisitionTags.TIME_GAIN_COMPENSATION] = np.asarray([]) 
+        self.meta[MetadataAcquisitionTags.OVERALL_GAIN] = 1.0 
+        self.meta[MetadataAcquisitionTags.ELEMENT_DEPENDENT_GAIN] = np.asarray([]) 
+        self.meta[MetadataAcquisitionTags.ACOUSTIC_COUPLING_AGENT] = "gel"
+        self.meta[MetadataAcquisitionTags.SCANNING_METHOD] = ""
+        self.meta[MetadataAcquisitionTags.FREQUENCY_DOMAIN_FILTER] = np.asarray([])
+        self.meta[MetadataAcquisitionTags.SPEED_OF_SOUND] = 0.0 
+        self.meta[MetadataAcquisitionTags.REGIONS_OF_INTEREST] = {}
+        self.meta[MetadataAcquisitionTags.MEASUREMENT_SPATIAL_POSES] = np.asarray([[0],[0]])
+        self.meta[MetadataAcquisitionTags.TEMPERATURE_CONTROL] = np.asarray([])
 
         super().__init__()
 
@@ -196,37 +196,37 @@ class ImagioFileConverter(BaseAdapter):
         device_creator.set_general_information(
             uuid=self.uuid,
             fov=np.asarray([0, 0, 0, 0, 0, 0]))
-#
-#        for element_idx in range(128):
-#            detection_element_creator = DetectionElementCreator()
-#            detection_element_creator.set_detector_position(np.asarray([0, element_idx, 0]))
-#            detection_element_creator.set_detector_geometry_type("CUBOID")
-#            detection_element_creator.set_detector_geometry(np.asarray([0.0000, 0.0000, 0.0000]))
-#            detection_element_creator.set_detector_orientation(np.asarray([0, 0, 1]))
-#            detection_element_creator.set_frequency_response(np.asarray([np.linspace(700, 900, 100),
-#                                                                         np.ones(100)]))
-#            detection_element_creator.set_angular_response(np.asarray([np.linspace(700, 900, 100),
-#                                                                       np.ones(100)]))
-#            device_creator.add_detection_element(detection_element_creator.get_dictionary())
-#
-#        for wavelength in [755, 1064]: # nanometers
-#            illumination_element_creator = IlluminationElementCreator()
-#            illumination_element_creator.set_wavelength_range(np.asarray([wavelength, wavelength, 1]))
-#            illumination_element_creator.set_illuminator_geometry(np.asarray([0, 0, 0]))
-#            illumination_element_creator.set_illuminator_geometry_type("CUBOID")
-#            illumination_element_creator.set_illuminator_orientation(np.asarray([0, 0, 1]))
-#            illumination_element_creator.set_illuminator_position(np.asarray([0, 0, 1]))
-#            illumination_element_creator.set_beam_energy_profile(np.asarray([np.linspace(700, 900, 100),
-#                                                                             np.ones(100)]))
-#            illumination_element_creator.set_beam_stability_profile(np.asarray([np.linspace(700, 900, 100),
-#                                                                                np.ones(100)]))
-#            illumination_element_creator.set_beam_intensity_profile(np.asarray([np.linspace(700, 900, 100),
-#                                                                                np.ones(100)]))
-#            illumination_element_creator.set_pulse_width(0.0)
-#            illumination_element_creator.set_beam_divergence_angles(0.0)
-#            device_creator.add_illumination_element(illumination_element_creator.get_dictionary())
-#            device_creator.add_illumination_element(illumination_element_creator.get_dictionary())
-#
+
+        for element_idx in range(128):
+            detection_element_creator = DetectionElementCreator()
+            detection_element_creator.set_detector_position(np.asarray([0, element_idx, 0]))
+            detection_element_creator.set_detector_geometry_type("CUBOID")
+            detection_element_creator.set_detector_geometry(np.asarray([0.0000, 0.0000, 0.0000]))
+            detection_element_creator.set_detector_orientation(np.asarray([0, 0, 1]))
+            detection_element_creator.set_frequency_response(np.asarray([np.linspace(700, 900, 100),
+                                                                         np.ones(100)]))
+            detection_element_creator.set_angular_response(np.asarray([np.linspace(700, 900, 100),
+                                                                       np.ones(100)]))
+            device_creator.add_detection_element(detection_element_creator.get_dictionary())
+
+        for wavelength in [755, 1064]: # nanometers
+            illumination_element_creator = IlluminationElementCreator()
+            illumination_element_creator.set_wavelength_range(np.asarray([wavelength, wavelength, 1]))
+            illumination_element_creator.set_illuminator_geometry(np.asarray([0, 0, 0]))
+            illumination_element_creator.set_illuminator_geometry_type("CUBOID")
+            illumination_element_creator.set_illuminator_orientation(np.asarray([0, 0, 1]))
+            illumination_element_creator.set_illuminator_position(np.asarray([0, 0, 1]))
+            illumination_element_creator.set_beam_energy_profile(np.asarray([np.linspace(700, 900, 100),
+                                                                             np.ones(100)]))
+            illumination_element_creator.set_beam_stability_profile(np.asarray([np.linspace(700, 900, 100),
+                                                                                np.ones(100)]))
+            illumination_element_creator.set_beam_intensity_profile(np.asarray([np.linspace(700, 900, 100),
+                                                                                np.ones(100)]))
+            illumination_element_creator.set_pulse_width(0.0)
+            illumination_element_creator.set_beam_divergence_angles(0.0)
+            device_creator.add_illumination_element(illumination_element_creator.get_dictionary())
+            device_creator.add_illumination_element(illumination_element_creator.get_dictionary())
+
         return device_creator.finalize_device_meta_data()  
 
     def set_metadata_value(self, metadatum: MetaDatum) -> object:
