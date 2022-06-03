@@ -9,6 +9,7 @@ import os
 import glob
 import struct
 import cv2
+import math
 
 from pacfish import BaseAdapter, MetaDatum
 from pacfish import MetadataAcquisitionTags
@@ -26,26 +27,27 @@ class ImagioFileConverter(BaseAdapter):
     OAFRAMETYPE_PROBE = 7
     OAFRAMETYPE_TGC = 8
     OAFRAMETYPE_PROBE_POSITION = 9
+
     OAFRAME_MAGIC = 0xbee5
-    OAFRAME_HEADER_SIZE = 1024
-    OAFRAME_SUBHEADER_SIZE = 20
-    OAFRAME_CRC_SIZE = 4 
-    OAFRAME_META_LASER_INFO_OFFSET = 72
-    OAFRAME_META_SAMPLE_INFO_OFFSET = 90
-    OAFRAME_META_WAVELENGTH_OFFSET = 124
-    OAFRAME_META_LASER_ENERGY_OFFSET =  190
+    OAFRAME_HEADER_SIZE = 1024  # bytes
+    OAFRAME_SUBHEADER_SIZE = 20 # bytes
+    OAFRAME_CRC_SIZE = 4        # bytes
+    OAFRAME_META_LASER_INFO_OFFSET = 72    # bytes
+    OAFRAME_META_SAMPLE_INFO_OFFSET = 90   # bytes
+    OAFRAME_META_WAVELENGTH_OFFSET = 124   # bytes
+    OAFRAME_META_LASER_ENERGY_OFFSET = 190 # bytes
     OAFRAME_DATATYPE_SHORT = 2
 
     # see AcquisitionInterface.h in Seno Imagio SW
     OAFRAME_DEFAULT_SAMPLES_PER_CHANNEL = 2048 
 
     # see ObjectBufferMetaDataDefinitions.h in Seno Imagio SW
-    USFRAME_WIDTH_OFFSET = 28
-    USFRAME_MICRONSX_OFFSET = 80
+    USFRAME_WIDTH_OFFSET = 28      # bytes
+    USFRAME_MICRONSX_OFFSET = 80   # bytes
     OAFRAME_WAVELENGTH_ALEXANDRITE = 1
     OAFRAME_WAVELENGTH_YAG = 2
-    wavelengths_nm = {OAFRAME_WAVELENGTH_ALEXANDRITE : 750, OAFRAME_WAVELENGTH_YAG : 1064}
-    pulsewidth_nsec = {OAFRAME_WAVELENGTH_ALEXANDRITE : 90, OAFRAME_WAVELENGTH_YAG : 7}
+    wavelengths_nm = {OAFRAME_WAVELENGTH_ALEXANDRITE : 750, OAFRAME_WAVELENGTH_YAG : 1064} # nanometers
+    pulsewidth_nsec = {OAFRAME_WAVELENGTH_ALEXANDRITE : 90, OAFRAME_WAVELENGTH_YAG : 7} # nanoseconds
 
     # generated via https://www.uuidgenerator.net/version4
     uuid = "a522bad9-f9a4-43b3-a8c3-80cde9e21d2e"
@@ -88,7 +90,8 @@ class ImagioFileConverter(BaseAdapter):
                 # extracted variables (i.e. "sMagic", "iTick", etc..) line up with those defined in ObjectBufferMetaDataDefinitions.h in the Seno Imagio SW
                 metaData = (sMagic, sVersion, iTick, lSize, lFrameCounter, sType, sDummy) = struct.unpack("<HHIIIhh", data[0:self.OAFRAME_SUBHEADER_SIZE]) 
                 if (sMagic != self.OAFRAME_MAGIC):
-                    print(f"ERROR: Unexpected magic number (read 0x{sMagic:04x}, expected 0x{self.OAFRAME_MAGIC:04x})")
+                    print(f"WARNING: Unexpected magic number (read 0x{sMagic:04x}, expected 0x{self.OAFRAME_MAGIC:04x})")
+                    continue
 
                 size = self.OAFRAME_HEADER_SIZE - self.OAFRAME_SUBHEADER_SIZE - self.OAFRAME_CRC_SIZE
                 start = self.OAFRAME_SUBHEADER_SIZE
@@ -102,7 +105,7 @@ class ImagioFileConverter(BaseAdapter):
 
                     (sNumChans, sNumSamplesPerChannel, sDataType, lFrameCounter, sProbeID, sAcquireHardwareID, iSampleRate) = \
                         struct.unpack("<hhHIhhi", headerFrameMeta[self.OAFRAME_META_LASER_INFO_OFFSET:self.OAFRAME_META_SAMPLE_INFO_OFFSET])
-                    cWavelength = struct.unpack("<B", headerFrameMeta[self.OAFRAME_META_WAVELENGTH_OFFSET:self.OAFRAME_META_WAVELENGTH_OFFSET+1])[0] # 1 = Alex, 2 = YAG
+                    cWavelength = struct.unpack("<B", headerFrameMeta[self.OAFRAME_META_WAVELENGTH_OFFSET:self.OAFRAME_META_WAVELENGTH_OFFSET+1])[0]
                     (fLaserEnergy, fGain) = struct.unpack("<ff", headerFrameMeta[self.OAFRAME_META_LASER_ENERGY_OFFSET:self.OAFRAME_META_LASER_ENERGY_OFFSET+8])
 
                     if (sDataType != self.OAFRAME_DATATYPE_SHORT):
@@ -224,7 +227,7 @@ class ImagioFileConverter(BaseAdapter):
             illumination_element_creator.set_beam_energy_profile(np.asarray([
                 [self.wavelengths_nm[self.OAFRAME_WAVELENGTH_ALEXANDRITE], self.OAFRAME_NOMINAL_ENERGY * 1e-3],
                 [self.wavelengths_nm[self.OAFRAME_WAVELENGTH_YAG], self.OAFRAME_NOMINAL_ENERGY * 1e-3]]))
-            illumination_element_creator.set_beam_divergence_angles(33) # degrees
+            illumination_element_creator.set_beam_divergence_angles(33.0 * math.pi / 180) # radians
             illumination_element_creator.set_illuminator_geometry(np.asarray([57.25 * 1E-3, 0, 28.63 * 1e-3])) # position of light bars, see SPEC-4702100100
             illumination_element_creator.set_illuminator_position(np.asarray([0, 0, 28.63 * 1e-3])) # see SPEC-4702100100
 
