@@ -42,6 +42,7 @@ class ImagioFileConverter(BaseAdapter):
     # see ObjectBufferMetaDataDefinitions.h in Seno Imagio SW
     OAFRAME_WAVELENGTH_ALEXANDRITE = 1
     OAFRAME_WAVELENGTH_YAG = 2
+    wavelengths_nm = {OAFRAME_WAVELENGTH_ALEXANDRITE : 755, OAFRAME_WAVELENGTH_YAG : 1064}
 
     # generated via https://www.uuidgenerator.net/version4
     uuid = "a522bad9-f9a4-43b3-a8c3-80cde9e21d2e"
@@ -69,6 +70,8 @@ class ImagioFileConverter(BaseAdapter):
             self.data = []
 
             print(f"INFO: Reading in Seno Imagio Optoacoustic data file '{filename}'")
+            iSampleRate = iSoundVelocity = 0
+            fGain = 0.0
             while True:
                 data = f.read(self.OAFRAME_HEADER_SIZE)
 
@@ -93,13 +96,13 @@ class ImagioFileConverter(BaseAdapter):
                     (sNumChans, sNumSamplesPerChannel, sDataType, lFrameCounter, sProbeID, sAcquireHardwareID, iSampleRate) = \
                         struct.unpack("<hhHIhhi", headerFrameMeta[self.OAFRAME_META_LASER_INFO_OFFSET:self.OAFRAME_META_SAMPLE_INFO_OFFSET])
                     cWavelength = struct.unpack("<B", headerFrameMeta[self.OAFRAME_META_WAVELENGTH_OFFSET:self.OAFRAME_META_WAVELENGTH_OFFSET+1])[0] # 1 = Alex, 2 = YAG
-                    fLaserEnergy = struct.unpack("<f", headerFrameMeta[self.OAFRAME_META_LASER_ENERGY_OFFSET:self.OAFRAME_META_LASER_ENERGY_OFFSET+4])[0]
+                    (fLaserEnergy, fGain) = struct.unpack("<ff", headerFrameMeta[self.OAFRAME_META_LASER_ENERGY_OFFSET:self.OAFRAME_META_LASER_ENERGY_OFFSET+8])
 
                     if (sDataType != self.OAFRAME_DATATYPE_SHORT):
                         print("WARNING: Data type ({sDataType = }) not as expected for frame.  Skipping to next.")
                         continue
 
-                    print(f"INFO: Found OA frame.  {sNumSamplesPerChannel = }, {sNumChans = }, {lSize = }, {cWavelength = }, {len(frameData) = }, {iTick = }")
+                    print(f"INFO: Found OA frame.  {sNumSamplesPerChannel = }, {sNumChans = }, {lSize = }, {cWavelength = }, {len(frameData) = }, {iTick = }, {iSampleRate = }, {fGain = }")
            
                     # parse out the raw OA frame data
                     frameData = frameData[:sNumSamplesPerChannel*sNumChans*2] # throw away data not from the pulse (because pulses are variable length from shot to shot)
@@ -109,21 +112,21 @@ class ImagioFileConverter(BaseAdapter):
                         ext_buf.append(np.concatenate([row, np.zeros(self.OAFRAME_DEFAULT_SAMPLES_PER_CHANNEL - sNumSamplesPerChannel)]))
                     ext_buf = np.asarray(ext_buf, dtype=np.int16) 
                     self.data.append(ext_buf)
- 
+
                     self.meta[MetadataAcquisitionTags.PULSE_ENERGY].append(fLaserEnergy / 1000) # mJ -> J
                     self.meta[MetadataAcquisitionTags.MEASUREMENT_TIMESTAMPS].append(iTick / 1000) # msec -> sec
-                    if (cWavelength == self.OAFRAME_WAVELENGTH_ALEXANDRITE):
-                        self.meta[MetadataAcquisitionTags.ACQUISITION_WAVELENGTHS].append(755 * 1E-9) # nanometers -> meters
-                    elif (cWavelength == self.OAFRAME_WAVELENGTH_YAG):
-                        self.meta[MetadataAcquisitionTags.ACQUISITION_WAVELENGTHS].append(1064 * 1E-9) # nanometers -> meters
+                    if (cWavelength == self.OAFRAME_WAVELENGTH_ALEXANDRITE or cWavelength == self.OAFRAME_WAVELENGTH_YAG):
+                        self.meta[MetadataAcquisitionTags.ACQUISITION_WAVELENGTHS].append(self.wavelengths_nm[cWavelength] * 1E-9) # nanometers -> meters
                     else:
                         print(f"WARNING: Wavelength ({cWavelength = }) not as expected for frame.  Skipping to next")
                         continue
 
                 elif (sType == self.OAFRAMETYPE_US): # Ultrasound frame
 
+                    # TODO define constants for 28:40, move them here
                     (w, h, ss) = struct.unpack("<iii", headerFrameMeta[28:40]) # width, height and sample size
-                    print(f"INFO: Found US frame.  {len(frameData) = }, {w = }, {h = }, {ss = }")
+                    iSoundVelocity = struct.unpack("<i", headerFrameMeta[88:92])[0]
+                    print(f"INFO: Found US frame.  {len(frameData) = }, {w = }, {h = }, {ss = }, {iSoundVelocity = }")
                     buf = np.frombuffer(frameData[0:h*w], dtype=np.uint8).reshape(h, w)
                     self.meta[MetadataAcquisitionTags.ULTRASOUND_IMAGE_DATA].append(buf)
                     self.meta[MetadataAcquisitionTags.ULTRASOUND_IMAGE_TIMESTAMPS].append(iTick / 1000) # msec -> sec
@@ -141,19 +144,19 @@ class ImagioFileConverter(BaseAdapter):
         self.meta[MetadataAcquisitionTags.MEASUREMENTS_PER_IMAGE] = self.OAFRAME_DEFAULT_SAMPLES_PER_CHANNEL
         self.meta[MetadataAcquisitionTags.PHOTOACOUSTIC_IMAGING_DEVICE_REFERENCE] = self.uuid
         self.meta[MetadataAcquisitionTags.UUID] = self.uuid
-
-        # TODO ask Bryan
-        self.meta[MetadataAcquisitionTags.AD_SAMPLING_RATE] = 0.0  # iSampleRate (take first)
-        self.meta[MetadataAcquisitionTags.TIME_GAIN_COMPENSATION] = np.asarray([]) # not used
-        self.meta[MetadataAcquisitionTags.OVERALL_GAIN] = 1.0 # fGain (in dB, maybe convert?)
-        self.meta[MetadataAcquisitionTags.ELEMENT_DEPENDENT_GAIN] = np.asarray([]) # not used
         self.meta[MetadataAcquisitionTags.ACOUSTIC_COUPLING_AGENT] = "gel"
         self.meta[MetadataAcquisitionTags.SCANNING_METHOD] = "handheld"
+        self.meta[MetadataAcquisitionTags.AD_SAMPLING_RATE] = iSampleRate # use last parsed value
+        self.meta[MetadataAcquisitionTags.SPEED_OF_SOUND] = iSoundVelocity # use last parsed value
+        self.meta[MetadataAcquisitionTags.OVERALL_GAIN] = fGain #  TODO (in dB, maybe convert?)
+
+        # these are intentionally not populated but necessary for quality check
+        self.meta[MetadataAcquisitionTags.ELEMENT_DEPENDENT_GAIN] = np.asarray([]) 
         self.meta[MetadataAcquisitionTags.FREQUENCY_DOMAIN_FILTER] = np.asarray([-1, -1])
-        self.meta[MetadataAcquisitionTags.SPEED_OF_SOUND] = 0.0 # iSoundVelocity
-        self.meta[MetadataAcquisitionTags.REGIONS_OF_INTEREST] = {} # N/A
-        self.meta[MetadataAcquisitionTags.MEASUREMENT_SPATIAL_POSES] = np.asarray([[0],[0]]) # N/A
-        self.meta[MetadataAcquisitionTags.TEMPERATURE_CONTROL] = np.asarray([]) # N/A
+        self.meta[MetadataAcquisitionTags.TIME_GAIN_COMPENSATION] = np.asarray([]) 
+        self.meta[MetadataAcquisitionTags.MEASUREMENT_SPATIAL_POSES] = np.asarray([[0],[0]])
+        self.meta[MetadataAcquisitionTags.TEMPERATURE_CONTROL] = np.asarray([]) 
+        self.meta[MetadataAcquisitionTags.REGIONS_OF_INTEREST] = {} 
 
         super().__init__()
 
@@ -207,9 +210,9 @@ class ImagioFileConverter(BaseAdapter):
             detection_element_creator.set_angular_response(np.asarray([np.linspace(700, 900, 100), np.ones(100)])) # N/A
             device_creator.add_detection_element(detection_element_creator.get_dictionary())
 
-        for wavelength in [755, 1064]: # nanometers
+        for wavelength in self.wavelengths_nm.values(): 
             illumination_element_creator = IlluminationElementCreator()
-            illumination_element_creator.set_wavelength_range(np.asarray([wavelength, wavelength, 1])) # in meters, constant.  talk to Sam about accuracy.:;
+            illumination_element_creator.set_wavelength_range(np.asarray([wavelength, wavelength, 1])) # in meters, constant.  talk to Sam about accuracy
             illumination_element_creator.set_illuminator_geometry_type("CUBOID")
             illumination_element_creator.set_illuminator_geometry(np.asarray([0, 0, 0])) # size of light bars.  talk to Sam.
             illumination_element_creator.set_illuminator_orientation(np.asarray([0, 1, 0]))
