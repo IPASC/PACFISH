@@ -91,7 +91,7 @@ PACFISH API. We have examples for both `Python` and `MATLAB`.
 
 ## Use case: Implement a conversion adapter
 
-    impot pacfish as pf
+    import pacfish as pf
 
     class DeviceSpecificAdapter(pf.BaseAdapter):
 
