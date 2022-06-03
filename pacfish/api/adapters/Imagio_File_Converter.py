@@ -41,7 +41,7 @@ class ImagioFileConverter(BaseAdapter):
 
     # see ObjectBufferMetaDataDefinitions.h in Seno Imagio SW
     USFRAME_WIDTH_OFFSET = 28
-    USFRAME_SOUND_VELOCITY_OFFSET = 88
+    USFRAME_MICRONSX_OFFSET = 80
     OAFRAME_WAVELENGTH_ALEXANDRITE = 1
     OAFRAME_WAVELENGTH_YAG = 2
     wavelengths_nm = {OAFRAME_WAVELENGTH_ALEXANDRITE : 750, OAFRAME_WAVELENGTH_YAG : 1064}
@@ -49,6 +49,10 @@ class ImagioFileConverter(BaseAdapter):
 
     # generated via https://www.uuidgenerator.net/version4
     uuid = "a522bad9-f9a4-43b3-a8c3-80cde9e21d2e"
+
+    OAFRAME_NOMINAL_ENERGY = 85 # mJ
+
+    fov = [] # field of view.  populated during parsing, but used used when creating device metadata
 
     meta = {}
     data = []
@@ -73,7 +77,7 @@ class ImagioFileConverter(BaseAdapter):
             self.data = []
 
             print(f"INFO: Reading in Seno Imagio Optoacoustic data file '{filename}'")
-            iSampleRate = iSoundVelocity = 0
+            iSampleRate = iSoundVelocity = iMicronsX = iMicronsY = 0
             fGain = 0.0
             while True:
                 data = f.read(self.OAFRAME_HEADER_SIZE)
@@ -127,11 +131,15 @@ class ImagioFileConverter(BaseAdapter):
                 elif (sType == self.OAFRAMETYPE_US): # Ultrasound frame
 
                     (w, h, ss) = struct.unpack("<iii", headerFrameMeta[self.USFRAME_WIDTH_OFFSET:self.USFRAME_WIDTH_OFFSET+12]) # width, height and sample size
-                    iSoundVelocity = struct.unpack("<i", headerFrameMeta[self.USFRAME_SOUND_VELOCITY_OFFSET:self.USFRAME_SOUND_VELOCITY_OFFSET+4])[0]
-                    print(f"INFO: Found US frame.  {len(frameData) = }, {w = }, {h = }, {ss = }, {iSoundVelocity = }")
+                    (iMicronsX, iMicronsY, iSoundVelocity) = struct.unpack("<iii", headerFrameMeta[self.USFRAME_MICRONSX_OFFSET:self.USFRAME_MICRONSX_OFFSET+12])
+                    print(f"INFO: Found US frame.  {len(frameData) = }, {w = }, {h = }, {ss = }, {iMicronsX = }, {iMicronsY = }, {iSoundVelocity = }")
                     buf = np.frombuffer(frameData[0:h*w], dtype=np.uint8).reshape(h, w)
                     self.meta[MetadataAcquisitionTags.ULTRASOUND_IMAGE_DATA].append(buf)
-                    self.meta[MetadataAcquisitionTags.ULTRASOUND_IMAGE_TIMESTAMPS].append(iTick / 1000) # msec -> sec
+                    self.meta[MetadataAcquisitionTags.ULTRASOUND_IMAGE_TIMESTAMPS].append(iTick / 1E3) # msec -> sec
+
+                    if (len(self.fov) == 0):  # populate with first set of values we get
+                        self.fov = np.asarray([0, iMicronsX * w * 1E-6, 0, iMicronsY * h * 1E-6, 0, 0])
+
 
         # required for conversion to HDF5
         for key in self.meta:
@@ -150,7 +158,7 @@ class ImagioFileConverter(BaseAdapter):
         self.meta[MetadataAcquisitionTags.SCANNING_METHOD] = "handheld"
         self.meta[MetadataAcquisitionTags.AD_SAMPLING_RATE] = float(iSampleRate)  # use last parsed value
         self.meta[MetadataAcquisitionTags.SPEED_OF_SOUND] = float(iSoundVelocity) # use last parsed value
-        self.meta[MetadataAcquisitionTags.OVERALL_GAIN] = fGain #  TODO (in dB, maybe convert?)
+        self.meta[MetadataAcquisitionTags.OVERALL_GAIN] = fGain 
 
         # these are intentionally not populated but necessary for quality check
         self.meta[MetadataAcquisitionTags.ELEMENT_DEPENDENT_GAIN] = np.asarray([]) 
@@ -192,14 +200,7 @@ class ImagioFileConverter(BaseAdapter):
         """
 
         device_creator = DeviceMetaDataCreator()
-
-        # - TODO populate fov
-        #    is an array of six float values that describe the extent of the field of view of the device in the
-        #    x1, x2, and x3 directions: [x1_start, x1_end, x2_start, x2_end, x3_start, x3_end].
-        device_creator.set_general_information(
-            uuid=self.uuid,
-            fov=np.asarray([0, 0, 0, 0, 0, 0])) # [0, iMicronsX * ddesc.w, 0, iMicronsY * ddesc.h] -> meters
-
+        device_creator.set_general_information(uuid=self.uuid, fov=self.fov)
         num_channels = self.pa_data.get_sizes()[0]
         for element_idx in range(num_channels): 
             detection_element_creator = DetectionElementCreator()
@@ -220,15 +221,13 @@ class ImagioFileConverter(BaseAdapter):
             illumination_element_creator.set_pulse_width(float(self.pulsewidth_nsec[wavelength]))
             illumination_element_creator.set_illuminator_geometry_type("CUBOID")
             illumination_element_creator.set_illuminator_orientation(np.asarray([0, 1, 0]))
-        
-            # TODO put in 85 mJ
-            illumination_element_creator.set_beam_energy_profile(np.asarray([np.linspace(700, 900, 100), np.ones(100)])) 
+            illumination_element_creator.set_beam_energy_profile(np.asarray([
+                [self.wavelengths_nm[self.OAFRAME_WAVELENGTH_ALEXANDRITE], self.OAFRAME_NOMINAL_ENERGY * 1e-3],
+                [self.wavelengths_nm[self.OAFRAME_WAVELENGTH_YAG], self.OAFRAME_NOMINAL_ENERGY * 1e-3]]))
             
-            # TODO talk to Sam
+            # TODO talk to Sam / Jeff
             illumination_element_creator.set_beam_divergence_angles(0.0) 
             illumination_element_creator.set_illuminator_geometry(np.asarray([0, 0, 0])) # size of light bars
-
-            # TODO talk to Jeff
             illumination_element_creator.set_illuminator_position(np.asarray([0, 0, 0])) # will be in Z
 
             # intentionally not populated but required for quality check
