@@ -224,11 +224,9 @@ class ImagioFileConverter(BaseAdapter):
             illumination_element_creator.set_beam_energy_profile(np.asarray([
                 [self.wavelengths_nm[self.OAFRAME_WAVELENGTH_ALEXANDRITE], self.OAFRAME_NOMINAL_ENERGY * 1e-3],
                 [self.wavelengths_nm[self.OAFRAME_WAVELENGTH_YAG], self.OAFRAME_NOMINAL_ENERGY * 1e-3]]))
-            
-            # TODO talk to Sam / Jeff
-            illumination_element_creator.set_beam_divergence_angles(0.0) 
-            illumination_element_creator.set_illuminator_geometry(np.asarray([0, 0, 0])) # size of light bars
-            illumination_element_creator.set_illuminator_position(np.asarray([0, 0, 0])) # will be in Z
+            illumination_element_creator.set_beam_divergence_angles(33) # degrees
+            illumination_element_creator.set_illuminator_geometry(np.asarray([57.25 * 1E-3, 0, 28.63 * 1e-3])) # position of light bars, see SPEC-4702100100
+            illumination_element_creator.set_illuminator_position(np.asarray([0, 0, 28.63 * 1e-3])) # see SPEC-4702100100
 
             # intentionally not populated but required for quality check
             illumination_element_creator.set_beam_stability_profile(np.asarray([np.linspace(0, 0, 1), np.ones(1)])) # N/A
