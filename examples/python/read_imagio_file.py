@@ -36,7 +36,7 @@ if (output_png):
         iTick = str(int(timestamps[idx] * 1E3)) + "_msec"
         wavelength = str(int(wavelengths[idx] * 1E9)) + "_nm"
         file = folder + "/oa_" + str(iTick) + "_" + wavelength + ".png"
-        cv2.imwrite(file, oa_frame)
+        cv2.imwrite(file, (oa_frame+32768)/256)
         print(f"INFO: Wrote file '{file}' for OA frame")
 
     for idx, us_image in enumerate(pa_data.meta_data_acquisition['ultrasound_image_data']):
