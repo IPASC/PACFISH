@@ -40,9 +40,12 @@ class ImagioFileConverter(BaseAdapter):
     OAFRAME_DEFAULT_SAMPLES_PER_CHANNEL = 2048 
 
     # see ObjectBufferMetaDataDefinitions.h in Seno Imagio SW
+    USFRAME_WIDTH_OFFSET = 28
+    USFRAME_SOUND_VELOCITY_OFFSET = 88
     OAFRAME_WAVELENGTH_ALEXANDRITE = 1
     OAFRAME_WAVELENGTH_YAG = 2
-    wavelengths_nm = {OAFRAME_WAVELENGTH_ALEXANDRITE : 755, OAFRAME_WAVELENGTH_YAG : 1064}
+    wavelengths_nm = {OAFRAME_WAVELENGTH_ALEXANDRITE : 750, OAFRAME_WAVELENGTH_YAG : 1064}
+    pulsewidth_nsec = {OAFRAME_WAVELENGTH_ALEXANDRITE : 90, OAFRAME_WAVELENGTH_YAG : 7}
 
     # generated via https://www.uuidgenerator.net/version4
     uuid = "a522bad9-f9a4-43b3-a8c3-80cde9e21d2e"
@@ -113,8 +116,8 @@ class ImagioFileConverter(BaseAdapter):
                     ext_buf = np.asarray(ext_buf, dtype=np.int16) 
                     self.data.append(ext_buf)
 
-                    self.meta[MetadataAcquisitionTags.PULSE_ENERGY].append(fLaserEnergy / 1000) # mJ -> J
-                    self.meta[MetadataAcquisitionTags.MEASUREMENT_TIMESTAMPS].append(iTick / 1000) # msec -> sec
+                    self.meta[MetadataAcquisitionTags.PULSE_ENERGY].append(fLaserEnergy / 1E3) # mJ -> J
+                    self.meta[MetadataAcquisitionTags.MEASUREMENT_TIMESTAMPS].append(iTick / 1E3) # msec -> sec
                     if (cWavelength == self.OAFRAME_WAVELENGTH_ALEXANDRITE or cWavelength == self.OAFRAME_WAVELENGTH_YAG):
                         self.meta[MetadataAcquisitionTags.ACQUISITION_WAVELENGTHS].append(self.wavelengths_nm[cWavelength] * 1E-9) # nanometers -> meters
                     else:
@@ -123,9 +126,8 @@ class ImagioFileConverter(BaseAdapter):
 
                 elif (sType == self.OAFRAMETYPE_US): # Ultrasound frame
 
-                    # TODO define constants for 28:40, move them here
-                    (w, h, ss) = struct.unpack("<iii", headerFrameMeta[28:40]) # width, height and sample size
-                    iSoundVelocity = struct.unpack("<i", headerFrameMeta[88:92])[0]
+                    (w, h, ss) = struct.unpack("<iii", headerFrameMeta[self.USFRAME_WIDTH_OFFSET:self.USFRAME_WIDTH_OFFSET+12]) # width, height and sample size
+                    iSoundVelocity = struct.unpack("<i", headerFrameMeta[self.USFRAME_SOUND_VELOCITY_OFFSET:self.USFRAME_SOUND_VELOCITY_OFFSET+4])[0]
                     print(f"INFO: Found US frame.  {len(frameData) = }, {w = }, {h = }, {ss = }, {iSoundVelocity = }")
                     buf = np.frombuffer(frameData[0:h*w], dtype=np.uint8).reshape(h, w)
                     self.meta[MetadataAcquisitionTags.ULTRASOUND_IMAGE_DATA].append(buf)
@@ -146,8 +148,8 @@ class ImagioFileConverter(BaseAdapter):
         self.meta[MetadataAcquisitionTags.UUID] = self.uuid
         self.meta[MetadataAcquisitionTags.ACOUSTIC_COUPLING_AGENT] = "gel"
         self.meta[MetadataAcquisitionTags.SCANNING_METHOD] = "handheld"
-        self.meta[MetadataAcquisitionTags.AD_SAMPLING_RATE] = iSampleRate # use last parsed value
-        self.meta[MetadataAcquisitionTags.SPEED_OF_SOUND] = iSoundVelocity # use last parsed value
+        self.meta[MetadataAcquisitionTags.AD_SAMPLING_RATE] = float(iSampleRate)  # use last parsed value
+        self.meta[MetadataAcquisitionTags.SPEED_OF_SOUND] = float(iSoundVelocity) # use last parsed value
         self.meta[MetadataAcquisitionTags.OVERALL_GAIN] = fGain #  TODO (in dB, maybe convert?)
 
         # these are intentionally not populated but necessary for quality check
@@ -191,37 +193,48 @@ class ImagioFileConverter(BaseAdapter):
 
         device_creator = DeviceMetaDataCreator()
 
-        # TODO ask Bryan
-        
-        # - fov
+        # - TODO populate fov
         #    is an array of six float values that describe the extent of the field of view of the device in the
         #    x1, x2, and x3 directions: [x1_start, x1_end, x2_start, x2_end, x3_start, x3_end].
         device_creator.set_general_information(
             uuid=self.uuid,
             fov=np.asarray([0, 0, 0, 0, 0, 0])) # [0, iMicronsX * ddesc.w, 0, iMicronsY * ddesc.h] -> meters
 
-        for element_idx in range(128): # not 128, get numChans
+        num_channels = self.pa_data.get_sizes()[0]
+        for element_idx in range(num_channels): 
             detection_element_creator = DetectionElementCreator()
-            detection_element_creator.set_detector_position(np.asarray([0, element_idx, 0])) # 5.12 cm / 128
+            detection_element_creator.set_detector_position(np.asarray([0, 5.12 / 100 / num_channels * element_idx, 0])) # 5.12 cm probe
             detection_element_creator.set_detector_geometry_type("CUBOID")
-            detection_element_creator.set_detector_geometry(np.asarray([0.0000, 0.0000, 0.0000])) # N/A
             detection_element_creator.set_detector_orientation(np.asarray([0, 1, 0]))
-            detection_element_creator.set_frequency_response(np.asarray([np.linspace(700, 900, 100), np.ones(100)])) # N/A
-            detection_element_creator.set_angular_response(np.asarray([np.linspace(700, 900, 100), np.ones(100)])) # N/A
+
+            # intentionally not populated but required for quality check
+            detection_element_creator.set_detector_geometry(np.asarray([0.0000, 0.0000, 0.0000])) # N/A
+            detection_element_creator.set_frequency_response(np.asarray([np.linspace(0, 0, 1), np.ones(1)])) # N/A
+            detection_element_creator.set_angular_response(np.asarray([np.linspace(0, 0, 1), np.ones(1)])) # N/A
+
             device_creator.add_detection_element(detection_element_creator.get_dictionary())
 
-        for wavelength in self.wavelengths_nm.values(): 
+        for wavelength in self.wavelengths_nm.keys(): 
             illumination_element_creator = IlluminationElementCreator()
-            illumination_element_creator.set_wavelength_range(np.asarray([wavelength, wavelength, 1])) # in meters, constant.  talk to Sam about accuracy
+            illumination_element_creator.set_wavelength_range(np.asarray([self.wavelengths_nm[wavelength] * 1E-9, self.wavelengths_nm[wavelength]* 1E-9, 1])) 
+            illumination_element_creator.set_pulse_width(float(self.pulsewidth_nsec[wavelength]))
             illumination_element_creator.set_illuminator_geometry_type("CUBOID")
-            illumination_element_creator.set_illuminator_geometry(np.asarray([0, 0, 0])) # size of light bars.  talk to Sam.
             illumination_element_creator.set_illuminator_orientation(np.asarray([0, 1, 0]))
-            illumination_element_creator.set_illuminator_position(np.asarray([0, 0, 0])) # talk to Jeff.  will be in Z.
-            illumination_element_creator.set_beam_energy_profile(np.asarray([np.linspace(700, 900, 100), np.ones(100)])) # could choose to put in 85 mJ.
-            illumination_element_creator.set_beam_stability_profile(np.asarray([np.linspace(700, 900, 100), np.ones(100)])) # in theory 0
-            illumination_element_creator.set_beam_intensity_profile(np.asarray([np.linspace(700, 900, 100), np.ones(100)])) # N/A.
-            illumination_element_creator.set_pulse_width(0.0) # Alex 90 nsec.  YAG 10 nsec.  talk to Sam.
-            illumination_element_creator.set_beam_divergence_angles(0.0) # talk to Sam.
+        
+            # TODO put in 85 mJ
+            illumination_element_creator.set_beam_energy_profile(np.asarray([np.linspace(700, 900, 100), np.ones(100)])) 
+            
+            # TODO talk to Sam
+            illumination_element_creator.set_beam_divergence_angles(0.0) 
+            illumination_element_creator.set_illuminator_geometry(np.asarray([0, 0, 0])) # size of light bars
+
+            # TODO talk to Jeff
+            illumination_element_creator.set_illuminator_position(np.asarray([0, 0, 0])) # will be in Z
+
+            # intentionally not populated but required for quality check
+            illumination_element_creator.set_beam_stability_profile(np.asarray([np.linspace(0, 0, 1), np.ones(1)])) # N/A
+            illumination_element_creator.set_beam_intensity_profile(np.asarray([np.linspace(0, 0, 1), np.ones(1)])) # N/A
+
             device_creator.add_illumination_element(illumination_element_creator.get_dictionary())
 
         return device_creator.finalize_device_meta_data()  

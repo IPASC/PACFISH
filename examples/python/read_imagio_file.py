@@ -23,7 +23,7 @@ converter = ImagioFileConverter(input_file)
 
 pa_data = converter.generate_pa_data()
 
-#quality_check_pa_data(pa_data, verbose=True, log_file_path="")
+quality_check_pa_data(pa_data, verbose=True, log_file_path="")
 
 folder = "output/" + os.path.basename(input_file)
 pathlib.Path(folder).mkdir(parents=True, exist_ok=True)
