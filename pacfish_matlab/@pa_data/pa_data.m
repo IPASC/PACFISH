@@ -38,6 +38,12 @@ classdef pa_data
            
         end
         
+        
+        function obj = save_data(obj, file, varargin)
+            pacfish.write_data(file, obj, varargin{1});
+        end
+        
+        
     end
                 
 end
