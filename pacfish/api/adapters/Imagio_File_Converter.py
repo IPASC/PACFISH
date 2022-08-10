@@ -169,7 +169,9 @@ class ImagioFileConverter(BaseAdapter):
         self.meta[MetadataAcquisitionTags.TIME_GAIN_COMPENSATION] = np.asarray([]) 
         self.meta[MetadataAcquisitionTags.MEASUREMENT_SPATIAL_POSES] = np.asarray([[0],[0]])
         self.meta[MetadataAcquisitionTags.TEMPERATURE_CONTROL] = np.asarray([]) 
-        self.meta[MetadataAcquisitionTags.REGIONS_OF_INTEREST] = {} 
+        self.meta[MetadataAcquisitionTags.REGIONS_OF_INTEREST] = {}
+
+        self.data = np.asarray(self.data)
 
         super().__init__()
 
@@ -180,7 +182,7 @@ class ImagioFileConverter(BaseAdapter):
         It is internally stored as an N-dimensional numpy array.
         The binary data must be formatted the following way:
 
-        [detectors, samples]
+        [detectors, samples, wavelengths, frames]
         e.g (128, 2048)
 
         Return
@@ -188,6 +190,12 @@ class ImagioFileConverter(BaseAdapter):
         np.ndarray
             A numpy array containing the binary data
         """
+        # self.data is formatted this way: [wavelengths, detectors, samples]
+        self.data = np.moveaxis(self.data, 0, 2)  # swap to [detectors, samples, wavelengths]
+        if len(np.shape(self.data)) == 3:  # in case the frames are missing
+            data_shape = np.shape(self.data)
+            self.data = np.reshape(self.data, (data_shape[0], data_shape[1], data_shape[2], 1))
+
         return self.data
 
     def generate_device_meta_data(self) -> dict:
@@ -207,14 +215,14 @@ class ImagioFileConverter(BaseAdapter):
         num_channels = self.pa_data.get_sizes()[0]
         for element_idx in range(num_channels): 
             detection_element_creator = DetectionElementCreator()
-            detection_element_creator.set_detector_position(np.asarray([0, 5.12 / 100 / num_channels * element_idx, 0])) # 5.12 cm probe
+            detection_element_creator.set_detector_position(np.asarray([(5.12 / 100 / num_channels) * element_idx, 0, 0])) # 5.12 cm probe
             detection_element_creator.set_detector_geometry_type("CUBOID")
             detection_element_creator.set_detector_orientation(np.asarray([0, 1, 0]))
 
             # intentionally not populated but required for quality check
             detection_element_creator.set_detector_geometry(np.asarray([0.0000, 0.0000, 0.0000])) # N/A
-            detection_element_creator.set_frequency_response(np.asarray([np.linspace(0, 0, 1), np.ones(1)])) # N/A
-            detection_element_creator.set_angular_response(np.asarray([np.linspace(0, 0, 1), np.ones(1)])) # N/A
+            detection_element_creator.set_frequency_response(np.asarray([[0, 0], [1, 1]])) # N/A
+            detection_element_creator.set_angular_response(np.asarray([[0, 0], [1, 1]])) # N/A
 
             device_creator.add_detection_element(detection_element_creator.get_dictionary())
 
@@ -229,11 +237,11 @@ class ImagioFileConverter(BaseAdapter):
                 [self.wavelengths_nm[self.OAFRAME_WAVELENGTH_YAG], self.OAFRAME_NOMINAL_ENERGY * 1e-3]]))
             illumination_element_creator.set_beam_divergence_angles(33.0 * math.pi / 180) # radians
             illumination_element_creator.set_illuminator_geometry(np.asarray([57.25 * 1E-3, 0, 28.63 * 1e-3])) # position of light bars, see SPEC-4702100100
-            illumination_element_creator.set_illuminator_position(np.asarray([0, 0, 28.63 * 1e-3])) # see SPEC-4702100100
+            illumination_element_creator.set_illuminator_position(np.asarray([28.63 * 1e-3, 0, 0])) # see SPEC-4702100100
 
             # intentionally not populated but required for quality check
-            illumination_element_creator.set_beam_stability_profile(np.asarray([np.linspace(0, 0, 1), np.ones(1)])) # N/A
-            illumination_element_creator.set_beam_intensity_profile(np.asarray([np.linspace(0, 0, 1), np.ones(1)])) # N/A
+            illumination_element_creator.set_beam_stability_profile(np.asarray([[0, 0], [1, 1]])) # N/A
+            illumination_element_creator.set_beam_intensity_profile(np.asarray([[0, 0], [1, 1]])) # N/A
 
             device_creator.add_illumination_element(illumination_element_creator.get_dictionary())
 
