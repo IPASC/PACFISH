@@ -8,6 +8,8 @@ import os
 import numpy as np
 import imageio
 
+PATH = "figure.png"
+
 
 class VisualisationTest(TestCase):
 
@@ -20,21 +22,21 @@ class VisualisationTest(TestCase):
     def test_visualisation_runs_though_and_produces_non_empty_png(self):
         device_metadata = create_complete_device_metadata_dictionary()
         pf.visualize_device(device_dictionary=device_metadata,
-                            save_path="")
+                            save_path=PATH)
 
-        self.assertTrue(os.path.exists("figure.png"))
-        im = np.asarray(imageio.imread("figure.png"))
+        self.assertTrue(os.path.exists(PATH))
+        im = np.asarray(imageio.imread(PATH))
         self.assertTrue((np.mean(im) > 0) and (np.mean(im) < 255))
-        os.remove("figure.png")
-        self.assertFalse(os.path.exists("figure.png"))
+        os.remove(PATH)
+        self.assertFalse(os.path.exists(PATH))
 
     def test_visualisation_runs_though_and_produces_non_empty_png_only_xz(self):
         device_metadata = create_complete_device_metadata_dictionary()
         pf.visualize_device(device_dictionary=device_metadata,
-                            save_path="", only_show_xz=True)
+                            save_path=PATH, only_show_xz=True)
 
-        self.assertTrue(os.path.exists("figure.png"))
-        im = np.asarray(imageio.imread("figure.png"))
+        self.assertTrue(os.path.exists(PATH))
+        im = np.asarray(imageio.imread(PATH))
         self.assertTrue((np.mean(im) > 0) and (np.mean(im) < 255))
-        os.remove("figure.png")
-        self.assertFalse(os.path.exists("figure.png"))
+        os.remove(PATH)
+        self.assertFalse(os.path.exists(PATH))
