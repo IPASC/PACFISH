@@ -8,7 +8,8 @@ import numpy as np
 from pacfish import MetadataDeviceTags
 
 
-def visualize_device(device_dictionary: dict, save_path: str = None, title: str = None, only_show_xz: bool = False):
+def visualize_device(device_dictionary: dict, save_path: str = None, title: str = None,
+                     only_show_xz: bool = False, show_legend: bool = True):
     """
     Visualises a given device from the device_dictionary.
 
@@ -17,11 +18,13 @@ def visualize_device(device_dictionary: dict, save_path: str = None, title: str 
     device_dictionary: dict
         The dictionary containing the device description.
     save_path: str
-        Optional save_path to save a PNG file of the visualisation to.
+        Optional save_path with the path and file name to save the visualisation to.
     title: str
         Optional custom title for the plot.
     only_show_xz: bool
         Optional bool parameter specifying if only the first window should be shown instead of all
+    show_legend: bool
+        Optional parameter whether the figure legend should be shown (default: True)
     """
 
     def define_boundary_values(_device_dictionary: dict):
@@ -161,9 +164,10 @@ def visualize_device(device_dictionary: dict, save_path: str = None, title: str 
     plt.scatter(None, None, color="red", marker="+", label="Illumination Element")
     plt.scatter(None, None, color="green", marker="s", label="Field of View")
     plt.scatter(None, None, color="Yellow", marker="s", label="Illumination Profile")
-    plt.legend(loc="lower left")
+    if show_legend:
+        plt.legend(loc="lower left")
     plt.tight_layout()
     if save_path is None:
         plt.show()
     else:
-        plt.savefig(save_path + "figure.png", dpi=300)
+        plt.savefig(save_path, dpi=300)

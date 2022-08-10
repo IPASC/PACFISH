@@ -79,10 +79,10 @@ classdef kwave_adapter
             acquisition_struct.speed_of_sound = [obj.medium.sound_speed];
         end
         
-        function pa_data = get_pa_data(obj, varargin)
+        function return_data = get_pa_data(obj, varargin)
             device_dict = obj.generate_device_dict();
             acquisition_dict = obj.generate_acquisition_dict();
-            pa_data = pacfish.pa_data(obj.time_series_data, acquisition_dict, device_dict);
+            return_data = pa_data(obj.time_series_data, acquisition_dict, device_dict);
         end
     end
 end
