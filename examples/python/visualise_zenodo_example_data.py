@@ -28,7 +28,7 @@ pa_data = pf.load_data(filename)
 pf.quality_check_pa_data(pa_data, verbose=True)
 
 # Visualising the device metadata
-pf.visualize_device(pa_data.meta_data_device, only_show_xz=True, title="2D device visualisation", show_legend=True,
+pf.visualize_device(pa_data.meta_data_device, only_show_xz=False, title="2D device visualisation", show_legend=True,
                     save_path="figure.svg")
 
 # Visualising the time series data
