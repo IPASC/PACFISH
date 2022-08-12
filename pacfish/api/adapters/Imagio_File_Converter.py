@@ -141,7 +141,7 @@ class ImagioFileConverter(BaseAdapter):
                     self.meta[MetadataAcquisitionTags.ULTRASOUND_IMAGE_TIMESTAMPS].append(iTick / 1E3) # msec -> sec
 
                     if (len(self.fov) == 0):  # populate with first set of values we get
-                        self.fov = np.asarray([0, iMicronsX * w * 1E-6, 0, iMicronsY * h * 1E-6, 0, 0])
+                        self.fov = np.asarray([0, iMicronsX * w * 1E-6, 0, 0, 0, iMicronsY * h * 1E-6])
 
 
         # required for conversion to HDF5
@@ -217,12 +217,12 @@ class ImagioFileConverter(BaseAdapter):
             detection_element_creator = DetectionElementCreator()
             detection_element_creator.set_detector_position(np.asarray([(5.12 / 100 / num_channels) * element_idx, 0, 0])) # 5.12 cm probe
             detection_element_creator.set_detector_geometry_type("CUBOID")
-            detection_element_creator.set_detector_orientation(np.asarray([0, 1, 0]))
+            detection_element_creator.set_detector_orientation(np.asarray([0, 0, 1]))
 
             # intentionally not populated but required for quality check
             detection_element_creator.set_detector_geometry(np.asarray([0.0000, 0.0000, 0.0000])) # N/A
-            detection_element_creator.set_frequency_response(np.asarray([[0, 0], [1, 1]])) # N/A
-            detection_element_creator.set_angular_response(np.asarray([[0, 0], [1, 1]])) # N/A
+            detection_element_creator.set_frequency_response(np.asarray([[0], [1]])) # N/A
+            detection_element_creator.set_angular_response(np.asarray([[0], [1]])) # N/A
 
             device_creator.add_detection_element(detection_element_creator.get_dictionary())
 
@@ -231,7 +231,7 @@ class ImagioFileConverter(BaseAdapter):
             illumination_element_creator.set_wavelength_range(np.asarray([self.wavelengths_nm[wavelength] * 1E-9, self.wavelengths_nm[wavelength]* 1E-9, 1])) 
             illumination_element_creator.set_pulse_width(float(self.pulsewidth_nsec[wavelength]))
             illumination_element_creator.set_illuminator_geometry_type("CUBOID")
-            illumination_element_creator.set_illuminator_orientation(np.asarray([0, 1, 0]))
+            illumination_element_creator.set_illuminator_orientation(np.asarray([0, 0, 1]))
             illumination_element_creator.set_beam_energy_profile(np.asarray([
                 [self.wavelengths_nm[self.OAFRAME_WAVELENGTH_ALEXANDRITE], self.OAFRAME_NOMINAL_ENERGY * 1e-3],
                 [self.wavelengths_nm[self.OAFRAME_WAVELENGTH_YAG], self.OAFRAME_NOMINAL_ENERGY * 1e-3]]))
@@ -240,8 +240,8 @@ class ImagioFileConverter(BaseAdapter):
             illumination_element_creator.set_illuminator_position(np.asarray([28.63 * 1e-3, 0, 0])) # see SPEC-4702100100
 
             # intentionally not populated but required for quality check
-            illumination_element_creator.set_beam_stability_profile(np.asarray([[0, 0], [1, 1]])) # N/A
-            illumination_element_creator.set_beam_intensity_profile(np.asarray([[0, 0], [1, 1]])) # N/A
+            illumination_element_creator.set_beam_stability_profile(np.asarray([[0], [1]])) # N/A
+            illumination_element_creator.set_beam_intensity_profile(np.asarray([[0], [1]])) # N/A
 
             device_creator.add_illumination_element(illumination_element_creator.get_dictionary())
 
