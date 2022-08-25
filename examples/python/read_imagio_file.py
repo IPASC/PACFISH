@@ -13,11 +13,11 @@ from pacfish import write_data
 from pacfish import quality_check_pa_data
 
 # input file is a Laser Optic Movie (LOM) from a scan of a phantom using the Seno Imagio system
-input_file = './examples/python/input/I0000001.dcm.lom' # Gen2 (4 OA frames, 1 US image, hair target)
+# input_file = '../../examples/python/input/I0000001.dcm.lom' # Gen2 (4 OA frames, 1 US image, hair target)
 
 # other examples
-#input_file = './examples/python/input/2017_12_11-10_54_55_0.lom' # Gen1a (many OA frames, many US images, lesion)
-#input_file = './examples/python/input/20211102134837219776.dcm.lom' # Gen2 (many OA frames, many US images, hair target)
+#input_file = '../../examples/python/input/2017_12_11-10_54_55_0.lom' # Gen1a (many OA frames, many US images, lesion)
+input_file = '../../examples/python/input/20211102134837219776.dcm.lom' # Gen2 (many OA frames, many US images, hair target)
 
 converter = ImagioFileConverter(input_file) 
 
@@ -32,7 +32,7 @@ output_png = True # disable if needed
 if (output_png):
     timestamps = pa_data.get_measurement_time_stamps()
     wavelengths = pa_data.get_acquisition_wavelengths()
-    for idx, oa_frame in enumerate(pa_data.binary_time_series_data):
+    for idx, oa_frame in enumerate(pa_data.binary_time_series_data[0, 0, :]):
         iTick = str(int(timestamps[idx] * 1E3)) + "_msec"
         wavelength = str(int(wavelengths[idx] * 1E9)) + "_nm"
         file = folder + "/oa_" + str(iTick) + "_" + wavelength + ".png"

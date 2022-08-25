@@ -19,22 +19,23 @@ data_url = "https://zenodo.org/record/5938838/files/sample_ipasc_kwave_2Dsim_cir
 #data_url = "https://zenodo.org/record/5938838/files/sample_ipasc_kwave_2Dsim_circular_array.hdf5"
 
 # Downloading file
-filename = download_file(data_url)
+#filename = download_file(data_url)
 
 # Loading file from disk as a pa_data instance
-pa_data = pf.load_data(filename)
+# "D:/PACFISH/examples/python/output/2017_12_11-10_54_55_0.lom/2017_12_11-10_54_55_0.lom_imagio_ipasc.hdf5"
+pa_data = pf.load_data("D:/PACFISH/examples/python/output/20211102134837219776.dcm.lom/20211102134837219776.dcm.lom_imagio_ipasc.hdf5")
 
 # perform completeness and consistency checking on the pa_data
 pf.quality_check_pa_data(pa_data, verbose=True)
 
 # Visualising the device metadata
-pf.visualize_device(pa_data.meta_data_device, only_show_xz=True, title="2D device visualisation")
+pf.visualize_device(pa_data.meta_data_device, only_show_xz=False, title="2D device visualisation")
 
 # Visualising the time series data
 shape = np.shape(pa_data.binary_time_series_data)
 plt.figure(figsize=(4.75, 4))
 plt.title("Time Series Data")
-plt.imshow(np.squeeze(pa_data.binary_time_series_data).T, aspect=shape[0]/shape[1])
+plt.imshow(np.squeeze(pa_data.binary_time_series_data[:, :, 0]).T, aspect=shape[0]/shape[1])
 plt.xlabel("Num detector elements")
 plt.ylabel("Num time samples")
 cb = plt.colorbar()
