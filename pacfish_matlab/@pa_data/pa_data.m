@@ -111,32 +111,47 @@ classdef pa_data
         end
         
         
-        function out = get_illuminator_position(obj, identifier)
+        function out = get_illuminator_position(obj, varargin)
             % The illuminator position defines the position of the illuminator centroid in 3D cartesian coordinates [x1, x2, x3] .
             % Parameters : identifier str: The ID of a specific illumination element. If `None` then all illumination elements are queried.
             % Return ndarray
             %   return value can be None, of the key was not found in the meta data dictionary.
+            if nargin==2
+                identifier = varargin{1};
+            else
+                identifier = obj.get_illuminator_ids;
+            end
             out = get_from_struct(obj.meta_data_device.illuminators, identifier, 'illuminator_position');
         end
         
-        function out = get_illuminator_orientation(obj, identifier)
+        function out = get_illuminator_orientation(obj, varargin)
             % The illuminator orientation defines the rotation of the illuminator in 3D cartesian coordinates [r1, r2, r3]. It is the normal of the planar illuminator surface.
             % Parameters : identifier str: The ID of a specific illumination element. If `None` then all illumination elements are queried.
             % Return np.ndarray
             %   return value can be None, of the key was not found in the meta data dictionary.
+            if nargin==2
+                identifier = varargin{1};
+            else
+                identifier = obj.get_illuminator_ids;
+            end
             out = get_from_struct(obj.meta_data_device.illuminators, identifier, 'illuminator_orientation');
         end
         
         
-        function out = get_illuminator_geometry(obj, identifier)
+        function out = get_illuminator_geometry(obj, varargin)
             % The illuminator shape defines the shape of the optical fibres, so it describes  whether the illuminator is a point illuminator, or has a more continuous form. Illuminators can only have planar emitting surfaces.
             % Parameters: identifier str: The ID of a specific illumination element. If `None` then all illumination elements are queried.
             % Return np.ndarray
             %   return value can be None, of the key was not found in the meta data dictionary.
+            if nargin==2
+                identifier = varargin{1};
+            else
+                identifier = obj.get_illuminator_ids;
+            end
             out = get_from_struct(obj.meta_data_device.illuminators, identifier, 'illuminator_geometry');
         end
         
-        function out = get_illuminator_geometry_type(obj, identifier)
+        function out = get_illuminator_geometry_type(obj, varargin)
             % The illuminator geometry type defines the shape of the optical fibre (bundle) output. It determines the interpretation of the data in the illuminator geometry field.
             % The following geometry types are currently supported:
             % - "CIRCULAR" - defined by a single value that determines the radius of the circle
@@ -146,6 +161,11 @@ classdef pa_data
             % Parameters: identifier str: The ID of a specific illumination element. If `None` then all illumination elements are queried.
             % Return str
             %   return value can be None, of the key was not found in the meta data dictionary.
+            if nargin==2
+                identifier = varargin{1};
+            else
+                identifier = obj.get_illuminator_ids;
+            end
             out = [];
             if (isempty(identifier))
                 identifier = fieldnames(obj.meta_data_device.illuminators);
@@ -163,95 +183,145 @@ classdef pa_data
             end
         end
         
-        function out = get_wavelength_range(obj, identifier)
+        function out = get_wavelength_range(obj, varargin)
             % The wavelength range quantifies the wavelength  range that the illuminator is capable of generating by reporting three values: the minimum wavelength max, the maximum wavelength  max and a metric for the
             % accuracy accuracy: (min, max, accuracy). This parameter could for instance be (700, 900, 1.2), meaning that this illuminator can be tuned from 700 nm to 900 nm with an accuracy of 1.2 nm.
             % Parameters: identifier str: The ID of a specific illumination element. If `None` then all illumination elements are queried.
             % Return np.ndarray
             %   return value can be None, of the key was not found in the meta data dictionary.
+            if nargin==2
+                identifier = varargin{1};
+            else
+                identifier = obj.get_illuminator_ids;
+            end
             out = get_from_struct(obj.meta_data_device.illuminators, identifier, 'wavelength_range');
         end
         
         
         
-        function out = get_beam_energy_profile(obj, identifier)
+        function out = get_beam_energy_profile(obj, varargin)
             % The beam energy profile field is a discretized functional of wavelength (nm) that represents the light energy of the illuminator with regard to the wavelength. Thereby, systematic differences in multispectral image acquisitions can be accounted for.
             % Parameters: identifier str: The ID of a specific illumination element. If `None` then all illumination elements are queried.
             % Return np.ndarray
             %   return value can be None, of the key was not found in the meta data dictionary.
+            if nargin==2
+                identifier = varargin{1};
+            else
+                identifier = obj.get_illuminator_ids;
+            end
             out = get_from_struct(obj.meta_data_device.illuminators, identifier, 'beam_energy_profile');
         end
         
-        function out = get_beam_stability_profile(obj, identifier)
+        function out = get_beam_stability_profile(obj, varargin)
             % The beam noise profile field is a functional of wavelength (nm) that represents the standard deviation of the pulse-to-pulse energy of the illuminator with regard to the wavelength.
             % Parameters: identifier str: The ID of a specific illumination element. If `None` then all illumination elements are queried.
             % Return np.ndarray
             %   return value can be None, of the key was not found in the meta data dictionary.
+            if nargin==2
+                identifier = varargin{1};
+            else
+                identifier = obj.get_illuminator_ids;
+            end
             out = get_from_struct(obj.meta_data_device.illuminators, identifier, 'beam_stability_profile');
         end
         
-        function out = get_pulse_width(obj, identifier)
+        function out = get_pulse_width(obj, varargin)
             % The pulse duration or pulse width describes the total length of a light pulse, measured as the time interval between the half-power points on the leading and trailing edges of the pulse.
             % Parameters: identifier str: The ID of a specific illumination element. If `None` then all illumination elements are queried.
             % Return np.ndarray
             %   return value can be None, of the key was not found in the meta data dictionary.
+            if nargin==2
+                identifier = varargin{1};
+            else
+                identifier = obj.get_illuminator_ids;
+            end
             out = get_from_struct(obj.meta_data_device.illuminators, identifier, 'pulse_width');
         end
         
         
-        function out = get_beam_profile(obj, identifier)
+        function out = get_beam_profile(obj, varargin)
             % The beam intensity profile is a function of a spatial position that specifies the relative beam intensity according to the planar emitting surface of the illuminator shape.
             % Parameters: identifier str: The ID of a specific illumination element. If `None` then all illumination elements are queried.
             % Return np.ndarray
             %   return value can be None, of the key was not found in the meta data dictionary.
+            if nargin==2
+                identifier = varargin{1};
+            else
+                identifier = obj.get_illuminator_ids;
+            end
             out = get_from_struct(obj.meta_data_device.illuminators, identifier, 'beam_intensity_profile');
         end
         
         
-        function out = get_beam_profile_distance(obj, identifier)
+        function out = get_beam_profile_distance(obj, varargin)
             % The distance from the light source for measuring its beam intensity profile.
             % Parameters: identifier str: The ID of a specific illumination element. If `None` then all illumination elements are queried.
             % Return float
             %   return value can be None, of the key was not found in the meta data dictionary.
+            if nargin==2
+                identifier = varargin{1};
+            else
+                identifier = obj.get_illuminator_ids;
+            end
             out = get_from_struct(obj.meta_data_device.illuminators, identifier, 'intensity_profile_distance');
         end
         
         
-        function out = get_beam_divergence(obj, identifier)
+        function out = get_beam_divergence(obj, varargin)
             % The beam divergence angles represent the opening angles of the beam from the illuminator shape with respect to the orientation vector. This angle represented by the standard deviation of the beam divergence.
             % Parameters: identifier str: The ID of a specific illumination element. If `None` then all illumination elements are queried.
             % Return float
             %   return value can be None, of the key was not found in the meta data dictionary.
+            if nargin==2
+                identifier = varargin{1};
+            else
+                identifier = obj.get_illuminator_ids;
+            end
             out = get_from_struct(obj.meta_data_device.illuminators, identifier, 'beam_divergence_angles');
         end
         
-        function out = get_detector_position(obj, identifier)
+        function out = get_detector_position(obj, varargin)
             % The positions of each detection element in 3D Cartesian coordinates [x1, x2, x3].
             % Parameters : identifier: str The ID of a specific detection element. If `None` then all detection elements are queried.
             % Return ndarray
             % return value can be None, of the key was not found in the meta data dictionary.
+            if nargin==2
+                identifier = varargin{1};
+            else
+                identifier = obj.get_detector_ids;
+            end
             out = get_from_struct(obj.meta_data_device.detectors, identifier, 'detector_position');
             
         end
         
         
-        function out = get_detector_orientation(obj, identifier)
+        function out = get_detector_orientation(obj, varargin)
             % The element orientation defines the rotation of the detection element in 3D cartesian coordinates [r1, r2, r3] in radians.
             % Parameters: identifier str: The ID of a specific detection element. If `None` then all detection elements are queried.
             % Return np.ndarray
             %   return value can be None, of the key was not found in the meta data dictionary.
+            if nargin==2
+                identifier = varargin{1};
+            else
+                identifier = obj.get_detector_ids;
+            end
             out = get_from_struct(obj.meta_data_device.detectors, identifier, 'detector_orientation');
         end
         
-        function out = get_detector_geometry(obj, identifier)
+        function out = get_detector_geometry(obj, varargin)
             % The element size defines the size of the detection element in 3D cartesian coordinates [x1, x2, x3] relative to its position and orientation.
             % Parameters: identifier str: The ID of a specific detection element. If `None` then all detection elements are queried.
             % Return np.ndarray
             %   return value can be None, of the key was not found in the meta data dictionary.
+            if nargin==2
+                identifier = varargin{1};
+            else
+                identifier = obj.get_detector_ids;
+            end
             out = get_from_struct(obj.meta_data_device.detectors, identifier, 'detector_geometry');
         end
         
-        function out = get_detector_geometry_type(obj, identifier)
+        function out = get_detector_geometry_type(obj, varargin)
             % The detector geometry type defines how to interpret the data in the detector geometry field.
             % The following geometry types are currently supported:
             % - "CIRCULAR" - defined by a single value that determines the radius of the circle
@@ -261,6 +331,11 @@ classdef pa_data
             % Parameters: identifier str: The ID of a specific detection element. If `None` then all detection elements are queried.
             % Return str
             %   return value can be None, of the key was not found in the meta data dictionary.
+            if nargin==2
+                identifier = varargin{1};
+            else
+                identifier = obj.get_detector_ids;
+            end
             out = [];
             if (isempty(identifier))
                 identifier = fieldnames(obj.meta_data_device.detectors);
@@ -278,31 +353,41 @@ classdef pa_data
             end
         end
         
-        function out = get_frequency_response(obj, identifier)
+        function out = get_frequency_response(obj, varargin)
             % The frequency response is a functional that characterizes the response of the detection element to the frequency of the incident pressure waves.
             % Parameters: identifier str: The ID of a specific detection element. If `None` then all detection elements are queried.
             % Return np.ndarray
             %   return value can be None, of the key was not found in the meta data dictionary.
+            if nargin==2
+                identifier = varargin{1};
+            else
+                identifier = obj.get_detector_ids;
+            end
             out = get_from_struct(obj.meta_data_device.detectors, identifier, 'frequency_response');
         end
         
-        function out = get_angular_response(obj, identifier)
+        function out = get_angular_response(obj, varargin)
             % The angular response field characterizes the angular sensitivity of the detection element to the incident angle (relative to the elements orientation) of the incoming pressure wave.
             % Parameters: identifier str: The ID of a specific detection element. If `None` then all detection elements are queried.
             % Return np.ndarray
             %   return value can be None, of the key was not found in the meta data dictionary.
+            if nargin==2
+                identifier = varargin{1};
+            else
+                identifier = obj.get_detector_ids;
+            end
             out = get_from_struct(obj.meta_data_device.detectors, identifier, 'angular_response');
         end
         
         function out = get_regions_of_interest(obj)
             % A list of named regions within the underlying 3D Cartesian coordinate system (cf. Device Metadata). Strings containing the region names are mapped to arrays that define either an approximate cuboid area (cf. Field of View) or a list of coordinates describing a set of 3D Cartesian coordinates surrounding the named region.
-            % Return np.ndarray
+            % Return structure of regions
             %   return value can be None, of the key was not found in the meta data dictionary.
-            out = [];
+            out = struct;
             if (isfield(obj.meta_data, 'regions_of_interest'))
                 f = fieldnames(obj.meta_data.regions_of_interest);
                 for i=1:length(f)
-                    out{i} = obj.meta_data.regions_of_interest.(f{i});
+                    out.(f{i}) = obj.meta_data.regions_of_interest.(f{i});
                 end
             end
         end
@@ -368,7 +453,7 @@ classdef pa_data
             % An array specifying the time at which a measurement was recorded.
             % Return np.ndarray
             %   return value can be None, of the key was not found in the meta data dictionary.
-            out = get_acquisition_meta_datum(obj, 'measurement_time_stamps');
+            out = get_acquisition_meta_datum(obj, 'measurement_timestamps');
         end
         
         function out = get_acquisition_wavelengths(obj)

@@ -1,5 +1,10 @@
 % % test perso
 clear
+
+%% CALL OF THE UNIT TEST 
+unit('../data/ipasc_compatible_V1');
+
+%%
 % [a1, b1, c1] = load_data('test_input2.hdf5');
 % pa = pa_data(a1, b1, c1);
 % 
@@ -37,10 +42,7 @@ pa1 = pa_data('test_input.hdf5');
 disp('New try');
 
 %%- general getters
-ids_illu = pa1.get_illuminator_ids;
-ids_dete = pa1.get_detector_ids;
-% pa1.get_custom_meta_datum('speed_of_sound')
-% pa1.get_acquisition_meta_datum('speed_of_sound')
+% pa1.get_speed_of_sound
 % pa1.get_device_uuid
 % pa1.get_field_of_view
 % pa1.get_number_of_illuminators
@@ -48,25 +50,25 @@ ids_dete = pa1.get_detector_ids;
 % pa1.get_regions_of_interest
 
 %%- specific to illuminator
-% pa1.get_illuminator_position(ids_illu)
-% pa1.get_illuminator_orientation(ids_illu)
-% pa1.get_illuminator_geometry(ids_illu)
-% pa1.get_illuminator_geometry_type(ids_illu)
-% pa1.get_wavelength_range(ids_illu)
-% pa1.get_beam_energy_profile(ids_illu)
-% pa1.get_beam_stability_profile(ids_illu)
-% pa1.get_pulse_width(ids_illu)
-% pa1.get_beam_profile(ids_illu)
-% pa1.get_beam_profile_distance(ids_illu)
-% pa1.get_beam_divergence(ids_illu)
+% pa1.get_illuminator_position()
+% pa1.get_illuminator_orientation()
+% pa1.get_illuminator_geometry()
+% pa1.get_illuminator_geometry_type()
+% pa1.get_wavelength_range()
+% pa1.get_beam_energy_profile()
+% pa1.get_beam_stability_profile()
+% pa1.get_pulse_width()
+% pa1.get_beam_profile()
+% pa1.get_beam_profile_distance()
+% pa1.get_beam_divergence()
 
 %%- specific to detector
-% pa1.get_detector_position(ids_dete)
-% pa1.get_detector_orientation(ids_dete)
-% pa1.get_detector_geometry(ids_dete)
-% pa1.get_detector_geometry_type(ids_dete)
-% pa1.get_frequency_response(ids_dete)
-% pa1.get_angular_response(ids_dete)
+% pa1.get_detector_position()
+% pa1.get_detector_orientation()
+% pa1.get_detector_geometry()
+% pa1.get_detector_geometry_type()
+% pa1.get_frequency_response()
+% pa1.get_angular_response()
 
 %%- others
 % pa1.get_encoding
@@ -90,4 +92,9 @@ ids_dete = pa1.get_detector_ids;
 % pa1.get_frequency_domain_filter
 % pa1.get_measurement_spatial_poses
 % pa1.get_measurements_per_image
+
+%%-advanced test
+a = pa1.get_detector_position();
+a(:,11) % 10+1 because it starts at 0...
+pa1.get_detector_position({'deleteme0000000010'})
 
