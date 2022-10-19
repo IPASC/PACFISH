@@ -16,7 +16,7 @@ class PAData:
 
         1. a numpy array containing the binary data
         2. a dictionary with the acquisition metadata
-        3. a dictionary with the device meta data
+        3. a dictionary with the device metadata
 
     Furthermore, this class contains convenience methods to access all fields within the HDF5 dictionary, without
     the necessity to know the internal structure by heart.
@@ -84,7 +84,7 @@ class PAData:
 
     def get_acquisition_meta_datum(self, meta_data_tag: MetaDatum) -> object:
         """
-        This method returns data from the acquisition meta data dictionary
+        This method returns data from the acquisition metadata dictionary
 
         Parameters
         ----------
@@ -94,7 +94,7 @@ class PAData:
         Return
         ------
         object
-            return value might be None, if the specified meta data tag was not found in the dictionary.
+            return value might be None, if the specified metadata tag was not found in the dictionary.
         """
         if meta_data_tag.tag in self.meta_data_acquisition:
             return self.meta_data_acquisition[meta_data_tag.tag]
@@ -103,7 +103,7 @@ class PAData:
 
     def get_custom_meta_datum(self, meta_data_tag: str) -> object:
         """
-        This method returns data from the acquisition meta data dictionary.
+        This method returns data from the acquisition metadata dictionary.
 
         Parameters
         ----------
@@ -113,7 +113,7 @@ class PAData:
         Return
         ------
         object
-            return value might be None, if the specified meta data tag was not found in the dictionary.
+            return value might be None, if the specified metadata tag was not found in the dictionary.
         """
         if meta_data_tag in self.meta_data_acquisition:
             return self.meta_data_acquisition[meta_data_tag]
@@ -127,7 +127,7 @@ class PAData:
         Return
         ------
         str
-            return value can be None, of no UUID was found in the meta data.
+            return value can be None, of no UUID was found in the metadata.
         """
         if MetadataDeviceTags.UNIQUE_IDENTIFIER.tag in self.meta_data_device[MetadataDeviceTags.GENERAL.tag]:
             return self.meta_data_device[MetadataDeviceTags.GENERAL.tag][MetadataDeviceTags.UNIQUE_IDENTIFIER.tag]
@@ -144,7 +144,7 @@ class PAData:
         Return
         ------
         np.ndarray
-            return value can be None, of the key was not found in the meta data dictionary.
+            return value can be None, of the key was not found in the metadata dictionary.
         """
         if MetadataDeviceTags.FIELD_OF_VIEW.tag in self.meta_data_device[MetadataDeviceTags.GENERAL.tag]:
             return self.meta_data_device[MetadataDeviceTags.GENERAL.tag][MetadataDeviceTags.FIELD_OF_VIEW.tag]
@@ -159,7 +159,7 @@ class PAData:
         Return
         ------
         int
-            return value can be None, of the key was not found in the meta data dictionary.
+            return value can be None, of the key was not found in the metadata dictionary.
         """
         if MetadataDeviceTags.NUMBER_OF_ILLUMINATION_ELEMENTS.tag in self.meta_data_device[MetadataDeviceTags.GENERAL.tag]:
             return self.meta_data_device[MetadataDeviceTags.GENERAL.tag][MetadataDeviceTags.NUMBER_OF_ILLUMINATION_ELEMENTS.tag]
@@ -174,7 +174,7 @@ class PAData:
         Return
         ------
         int
-            return value can be None, of the key was not found in the meta data dictionary.
+            return value can be None, of the key was not found in the metadata dictionary.
         """
         if MetadataDeviceTags.NUMBER_OF_DETECTION_ELEMENTS.tag in self.meta_data_device[MetadataDeviceTags.GENERAL.tag]:
             return self.meta_data_device[MetadataDeviceTags.GENERAL.tag][MetadataDeviceTags.NUMBER_OF_DETECTION_ELEMENTS.tag]
@@ -194,7 +194,7 @@ class PAData:
         Return
         ------
         np.ndarray
-            return value can be None, of the key was not found in the meta data dictionary.
+            return value can be None, of the key was not found in the metadata dictionary.
         """
         return self.get_illuminator_attribute_for_tag(MetadataDeviceTags.ILLUMINATOR_POSITION, identifier)
 
@@ -211,7 +211,7 @@ class PAData:
         Return
         ------
         np.ndarray
-            return value can be None, of the key was not found in the meta data dictionary.
+            return value can be None, of the key was not found in the metadata dictionary.
         """
         return self.get_illuminator_attribute_for_tag(MetadataDeviceTags.ILLUMINATOR_ORIENTATION, identifier)
 
@@ -228,7 +228,7 @@ class PAData:
         Return
         ------
         np.ndarray
-            return value can be None, of the key was not found in the meta data dictionary.
+            return value can be None, of the key was not found in the metadata dictionary.
         """
         return self.get_illuminator_attribute_for_tag(MetadataDeviceTags.ILLUMINATOR_GEOMETRY, identifier)
 
@@ -252,7 +252,7 @@ class PAData:
         Return
         ------
         str
-            return value can be None, of the key was not found in the meta data dictionary.
+            return value can be None, of the key was not found in the metadata dictionary.
         """
         return self.get_illuminator_attribute_for_tag(MetadataDeviceTags.ILLUMINATOR_GEOMETRY_TYPE, identifier)
 
@@ -270,8 +270,8 @@ class PAData:
 
         Return
         ------
-        str
-            return value can be None, of the key was not found in the meta data dictionary.
+        np.ndarray
+            return value can be None, of the key was not found in the metadata dictionary.
         """
         return self.get_illuminator_attribute_for_tag(MetadataDeviceTags.WAVELENGTH_RANGE, identifier)
 
@@ -288,8 +288,8 @@ class PAData:
 
         Return
         ------
-        str
-            return value can be None, of the key was not found in the meta data dictionary.
+        np.ndarray
+            return value can be None, of the key was not found in the metadata dictionary.
         """
         return self.get_illuminator_attribute_for_tag(MetadataDeviceTags.BEAM_ENERGY_PROFILE, identifier)
 
@@ -305,8 +305,8 @@ class PAData:
 
         Return
         ------
-        str
-            return value can be None, of the key was not found in the meta data dictionary.
+        np.ndarrayy
+            return value can be None, of the key was not found in the metadata dictionary.
         """
         return self.get_illuminator_attribute_for_tag(MetadataDeviceTags.BEAM_STABILITY_PROFILE, identifier)
 
@@ -323,7 +323,7 @@ class PAData:
         Return
         ------
         str
-            return value can be None, of the key was not found in the meta data dictionary.
+            return value can be None, of the key was not found in the metadata dictionary.
         """
         return self.get_illuminator_attribute_for_tag(MetadataDeviceTags.PULSE_WIDTH, identifier)
 
@@ -340,7 +340,7 @@ class PAData:
         Return
         ------
         str
-            return value can be None, of the key was not found in the meta data dictionary.
+            return value can be None, of the key was not found in the metadata dictionary.
         """
         return self.get_illuminator_attribute_for_tag(MetadataDeviceTags.BEAM_INTENSITY_PROFILE, identifier)
 
@@ -355,8 +355,8 @@ class PAData:
 
         Return
         ------
-        str
-            return value can be None, of the key was not found in the meta data dictionary.
+        float
+            return value can be None, of the key was not found in the metadata dictionary.
         """
         return self.get_illuminator_attribute_for_tag(MetadataDeviceTags.INTENSITY_PROFILE_DISTANCE, identifier)
 
@@ -372,8 +372,8 @@ class PAData:
 
         Return
         ------
-        str
-            return value can be None, of the key was not found in the meta data dictionary.
+        float
+            return value can be None, of the key was not found in the metadata dictionary.
         """
         return self.get_illuminator_attribute_for_tag(MetadataDeviceTags.BEAM_DIVERGENCE_ANGLES, identifier)
 
@@ -391,7 +391,7 @@ class PAData:
         Return
         ------
         object
-            return value can be None, of the key was not found in the meta data dictionary.
+            return value can be None, of the key was not found in the metadata dictionary.
         """
         if identifier is not None:
             if isinstance(identifier, int):
@@ -422,7 +422,8 @@ class PAData:
 
     def get_detector_position(self, identifier=None):
         """
-        The positions of each detection element in 3D Cartesian coordinates [x1, x2, x3].
+        The detector position defines the position of the detection element centroid in 3D
+        cartesian coordinates [x1, x2, x3].
 
         Parameters
         ----------
@@ -431,8 +432,8 @@ class PAData:
 
         Return
         ------
-        str
-            return value can be None, of the key was not found in the meta data dictionary.
+        np.ndarray
+            return value can be None, of the key was not found in the metadata dictionary.
         """
         return self.get_detector_attribute_for_tag(MetadataDeviceTags.DETECTOR_POSITION, identifier)
 
@@ -446,7 +447,7 @@ class PAData:
         Return
         ------
         np.ndarray
-            return value can be None, of the key was not found in the meta data dictionary.
+            return value can be None, of the key was not found in the metadata dictionary.
         """
         return self.get_acquisition_meta_datum(MetadataAcquisitionTags.REGIONS_OF_INTEREST)
 
@@ -462,8 +463,8 @@ class PAData:
 
         Return
         ------
-        str
-            return value can be None, of the key was not found in the meta data dictionary.
+        np.ndarray
+            return value can be None, of the key was not found in the metadata dictionary.
         """
         return self.get_detector_attribute_for_tag(MetadataDeviceTags.DETECTOR_ORIENTATION, identifier)
 
@@ -479,8 +480,8 @@ class PAData:
 
         Return
         ------
-        str
-            return value can be None, of the key was not found in the meta data dictionary.
+        np.ndarray
+            return value can be None, of the key was not found in the metadata dictionary.
         """
         return self.get_detector_attribute_for_tag(MetadataDeviceTags.DETECTOR_GEOMETRY, identifier)
 
@@ -502,7 +503,7 @@ class PAData:
         Return
         ------
         str
-            return value can be None, of the key was not found in the meta data dictionary.
+            return value can be None, of the key was not found in the metadata dictionary.
         """
         return self.get_detector_attribute_for_tag(MetadataDeviceTags.DETECTOR_GEOMETRY_TYPE, identifier)
 
@@ -518,8 +519,8 @@ class PAData:
 
         Return
         ------
-        str
-            return value can be None, of the key was not found in the meta data dictionary.
+        np.ndarray
+            return value can be None, of the key was not found in the metadata dictionary.
         """
         return self.get_detector_attribute_for_tag(MetadataDeviceTags.FREQUENCY_RESPONSE, identifier)
 
@@ -535,8 +536,8 @@ class PAData:
 
         Return
         ------
-        str
-            return value can be None, of the key was not found in the meta data dictionary.
+        np.ndarray
+            return value can be None, of the key was not found in the metadata dictionary.
         """
         return self.get_detector_attribute_for_tag(MetadataDeviceTags.ANGULAR_RESPONSE, identifier)
 
@@ -554,7 +555,7 @@ class PAData:
         Return
         ------
         object
-            return value can be None, of the key was not found in the meta data dictionary.
+            return value can be None, of the key was not found in the metadata dictionary.
         """
         if identifier is not None:
             if isinstance(identifier, int):
@@ -589,7 +590,7 @@ class PAData:
         Return
         ------
         str
-            return value can be None, of the key was not found in the meta data dictionary.
+            return value can be None, of the key was not found in the metadata dictionary.
         """
         return self.get_acquisition_meta_datum(MetadataAcquisitionTags.ENCODING)
 
@@ -601,7 +602,7 @@ class PAData:
         Return
         ------
         str
-            return value can be None, of the key was not found in the meta data dictionary.
+            return value can be None, of the key was not found in the metadata dictionary.
         """
         return self.get_acquisition_meta_datum(MetadataAcquisitionTags.COMPRESSION)
 
@@ -613,7 +614,7 @@ class PAData:
         Return
         ------
         str
-            return value can be None, of the key was not found in the meta data dictionary.
+            return value can be None, of the key was not found in the metadata dictionary.
         """
         return self.get_acquisition_meta_datum(MetadataAcquisitionTags.UUID)
 
@@ -626,7 +627,7 @@ class PAData:
         Return
         ------
         str
-            return value can be None, of the key was not found in the meta data dictionary.
+            return value can be None, of the key was not found in the metadata dictionary.
         """
         return self.get_acquisition_meta_datum(MetadataAcquisitionTags.DATA_TYPE)
 
@@ -641,7 +642,7 @@ class PAData:
         Return
         ------
         str
-            return value can be None, of the key was not found in the meta data dictionary.
+            return value can be None, of the key was not found in the metadata dictionary.
         """
         return self.get_acquisition_meta_datum(MetadataAcquisitionTags.DIMENSIONALITY)
 
@@ -653,7 +654,7 @@ class PAData:
         Return
         ------
         np.ndarray
-            return value can be None, of the key was not found in the meta data dictionary.
+            return value can be None, of the key was not found in the metadata dictionary.
         """
         return self.get_acquisition_meta_datum(MetadataAcquisitionTags.SIZES)
 
@@ -664,7 +665,7 @@ class PAData:
         Return
         ------
         str
-            return value can be None, of the key was not found in the meta data dictionary.
+            return value can be None, of the key was not found in the metadata dictionary.
         """
         return self.get_acquisition_meta_datum(MetadataAcquisitionTags.PHOTOACOUSTIC_IMAGING_DEVICE_REFERENCE)
 
@@ -676,7 +677,7 @@ class PAData:
         Return
         ------
         np.ndarray
-            return value can be None, of the key was not found in the meta data dictionary.
+            return value can be None, of the key was not found in the metadata dictionary.
         """
         return self.get_acquisition_meta_datum(MetadataAcquisitionTags.PULSE_ENERGY)
 
@@ -687,7 +688,7 @@ class PAData:
         Return
         ------
         np.ndarray
-            return value can be None, of the key was not found in the meta data dictionary.
+            return value can be None, of the key was not found in the metadata dictionary.
         """
         return self.get_acquisition_meta_datum(MetadataAcquisitionTags.MEASUREMENT_TIMESTAMPS)
 
@@ -698,7 +699,7 @@ class PAData:
         Return
         ------
         np.ndarray
-            return value can be None, of the key was not found in the meta data dictionary.
+            return value can be None, of the key was not found in the metadata dictionary.
         """
         return self.get_acquisition_meta_datum(MetadataAcquisitionTags.ACQUISITION_WAVELENGTHS)
 
@@ -711,7 +712,7 @@ class PAData:
         Return
         ------
         np.ndarray
-            return value can be None, of the key was not found in the meta data dictionary.
+            return value can be None, of the key was not found in the metadata dictionary.
         """
         return self.get_acquisition_meta_datum(MetadataAcquisitionTags.TIME_GAIN_COMPENSATION)
 
@@ -723,7 +724,7 @@ class PAData:
         Return
         ------
         float
-            return value can be None, of the key was not found in the meta data dictionary.
+            return value can be None, of the key was not found in the metadata dictionary.
         """
         return self.get_acquisition_meta_datum(MetadataAcquisitionTags.OVERALL_GAIN)
 
@@ -735,7 +736,7 @@ class PAData:
         Return
         ------
         np.ndarray
-            return value can be None, of the key was not found in the meta data dictionary.
+            return value can be None, of the key was not found in the metadata dictionary.
         """
         return self.get_acquisition_meta_datum(MetadataAcquisitionTags.ELEMENT_DEPENDENT_GAIN)
 
@@ -747,7 +748,7 @@ class PAData:
         Return
         ------
         np.ndarray
-            return value can be None, of the key was not found in the meta data dictionary.
+            return value can be None, of the key was not found in the metadata dictionary.
         """
         return self.get_acquisition_meta_datum(MetadataAcquisitionTags.TEMPERATURE_CONTROL)
 
@@ -758,7 +759,7 @@ class PAData:
         Return
         ------
         str
-            return value can be None, of the key was not found in the meta data dictionary.
+            return value can be None, of the key was not found in the metadata dictionary.
         """
         return self.get_acquisition_meta_datum(MetadataAcquisitionTags.ACOUSTIC_COUPLING_AGENT)
 
@@ -773,7 +774,7 @@ class PAData:
         Return
         ------
         np.ndarray
-            return value can be None, of the key was not found in the meta data dictionary.
+            return value can be None, of the key was not found in the metadata dictionary.
         """
         return self.get_acquisition_meta_datum(MetadataAcquisitionTags.SPEED_OF_SOUND)
 
@@ -787,7 +788,7 @@ class PAData:
         Return
         ------
         str
-            return value can be None, of the key was not found in the meta data dictionary.
+            return value can be None, of the key was not found in the metadata dictionary.
         """
         return self.get_acquisition_meta_datum(MetadataAcquisitionTags.SCANNING_METHOD)
 
@@ -799,7 +800,7 @@ class PAData:
         Return
         ------
         float
-            return value can be None, of the key was not found in the meta data dictionary.
+            return value can be None, of the key was not found in the metadata dictionary.
         """
         return self.get_acquisition_meta_datum(MetadataAcquisitionTags.AD_SAMPLING_RATE)
 
@@ -810,7 +811,7 @@ class PAData:
         Return
         ------
         np.ndarray
-            return value can be None, of the key was not found in the meta data dictionary.
+            return value can be None, of the key was not found in the metadata dictionary.
         """
         return self.get_acquisition_meta_datum(MetadataAcquisitionTags.FREQUENCY_DOMAIN_FILTER)
 
@@ -822,7 +823,7 @@ class PAData:
         Return
         ------
         np.ndarray
-            return value can be None, of the key was not found in the meta data dictionary.
+            return value can be None, of the key was not found in the metadata dictionary.
         """
         return self.get_acquisition_meta_datum(MetadataAcquisitionTags.MEASUREMENT_SPATIAL_POSES)
 
@@ -835,6 +836,6 @@ class PAData:
         Return
         ------
         int
-            return value can be None, of the key was not found in the meta data dictionary.
+            return value can be None, of the key was not found in the metadata dictionary.
         """
         return self.get_acquisition_meta_datum(MetadataAcquisitionTags.MEASUREMENTS_PER_IMAGE)

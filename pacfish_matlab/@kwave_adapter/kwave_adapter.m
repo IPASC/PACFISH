@@ -36,13 +36,26 @@ classdef kwave_adapter
                 num_detectors = obj.sensor_definition.number_elements;
                 device_struct.general.num_detectors = num_detectors;
                 device_struct.general.num_illuminators = 0;
-                
+                min_1 = 100000;
+                min_2 = 100000;
+                min_3 = 100000;
+                for det = 1:num_detectors
+                    if (min_1 > obj.sensor_definition.elements{1, det}.position(1))
+                        min_1 = obj.sensor_definition.elements{1, det}.position(1);
+                    end
+                    if (min_2 > obj.sensor_definition.elements{1, det}.position(2))
+                        min_2 = obj.sensor_definition.elements{1, det}.position(2);
+                    end
+                    if (min_3 > obj.sensor_definition.elements{1, det}.position(3))
+                        min_3 = obj.sensor_definition.elements{1, det}.position(3);
+                    end
+                end
                 for det = 1:num_detectors
                     index = strcat("deleteme", sprintf( '%010d', (det-1) ));
                     elem = obj.sensor_definition.elements{1, det};
-                    device_struct.detectors.(index).detector_position = [elem.position(1) elem.position(3) elem.position(2)];
+                    device_struct.detectors.(index).detector_position = [elem.position(1)-min_1 elem.position(3)-min_3 elem.position(2)-min_2];
                     device_struct.detectors.(index).detector_geometry_type = "CUBOID";
-                    device_struct.detectors.(index).detector_geometry = [elem.width elem.length elem.width];
+                    device_struct.detectors.(index).detector_geometry = [elem.length elem.width elem.length];
                     device_struct.detectors.(index).detector_orientation = [elem.orientation(1) elem.orientation(3) elem.orientation(2)];
                 end
                 
@@ -79,10 +92,10 @@ classdef kwave_adapter
             acquisition_struct.speed_of_sound = [obj.medium.sound_speed];
         end
         
-        function pa_data = get_pa_data(obj, varargin)
+        function return_data = get_pa_data(obj, varargin)
             device_dict = obj.generate_device_dict();
             acquisition_dict = obj.generate_acquisition_dict();
-            pa_data = pacfish.pa_data(obj.time_series_data, acquisition_dict, device_dict);
+            return_data = pa_data(obj.time_series_data, acquisition_dict, device_dict);
         end
     end
 end
