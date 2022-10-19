@@ -22,10 +22,9 @@ class IOHandlingTest(TestCase):
         device_dict = create_complete_device_metadata_dictionary()
         acquisition_dict = create_complete_acquisition_meta_data_dictionary()
 
-        pa_data = pf.PAData(binary_time_series_data=np.zeros([256, 2048]),
+        pa_data = pf.PAData(binary_time_series_data=np.random.random([4, 100, 2]),
                             meta_data_acquisition=acquisition_dict,
                             meta_data_device=device_dict)
-
 
         try:
             pf.write_data("ipasc_test.hdf5", pa_data)

@@ -16,13 +16,13 @@ def create_complete_acquisition_meta_data_dictionary():
     dictionary[MetadataAcquisitionTags.DIMENSIONALITY.tag] = "time"
     dictionary[MetadataAcquisitionTags.REGIONS_OF_INTEREST.tag] = {"region1": np.asarray([[0, 0.001, 0], [0.001, 0, 0.001]])}
     dictionary[MetadataAcquisitionTags.SIZES.tag] = np.asarray([4, 200])
-    dictionary[MetadataAcquisitionTags.PULSE_ENERGY.tag] = np.asarray([2])
-    dictionary[MetadataAcquisitionTags.MEASUREMENT_TIMESTAMPS.tag] = np.asarray([2])
-    dictionary[MetadataAcquisitionTags.ACQUISITION_WAVELENGTHS.tag] = np.asarray([2])
+    dictionary[MetadataAcquisitionTags.PULSE_ENERGY.tag] = np.asarray([2, 2])
+    dictionary[MetadataAcquisitionTags.MEASUREMENT_TIMESTAMPS.tag] = np.asarray([2, 2])
+    dictionary[MetadataAcquisitionTags.ACQUISITION_WAVELENGTHS.tag] = np.asarray([2, 2])
     dictionary[MetadataAcquisitionTags.TIME_GAIN_COMPENSATION.tag] = create_random_testing_parameters()['test_array']
     dictionary[MetadataAcquisitionTags.OVERALL_GAIN.tag] = 2.2
-    dictionary[MetadataAcquisitionTags.ELEMENT_DEPENDENT_GAIN.tag] = np.ones(100)
-    dictionary[MetadataAcquisitionTags.TEMPERATURE_CONTROL.tag] = np.ones(100) * 290.3
+    dictionary[MetadataAcquisitionTags.ELEMENT_DEPENDENT_GAIN.tag] = np.ones(2)
+    dictionary[MetadataAcquisitionTags.TEMPERATURE_CONTROL.tag] = np.ones(2) * 290.3
     dictionary[MetadataAcquisitionTags.ACOUSTIC_COUPLING_AGENT.tag] = create_random_testing_parameters()['test_string']
     dictionary[MetadataAcquisitionTags.SCANNING_METHOD.tag] = create_random_testing_parameters()['test_string']
     dictionary[MetadataAcquisitionTags.AD_SAMPLING_RATE.tag] = 1.2234
@@ -65,10 +65,10 @@ def create_random_illumination_element(dim_x=None, dim_y=None, dim_z=None):
                                                                                  min_wavelength +
                                                                                  np.random.random() * 200,
                                                                                  1.0])
-    illuminator_dict[MetadataDeviceTags.BEAM_ENERGY_PROFILE.tag] = np.asarray([np.random.random(size=200),
-                                                                               np.random.random(size=200)])
-    illuminator_dict[MetadataDeviceTags.BEAM_STABILITY_PROFILE.tag] = np.asarray([np.random.random(size=200),
-                                                                                  np.random.random(size=200)])
+    illuminator_dict[MetadataDeviceTags.BEAM_ENERGY_PROFILE.tag] = np.asarray([np.random.random(size=2),
+                                                                               np.random.random(size=2)])
+    illuminator_dict[MetadataDeviceTags.BEAM_STABILITY_PROFILE.tag] = np.asarray([np.random.random(size=2),
+                                                                                  np.random.random(size=2)])
     illuminator_dict[MetadataDeviceTags.PULSE_WIDTH.tag] = 0.00000012
     illuminator_dict[MetadataDeviceTags.BEAM_INTENSITY_PROFILE.tag] = np.random.random(size=(200, 4))
     illuminator_dict[MetadataDeviceTags.INTENSITY_PROFILE_DISTANCE.tag] = 1337.4217
@@ -90,10 +90,10 @@ def create_random_detection_element(dim_x=None, dim_y=None, dim_z=None):
     detector_dict[MetadataDeviceTags.DETECTOR_GEOMETRY.tag] = np.asarray([0.0001, 0.0001, 0.0001])
     detector_dict[MetadataDeviceTags.DETECTOR_GEOMETRY_TYPE.tag] = "CUBOID"
 
-    detector_dict[MetadataDeviceTags.FREQUENCY_RESPONSE.tag] = np.asarray([np.random.random(size=200),
-                                                                           np.random.random(size=200)])
-    detector_dict[MetadataDeviceTags.ANGULAR_RESPONSE.tag] = np.asarray([np.random.random(size=200),
-                                                                         np.random.random(size=200)])
+    detector_dict[MetadataDeviceTags.FREQUENCY_RESPONSE.tag] = np.asarray([np.random.random(size=2),
+                                                                           np.random.random(size=2)])
+    detector_dict[MetadataDeviceTags.ANGULAR_RESPONSE.tag] = np.asarray([np.random.random(size=2),
+                                                                         np.random.random(size=2)])
     return detector_dict
 
 
