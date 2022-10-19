@@ -1,5 +1,5 @@
-%% SPDX-FileCopyrightText: 2021 International Photoacoustics Standardisation Consortium (IPASC)
-%% SPDX-FileCopyrightText: 2021 François Varray
+%% SPDX-FileCopyrightText: 2022 International Photoacoustics Standardisation Consortium (IPASC)
+%% SPDX-FileCopyrightText: 2022 François Varray
 %% SPDX-FileCopyrightText: 2022 Janek Gröhl
 %% SPDX-License-Identifier: BSD 3-Clause License
 
@@ -211,7 +211,7 @@ classdef pa_data
         function out = get_beam_profile_distance(obj, identifier)
             % The distance from the light source for measuring its beam intensity profile.
             % Parameters: identifier str: The ID of a specific illumination element. If `None` then all illumination elements are queried.
-            % Return np.ndarray
+            % Return float
             %   return value can be None, of the key was not found in the meta data dictionary.
             out = get_from_struct(obj.meta_data_device.illuminators, identifier, 'intensity_profile_distance');
         end
@@ -220,7 +220,7 @@ classdef pa_data
         function out = get_beam_divergence(obj, identifier)
             % The beam divergence angles represent the opening angles of the beam from the illuminator shape with respect to the orientation vector. This angle represented by the standard deviation of the beam divergence.
             % Parameters: identifier str: The ID of a specific illumination element. If `None` then all illumination elements are queried.
-            % Return np.ndarray
+            % Return float
             %   return value can be None, of the key was not found in the meta data dictionary.
             out = get_from_struct(obj.meta_data_device.illuminators, identifier, 'beam_divergence_angles');
         end
@@ -399,11 +399,11 @@ classdef pa_data
             out = get_acquisition_meta_datum(obj, 'element_dependent_gain');
         end
         
-        function out = get_temperature_control(obj)
+        function out = get_temperature(obj)
             % An array describing the temperature of the imaged space (covering both the imaged medium and the coupling agent) for each measurement.
             % Return np.ndarray
             %   return value can be None, of the key was not found in the meta data dictionary.
-            out = get_acquisition_meta_datum(obj, 'temperature');
+            out = get_acquisition_meta_datum(obj, 'temperature_control');
         end
         
         function out = get_acoustic_coupling_agent(obj)
