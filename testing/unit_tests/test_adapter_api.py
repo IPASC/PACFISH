@@ -149,12 +149,12 @@ class AdapterAPITest(TestCase):
                          amd[pf.MetadataAcquisitionTags.REGIONS_OF_INTEREST.tag])
         self.assertEqual(pa_data.get_photoacoustic_imaging_device_reference(),
                          amd[pf.MetadataAcquisitionTags.PHOTOACOUSTIC_IMAGING_DEVICE_REFERENCE.tag])
-        self.assertEqual(pa_data.get_measurement_time_stamps(),
-                         amd[pf.MetadataAcquisitionTags.MEASUREMENT_TIMESTAMPS.tag])
+        self.assertTrue((pa_data.get_measurement_time_stamps() ==
+                         amd[pf.MetadataAcquisitionTags.MEASUREMENT_TIMESTAMPS.tag]).all())
         self.assertTrue((pa_data.get_measurement_spatial_poses() ==
                          amd[pf.MetadataAcquisitionTags.MEASUREMENT_SPATIAL_POSES.tag]).all())
-        self.assertEqual(pa_data.get_acquisition_wavelengths(),
-                         amd[pf.MetadataAcquisitionTags.ACQUISITION_WAVELENGTHS.tag])
+        self.assertTrue((pa_data.get_acquisition_wavelengths() ==
+                         amd[pf.MetadataAcquisitionTags.ACQUISITION_WAVELENGTHS.tag]).all())
         self.assertTrue((pa_data.get_time_gain_compensation() ==
                          amd[pf.MetadataAcquisitionTags.TIME_GAIN_COMPENSATION.tag]).all())
         self.assertEqual(pa_data.get_overall_gain(),
