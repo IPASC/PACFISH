@@ -11,7 +11,8 @@ classdef kwave_adapter
         medium = 0;
         kgrid = 0;
         fov = 0;
-        model = 0;
+        % Assume 3D defintion of rectangular elements for transducer elements by default.
+        model = 1;
         % Position variables made in place of getting the positions (As
         % that cannot be done with line elements)
         position1 = 0; 
@@ -33,8 +34,10 @@ classdef kwave_adapter
             obj.time_series_data = permute(varargin{2}, [2, 1]);
             obj.medium = varargin{3};
             obj.kgrid = varargin{4};
-            if (nargin>=5)
+            if (nargin==5)
                 obj.fov = varargin{5};
+            end
+            if (nargin>=6)
                 obj.model = varargin{6}; % Used to determine what type of simulation is being done
             end
             obj.lineheight = 0.1e-3; % We assume the height of line elements is this  
