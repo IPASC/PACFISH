@@ -49,3 +49,8 @@ jobs:
         flags: pytests
         file: ./coverage.xml
         fail_ci_if_error: true
+    - name: Publish to PyPI
+      if: github.repository == 'IPASC/PACFISH' && matrix.python-version == 3.9 && matrix.os == 'ubuntu-latest'
+      uses: pypa/gh-action-pypi-publish@release/v1
+      with:
+        password: ${{ secrets.PYPI_API_TOKEN }}
