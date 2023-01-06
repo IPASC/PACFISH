@@ -125,7 +125,7 @@ class NonNegativeWholeNumber(MetaDatum):
         if value is None:
             return False
 
-        if not isinstance(value, (int, np.int32, np.int64, np.int16, np.int8)):
+        if not isinstance(value, int):
             if not (isinstance(value, np.ndarray) and len(np.shape(value)) == 0):
                 raise TypeError("The given value of", self.tag, "was not of the expected data type. Expected ",
                                 "int but was", type(value).__name__)
@@ -379,7 +379,7 @@ class MetadataAcquisitionTags:
     SPEED_OF_SOUND = UnconstrainedMetaDatum("speed_of_sound", False, (np.ndarray, float), Units.METERS_PER_SECOND)
     AD_SAMPLING_RATE = NonNegativeNumber("ad_sampling_rate", True, float, Units.HERTZ)
     FREQUENCY_DOMAIN_FILTER = UnconstrainedMetaDatum("frequency_domain_filter", False, np.ndarray)
-    MEASUREMENTS_PER_IMAGE = NonNegativeWholeNumber("measurements_per_image", False, numbers.Number)
+    MEASUREMENTS_PER_IMAGE = NonNegativeWholeNumber("measurements_per_image", False, int)
 
     TAGS_BINARY = [DATA_TYPE, DIMENSIONALITY, SIZES]
     TAGS_CONTAINER = [UUID, ENCODING, COMPRESSION]

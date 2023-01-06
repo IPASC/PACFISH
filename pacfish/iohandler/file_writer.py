@@ -36,10 +36,8 @@ def write_data(file_path: str, pa_data: PAData, file_compression: str = None):
                 if isinstance(item, (bytes, int, np.int64, float, str, bool, np.bool_)):
                         h5file[path + key] = item
                 else:
-                    c = None
                     if isinstance(item, np.ndarray):
-                        c = compression
-                        h5file.create_dataset(path + key, data=item, compression=c)
+                        h5file.create_dataset(path + key, data=item, compression=compression)
             elif item is None:
                     h5file[path + key] = "None"
             else:

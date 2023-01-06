@@ -33,10 +33,13 @@ def load_data(file_path:str):
 
                     # This is introduced to ensure compatibility with the MATLAB code...
                     if isinstance(dictionary[key], np.ndarray):
+                        # remove any singleton dimensions
                         dictionary[key] = np.squeeze(dictionary[key])
-                        if dictionary[key].dtype == np.object_:
-                            dictionary[key] = dictionary[key].astype(np.str_)
-                            dictionary[key] = str(dictionary[key])
+
+                    # H5PY loads datasets into numpy types by default. However, that is not how they were defined
+                    # before writing, so the following two lines convert to the closest built-in type - if possible.
+                    if isinstance(dictionary[key], np.generic):
+                        dictionary[key] = dictionary[key].item()
 
                     if isinstance(dictionary[key], bytes):
                         dictionary[key] = dictionary[key].decode("utf-8")
