@@ -1,8 +1,8 @@
 %% SPDX-FileCopyrightText: 2022 International Photoacoustics Standardisation Consortium (IPASC)
 %% SPDX-FileCopyrightText: 2022 Janek Gröhl
+%% SPDX-FileCopyrightText: 2023 Jeffrey Sackey
+%% SPDX-FileCopyrightText: 2023 François Varray
 %% SPDX-License-Identifier: BSD 3-Clause License
-%% Changes made by Jeffrey Sackey
-%1 Only changes have comments 
 
 classdef kwave_adapter
     properties
