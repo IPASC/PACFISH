@@ -10,6 +10,7 @@ people that have contributed to this project.
 | Janek Gröhl | University of Cambridge | General Maintenance; Python API |
 | Lina Hacker | University of Cambridge | Python API |
 | François Varray | Creatis, Université de Lyon | MATLAB API |
+| Jeffrey Sackey | UNiversity College London | MATLAB API |
 | Lawrence Yip | Lawson Health Research Institute | Adapter Implementation, Bug Fixing |
 
 # How to contribute
