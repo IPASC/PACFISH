@@ -34,11 +34,13 @@ classdef kwave_adapter
             obj.time_series_data = permute(varargin{2}, [2, 1]);
             obj.medium = varargin{3};
             obj.kgrid = varargin{4};
-            if (nargin==5)
-                obj.fov = varargin{5};
+            % Changed order of model and fov so it is easier to not define
+            % fov when calling the function
+            if (nargin==5) % Checks whether the number of inputs from function call is 5 or not
+                obj.model = varargin{5}; % Used to determine what type of simulation is being done  
             end
-            if (nargin>=6)
-                obj.model = varargin{6}; % Used to determine what type of simulation is being done
+            if (nargin>=6) % Checks whether the number of inputs from function call is 6 or above
+               obj.fov = varargin{6}; % Takes the fov definition
             end
             obj.lineheight = 0.1e-3; % We assume the height of line elements is this  
         end
@@ -71,9 +73,10 @@ classdef kwave_adapter
                         for det = 1:num_detectors
                             index = strcat("deleteme", sprintf( '%010d', (det-1) ));
                             elem = obj.sensor_definition.elements{1, det};
+                            disp(elem)
                             device_struct.detectors.(index).detector_position = [elem.position(1)-min_1 elem.position(3)-min_3 elem.position(2)-min_2];
                             device_struct.detectors.(index).detector_geometry_type = "CUBOID";
-                            device_struct.detectors.(index).detector_geometry = [elem.length elem.width elem.length]; % 1 question I have is why do we assume detector length in z direction = that in the x one?
+                            device_struct.detectors.(index).detector_geometry = [elem.length elem.width elem.length]; 
                             device_struct.detectors.(index).detector_orientation = [elem.orientation(1) elem.orientation(3) elem.orientation(2)];
                         end
                     case 2 % 3D with line elements used as detector
@@ -187,36 +190,92 @@ classdef kwave_adapter
                             end
                             device_struct.detectors.(index).detector_position = [obj.position1-min_1 obj.position3-min_3 obj.position2-min_2]; % Same thing as old code but elem.position(1) is replaced with obj.position1 for example
                             device_struct.detectors.(index).detector_geometry_type = "LINE"; % They are line elements
-                            % Currently I believe this code would only work
-                            % for line detectors that only cover 1
-                            % dimension - as it assumes the other 2 would
-                            % have fixed line positions
-                            if dist(elem.start_point(1),elem.end_point(1)) ~= 0 % Checks whether the distance between the start point/end point in the x direction is not 0 - if it is then it does the same check for the other 2 dimensions
-                                % Length is determined by checking the
-                                % distance between the start point and end
-                                % point of the line in the x direction
-                                elem.length = dist(elem.start_point(1),elem.end_point(1));
-                                % Width is the line height determined
-                                % earlier
-                                elem.width = obj.lineheight;
-                            elseif dist(elem.start_point(2),elem.end_point(2)) ~= 0
-                                % Length is determined by checking the
-                                % distance between the start point and end
-                                % point of the line in the y direction
-                                elem.length = dist(elem.start_point(2),elem.end_point(2));
-                                % Width is the line height determined
-                                % earlier
-                                elem.width = obj.lineheight;
-                            elseif dist(elem.start_point(3),elem.end_point(3)) ~= 0
-                                % Length is determined by checking the
-                                % distance between the start point and end
-                                % point of the line in the z direction
-                                elem.length = dist(elem.start_point(3),elem.end_point(3));
-                                % Width is the line height determined
-                                % earlier
-                                elem.width = obj.lineheight;
+                            % Length is determined by checking the
+                            % distance between the start point and end
+                            % point of the line in the x, y and z
+                            % directions, squaring each and summing
+                            % them and lastly square rooting the sum
+                            % which is using pythagoras to determine
+                            % line length 
+                            % If change is in only 1 dimension other
+                            % distances
+                            % would be 0 and therefore the distance of the
+                            % non-0 direction would be not be considered
+                            % This length is stored as elem.width as that's
+                            % how rectangle elements would store their length
+                            elem.width = sqrt((dist(elem.start_point(1),elem.end_point(1)))^2+(dist(elem.start_point(2),elem.end_point(2)))^2+(dist(elem.start_point(3),elem.end_point(3)))^2);
+                            % Width is the line height determined
+                            % earlier
+                            % Stored as elem.length as that's where
+                            % rectangle elements store their width
+                            elem.length = obj.lineheight;
+                            % The project uses sohcahtoa
+                            % to determine the angle used for
+                            % orientation 
+                            % Specifically uses cos theta =
+                            % adjacent/hypotenuse
+                            % adjacent = y direction distance
+                            % hypotenuse = magnitude of element length in
+                            % the y and z direction
+                            costheta1 = dist(elem.start_point(2),elem.end_point(2))/(sqrt((dist(elem.start_point(2),elem.end_point(2)))^2+(dist(elem.start_point(3),elem.end_point(3)))^2));
+                            % If the denominator of the fraction is = 0
+                            % then the result would be not a number
+                            % This checks whether the result is not a
+                            % number
+                            % and sets cos theta to 0 if so as this should
+                            % be the default value
+                            if isnan(costheta1)
+                                costheta1 = 0;
                             end
-                            % Orientation doesn't exist for lines
+                            % Sets the orientation to 180 - the cos inverse
+                            % of cos theta to fix any directional issues
+                            % the normal inverse would cause
+                            orientation1 = 180 - acosd(costheta1);	
+                            % The project uses sohcahtoa
+                            % to determine the angle used for
+                            % orientation 
+                            % Specifically uses cos theta =
+                            % adjacent/hypotenuse
+                            % adjacent = z direction distance
+                            % hypotenuse = magnitude of element length in
+                            % the x and z direction
+                            costheta2 = dist(elem.start_point(3),elem.end_point(3))/(sqrt((dist(elem.start_point(3),elem.end_point(3)))^2+(dist(elem.start_point(1),elem.end_point(1)))^2));
+                            % If the denominator of the fraction is = 0
+                            % then the result would be not a number
+                            % This checks whether the result is not a
+                            % number
+                            % and sets cos theta to 0 if so as this should
+                            % be the default value
+                            if isnan(costheta2)
+                                costheta2 = 0;
+                            end
+                            orientation2 = 180 - acosd(costheta2);
+                        	% The project uses sohcahtoa
+                            % to determine the angle used for
+                            % orientation 
+                            % Specifically uses cos theta =
+                            % adjacent/hypotenuse
+                            % adjacent = x direction distance
+                            % hypotenuse = magnitude of element length in
+                            % the x and y direction
+                            costheta3 = dist(elem.start_point(1),elem.end_point(1))/(sqrt((dist(elem.start_point(2),elem.end_point(2)))^2+(dist(elem.start_point(1),elem.end_point(1)))^2));
+                            % If the denominator of the fraction is = 0
+                            % then the result would be not a number
+                            % This checks whether the result is not a
+                            % number
+                            % and sets cos theta to 0 if so as this should
+                            % be the default value
+                            if isnan(costheta3)
+                                costheta3 = 0;
+                            end
+                            % Sets the orientation to 180 - the cos inverse
+                            % of cos theta to fix any directional issues
+                            % the normal inverse would cause
+                            orientation3 = 180 - acosd(costheta3);	
+                            % Stores the 3 orientations made as the
+                            % detector orientation
+                            device_struct.detectors.(index).detector_orientation = [orientation1 orientation2 orientation3];
+                           
                             device_struct.detectors.(index).detector_geometry = [elem.length elem.width elem.length];
                         end
                     case 3 % 2D with position elements used as detector
@@ -233,6 +292,7 @@ classdef kwave_adapter
                         for det = 1:num_detectors
                             index = strcat("deleteme", sprintf( '%010d', (det-1) ));
                             elem = obj.sensor_definition.elements{1, det};
+                            disp(elem)
                             % Original code with the min_3-elem.position(3)
                             % removed as the input is 2D
                             device_struct.detectors.(index).detector_position = [elem.position(1)-min_1 elem.position(2)-min_2]; 
@@ -325,37 +385,57 @@ classdef kwave_adapter
                             end
                             device_struct.detectors.(index).detector_position = [obj.position1-min_1 obj.position2-min_2];
                             device_struct.detectors.(index).detector_geometry_type = "LINE"; % They are line elements
-                            if dist(elem.start_point(1),elem.end_point(1)) ~= 0 % Checks whether the distance between the start point/end point in the x direction is not 0 - if it is then it does the same check for the other 2 dimensions
-                                 % Length is determined by checking the
-                                % distance between the start point and end
-                                % point of the line in the x direction
-                                elem.length = dist(elem.start_point(1),elem.end_point(1));
-                                % Width is the line height determined
-                                % earlier
-                                elem.width = obj.lineheight;
-                            elseif dist(elem.start_point(2),elem.end_point(2)) ~= 0
-                                 % Length is determined by checking the
-                                % distance between the start point and end
-                                % point of the line in the y direction
-                                elem.length = dist(elem.start_point(2),elem.end_point(2)); 
-                                % Width is the line height determined
-                                % earlier
-                                elem.width = obj.lineheight;
-                            end
-                        end
+                            % Length is determined by checking the
+                            % distance between the start point and end
+                            % point of the line in the x and y
+                            % directions, squaring each and summing
+                            % them and lastly square rooting the sum
+                            % which is using pythagoras to determine
+                            % line length assuming there is a change in
+                            % both x and y
+                            % If change is in 1 dimension only the other distance
+                            % would be 0 and therefore the distance of the
+                            % non-0 direction would not be considered
+                            % This length is stored as elem.width as that's
+                            % how rectangle elements would store their length
+                            elem.width = sqrt((dist(elem.start_point(1),elem.end_point(1)))^2+(dist(elem.start_point(2),elem.end_point(2)))^2);
+                            
+                            % The project uses sohcahtoa
+                            % to determine the angle used for
+                            % orientation 
+                            % Specifically uses cos theta =
+                            % adjacent/hypotenuse
+                            % adjacent = y direction distance
+                            % hypotenuse = element length (elem.width)
+                            costheta = dist(elem.start_point(2),elem.end_point(2))/elem.width;
+                            % Sets the orientation to 180 - the cos inverse
+                            % of cos theta to fix any directional issues
+                            % the normal inverse would cause
+                            elem.orientation = acosd(costheta);
+                            
+                            % Width is the line height determined
+                            % earlier
+                            % Stored as elem.length as that's where
+                            % rectangle elements store their width
+                            elem.length = obj.lineheight;
                             % Orientation doesn't exist for lines
                              % Geometry only requires 2 dimensions here x
                             % and y as input is 2D
-                            device_struct.detectors.(index).detector_geometry = [elem.length elem.width];
+                            
+                            device_struct.detectors.(index).detector_orientation = elem.orientation; % Sets element orientation
+                            
+                            device_struct.detectors.(index).detector_geometry = [elem.length elem.width]; 
+
+                        end
                 end
                 
                 
                 
-                %% FIXME: we need a FOV definition.
-                if any(obj.fov)
-                    device_struct.general.field_of_view = obj.fov;
+                %% FIXME: we need a FOV definition. - FIXED
+                if any(obj.fov) % Checks whether FOV was given as an input (was previously checked above)
+                    device_struct.general.field_of_view = obj.fov; 
                 else
-                    device_struct.general.field_of_view = [];
+                    device_struct.general.field_of_view = [0 (obj.kgrid.Nx*obj.kgrid.dx) 0 (obj.kgrid.Ny*obj.kgrid.dy) 0 (obj.kgrid.Nz*obj.kgrid.dz)]; % If not then the program defines the FOV as full view taken from kgrid - dz/Nz are already 0 for 2D simulations 
                 end
 
             else
