@@ -36,6 +36,10 @@ def load_data(file_path:str):
                         # remove any singleton dimensions
                         dictionary[key] = np.squeeze(dictionary[key])
 
+                        if dictionary[key].dtype == np.object_:
+                            dictionary[key] = dictionary[key].astype(np.str_)
+                            dictionary[key] = str(dictionary[key])
+
                     # H5PY loads datasets into numpy types by default. However, that is not how they were defined
                     # before writing, so the following two lines convert to the closest built-in type - if possible.
                     if isinstance(dictionary[key], np.generic):
