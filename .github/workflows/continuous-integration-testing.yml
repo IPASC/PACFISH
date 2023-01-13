@@ -5,7 +5,7 @@ name: Test PACFISH
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, release ]
   pull_request:
     branches: [ main ]
 
@@ -56,17 +56,3 @@ jobs:
         pip install
         build
         --user
-    - name: Build a binary wheel and a source tarball
-      if: github.repository == 'IPASC/PACFISH' && matrix.python-version == 3.9 && matrix.os == 'ubuntu-latest'
-      run: >-
-        python -m
-        build
-        --sdist
-        --wheel
-        --outdir dist/
-        .
-    - name: Publish to PyPI
-      if: github.repository == 'IPASC/PACFISH' && matrix.python-version == 3.9 && matrix.os == 'ubuntu-latest'
-      uses: pypa/gh-action-pypi-publish@release/v1
-      with:
-        password: ${{ secrets.PYPI }}
