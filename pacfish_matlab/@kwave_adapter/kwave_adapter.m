@@ -24,7 +24,7 @@ classdef kwave_adapter
     end
     
     methods
-                
+
         %% Constructor for the api
         function obj = kwave_adapter(varargin)
             if (nargin<=4)
@@ -274,8 +274,8 @@ classdef kwave_adapter
                             orientation3 = 180 - acosd(costheta3);	
                             % Stores the 3 orientations made as the
                             % detector orientation
+
                             device_struct.detectors.(index).detector_orientation = [orientation1 orientation3 orientation2];
-                           
                             device_struct.detectors.(index).detector_geometry = [elem.length elem.width elem.length];
                         end
                     case 3 % 2D with position elements used as detector
@@ -429,6 +429,7 @@ classdef kwave_adapter
                         end
                 end
                 
+
                 if any(obj.fov) % Checks whether FOV was given as an input (was previously checked above)
                     device_struct.general.field_of_view = obj.fov; 
                 else

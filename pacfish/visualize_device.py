@@ -27,6 +27,8 @@ def visualize_device(device_dictionary: dict, save_path: str = None, title: str 
         Optional parameter whether the figure legend should be shown (default: True)
     """
 
+    MARGIN = 0.001
+
     def define_boundary_values(_device_dictionary: dict):
         mins = np.ones(3) * 100000
         maxs = np.ones(3) * -100000
@@ -59,7 +61,6 @@ def visualize_device(device_dictionary: dict, save_path: str = None, title: str 
             if fov[2 * i + 1] > maxs[i]:
                 maxs[i] = fov[2 * i + 1]
 
-        MARGIN = 0.001
         maxs += MARGIN
         mins -= MARGIN
         return mins, maxs
@@ -67,9 +68,13 @@ def visualize_device(device_dictionary: dict, save_path: str = None, title: str 
     def add_arbitrary_plane(_device_dictionary: dict, _mins, _maxs, _axes, _draw_axis):
         _draw_axis.set_xlim(_mins[_axes[0]], _maxs[_axes[0]])
         _draw_axis.set_ylim(_maxs[_axes[1]], _mins[_axes[1]])
+        x_ticks = np.asarray(np.round(np.linspace(_mins[_axes[0]] + MARGIN, _maxs[_axes[0]] - MARGIN, 5), decimals=4))
+        y_ticks = np.asarray(np.round(np.linspace(_mins[_axes[1]] + MARGIN, _maxs[_axes[1]] - MARGIN, 5), decimals=4))
+        _draw_axis.set_xticks(x_ticks, x_ticks*100)
+        _draw_axis.set_yticks(y_ticks, y_ticks * 100)
         _draw_axis.set_title(f"axes {_axes[0]}/{_axes[1]} projection view")
-        _draw_axis.set_xlabel(f"{_axes[0]}-axis [m]")
-        _draw_axis.set_ylabel(f"{_axes[1]}-axis [m]")
+        _draw_axis.set_xlabel(f"{_axes[0]}-axis [cm]")
+        _draw_axis.set_ylabel(f"{_axes[1]}-axis [cm]")
 
         fov = _device_dictionary["general"][MetadataDeviceTags.FIELD_OF_VIEW.tag]
 
@@ -84,10 +89,10 @@ def visualize_device(device_dictionary: dict, save_path: str = None, title: str 
                 _device_dictionary["detectors"][detector][MetadataDeviceTags.DETECTOR_GEOMETRY.tag])
 
             if detector_geometry_type == "CUBOID":
-                if detector_geometry[_axes[0]] == 0:
-                    detector_geometry[_axes[0]] = 0.0001
-                if detector_geometry[_axes[1]] == 0:
-                    detector_geometry[_axes[1]] = 0.0001
+                if detector_geometry[_axes[0]] < 0.001:
+                    detector_geometry[_axes[0]] = 0.001
+                if detector_geometry[_axes[1]] < 0.001:
+                    detector_geometry[_axes[1]] = 0.001
                 _draw_axis.add_patch(Rectangle((detector_position[_axes[0]] - detector_geometry[_axes[0]] / 2,
                                                 detector_position[_axes[1]] - detector_geometry[_axes[1]] / 2),
                                                detector_geometry[_axes[0]], detector_geometry[_axes[1]], color="blue"))
@@ -147,8 +152,8 @@ def visualize_device(device_dictionary: dict, save_path: str = None, title: str 
         plt.figure(figsize=(10, 4))
     plt.suptitle(title)
     ax = plt.subplot(1, num_subplots, 1)
-    ax.axes.xaxis.set_visible(False)
-    ax.axes.yaxis.set_visible(False)
+    # ax.axes.xaxis.set_visible(False)
+    # ax.axes.yaxis.set_visible(False)
     add_arbitrary_plane(device_dictionary, mins, maxs, _axes=(0, 2), _draw_axis=ax)
     if not only_show_xz:
         ax = plt.subplot(1, num_subplots, 2)

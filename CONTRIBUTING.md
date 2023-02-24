@@ -6,10 +6,12 @@ people that have contributed to this project.
 
 | Name | Institution | Contributions |
 | ---- | --- | ------------- |
+| Ben Cox | University College London | MATLAB API |
 | Kris Dreher | German Cancer Research Center | IO Handling |
 | Janek Gröhl | University of Cambridge | General Maintenance; Python API |
 | Lina Hacker | University of Cambridge | Python API |
 | François Varray | Creatis, Université de Lyon | MATLAB API |
+| Jeffrey Sackey | University College London | MATLAB API |
 | Lawrence Yip | Lawson Health Research Institute | Adapter Implementation, Bug Fixing |
 
 # How to contribute
