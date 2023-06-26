@@ -6,6 +6,7 @@
 import h5py
 from pacfish import PAData
 import numpy as np
+from pacfish.core.Metadata import MetadataAcquisitionTags as Tags
 
 
 def write_data(file_path: str, pa_data: PAData, file_compression: str = None):
@@ -27,6 +28,10 @@ def write_data(file_path: str, pa_data: PAData, file_compression: str = None):
     None
         This method does not return anything
     """
+
+    if ((Tags.VERSION.tag not in pa_data.meta_data_acquisition) or
+            (pa_data.meta_data_acquisition[Tags.VERSION.tag] == "V1")):
+        pa_data.meta_data_acquisition[Tags.VERSION.tag] = "V2"
 
     def recursively_save_dictionaries(file, path, data_dictionary, compression: str = None):
         for key, item in data_dictionary.items():

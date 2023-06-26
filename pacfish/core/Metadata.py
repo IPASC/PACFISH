@@ -353,6 +353,7 @@ class MetadataAcquisitionTags:
     UUID = UnconstrainedMetaDatum("uuid", True, str)
     ENCODING = UnconstrainedMetaDatum("encoding", True, str)
     COMPRESSION = UnconstrainedMetaDatum("compression", True, str)
+    VERSION = UnconstrainedMetaDatum("version", True, str)
 
     DATA_TYPE = UnconstrainedMetaDatum("data_type", True, str)
     DIMENSIONALITY = EnumeratedString("dimensionality", True, str, permissible_strings=DIMENSIONALITY_STRINGS)
@@ -381,7 +382,7 @@ class MetadataAcquisitionTags:
     FREQUENCY_DOMAIN_FILTER = UnconstrainedMetaDatum("frequency_domain_filter", False, np.ndarray)
     MEASUREMENTS_PER_IMAGE = NonNegativeWholeNumber("measurements_per_image", False, int)
 
-    TAGS_BINARY = [DATA_TYPE, DIMENSIONALITY, SIZES]
+    TAGS_BINARY = [DATA_TYPE, DIMENSIONALITY, SIZES, VERSION]
     TAGS_CONTAINER = [UUID, ENCODING, COMPRESSION]
     TAGS_ACQUISITION = [PHOTOACOUSTIC_IMAGING_DEVICE_REFERENCE, PULSE_ENERGY, ACQUISITION_WAVELENGTHS,
                         TIME_GAIN_COMPENSATION, OVERALL_GAIN, ELEMENT_DEPENDENT_GAIN, TEMPERATURE_CONTROL,

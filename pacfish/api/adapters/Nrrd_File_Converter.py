@@ -28,7 +28,7 @@ class NrrdFileConverter(BaseAdapter):
         super().__init__()
 
     def generate_binary_data(self) -> np.ndarray:
-        data = np.reshape(self.data, (self.meta['sizes'][0], self.meta['sizes'][1], 1, self.meta['sizes'][2]))
+        data = np.reshape(self.data, (self.meta['sizes'][0], self.meta['sizes'][1], self.meta['sizes'][2]))
         return data
 
     def generate_device_meta_data(self) -> dict:
@@ -69,6 +69,8 @@ class NrrdFileConverter(BaseAdapter):
                                                                              np.ones(100)]))
             illumination_element_creator.set_beam_stability_profile(np.asarray([np.linspace(700, 900, 100),
                                                                                 np.ones(100)]))
+            illumination_element_creator.set_beam_intensity_profile(np.asarray([np.linspace(0, 1, 100),
+                                                                             np.ones(100)]))
             illumination_element_creator.set_pulse_width(7e-9)
             device_creator.add_illumination_element(illumination_element_creator.get_dictionary())
 

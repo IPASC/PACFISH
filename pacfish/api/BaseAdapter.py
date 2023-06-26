@@ -47,6 +47,9 @@ class BaseAdapter(ABC):
         meta_data_device = self.generate_device_meta_data()
         self.pa_data.meta_data_device = meta_data_device
 
+        # We hard-set the version number when exporting.
+        self.pa_data.meta_data_acquisition[MetadataAcquisitionTags.VERSION.tag] = "V2"
+
 
     @abstractmethod
     def generate_binary_data(self) -> np.ndarray:
