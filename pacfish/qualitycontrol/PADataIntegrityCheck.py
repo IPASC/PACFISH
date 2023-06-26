@@ -31,10 +31,8 @@ def quality_check_pa_data(pa_data: PAData, verbose: bool = False, log_file_path:
 
     b1 = completeness.check_acquisition_meta_data(pa_data.meta_data_acquisition)
     b2 = consistency.check_acquisition_meta_data(pa_data.meta_data_acquisition)
-
     b3 = completeness.check_device_meta_data(pa_data.meta_data_device)
     b4 = consistency.check_device_meta_data(pa_data.meta_data_device)
-
     b5 = consistency.check_binary_data(pa_data.binary_time_series_data)
 
     return b1 and b2 and b3 and b4 and b5

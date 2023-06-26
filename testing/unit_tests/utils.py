@@ -8,6 +8,7 @@ from pacfish import MetadataDeviceTags, MetadataAcquisitionTags
 def create_complete_acquisition_meta_data_dictionary():
 
     dictionary = dict()
+    dictionary[MetadataAcquisitionTags.VERSION.tag] = "V2"
     dictionary[MetadataAcquisitionTags.UUID.tag] = create_random_testing_parameters()['test_string']
     dictionary[MetadataAcquisitionTags.ENCODING.tag] = create_random_testing_parameters()['test_string']
     dictionary[MetadataAcquisitionTags.COMPRESSION.tag] = create_random_testing_parameters()['test_string']
