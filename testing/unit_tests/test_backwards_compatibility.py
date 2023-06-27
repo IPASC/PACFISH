@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: BSD 3-Clause License
 
 import os
+import inspect
 from unittest.case import TestCase
 import pacfish as pf
 from testing.unit_tests.utils import assert_equal_dicts
@@ -16,8 +17,11 @@ class TestBackwardsCompatibility(TestCase):
         print("tearDown")
 
     def test_read_V1_file(self):
+        path_sep = "../"
+        file_path = "data/ipasc_compatible_V1.hdf5"
 
-        pa_data = pf.load_data("../data/ipasc_compatible_V1.hdf5")
+        path = os.path.abspath(os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe()))) + "/../../" + file_path)
+        pa_data = pf.load_data(path)
 
         self.assertTrue(len(pa_data.binary_time_series_data.shape) == 3)
 
