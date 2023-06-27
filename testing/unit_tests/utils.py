@@ -31,6 +31,8 @@ def create_complete_acquisition_meta_data_dictionary():
     dictionary[MetadataAcquisitionTags.SPEED_OF_SOUND.tag] = np.asarray(1540.0)
     dictionary[MetadataAcquisitionTags.MEASUREMENT_SPATIAL_POSES.tag] = create_random_testing_parameters()['test_array']
     dictionary[MetadataAcquisitionTags.MEASUREMENTS_PER_IMAGE.tag] = 1
+    dictionary[MetadataAcquisitionTags.ULTRASOUND_IMAGE_DATA.tag] = np.asarray([2, 2])
+    dictionary[MetadataAcquisitionTags.ULTRASOUND_IMAGE_TIMESTAMPS.tag] = np.asarray([2, 2])
     return dictionary
 
 
