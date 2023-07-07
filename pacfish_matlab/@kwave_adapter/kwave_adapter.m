@@ -36,11 +36,11 @@ classdef kwave_adapter
             obj.kgrid = varargin{4};
             % Changed order of model and fov so it is easier to not define
             % fov when calling the function
-            if (nargin==5) % Checks whether the number of inputs from function call is 5 or not
-                obj.model = varargin{5}; % Used to determine what type of simulation is being done  
+            if (nargin==5) % Checks whether the number of inputs from function call is 6 or above
+               obj.fov = varargin{5}; % Takes the fov definition
             end
-            if (nargin>=6) % Checks whether the number of inputs from function call is 6 or above
-               obj.fov = varargin{6}; % Takes the fov definition
+            if (nargin>=6) % Checks whether the number of inputs from function call is 5 or not
+                obj.model = varargin{6}; % Used to determine what type of simulation is being done
             end
             obj.lineheight = 0.1e-3; % We assume the height of line elements is this  
         end
