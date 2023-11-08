@@ -20,7 +20,7 @@ A list of meta data information was suggested by the International
 Photoacoustic Standardisation Consortium (IPASC) 
 in early 2020. You can find this list using the following link:
 
-https://www.ipasc.science/documents/20210916_IPASC_Format_V2.pdf
+[https://www.ipasc.science/documents/20210916_IPASC_Format_V2.pdf](https://www.ipasc.science/wp-content/uploads/2023/01/20200121_Metadata_list.pdf)
 
 PACFISH serves three purposes: (1) it helps vendors to integrate the IPASC data format 
 export into their standard software; (2) it assists scientists to read and write data in 
