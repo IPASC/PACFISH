@@ -7,3 +7,4 @@ coverage
 pytest-cov
 imageio
 scipy
+opencv-python

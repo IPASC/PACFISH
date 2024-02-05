@@ -353,6 +353,7 @@ class MetadataAcquisitionTags:
     UUID = UnconstrainedMetaDatum("uuid", True, str)
     ENCODING = UnconstrainedMetaDatum("encoding", True, str)
     COMPRESSION = UnconstrainedMetaDatum("compression", True, str)
+    VERSION = UnconstrainedMetaDatum("version", True, str)
 
     DATA_TYPE = UnconstrainedMetaDatum("data_type", True, str)
     DIMENSIONALITY = EnumeratedString("dimensionality", True, str, permissible_strings=DIMENSIONALITY_STRINGS)
@@ -380,12 +381,14 @@ class MetadataAcquisitionTags:
     AD_SAMPLING_RATE = NonNegativeNumber("ad_sampling_rate", True, float, Units.HERTZ)
     FREQUENCY_DOMAIN_FILTER = UnconstrainedMetaDatum("frequency_domain_filter", False, np.ndarray)
     MEASUREMENTS_PER_IMAGE = NonNegativeWholeNumber("measurements_per_image", False, int)
+    ULTRASOUND_IMAGE_DATA = UnconstrainedMetaDatum("ultrasound_image_data", False, np.ndarray)
+    ULTRASOUND_IMAGE_TIMESTAMPS = UnconstrainedMetaDatum("ultrasound_image_timestamps", False, np.ndarray)
 
-    TAGS_BINARY = [DATA_TYPE, DIMENSIONALITY, SIZES]
+    TAGS_BINARY = [DATA_TYPE, DIMENSIONALITY, SIZES, VERSION]
     TAGS_CONTAINER = [UUID, ENCODING, COMPRESSION]
     TAGS_ACQUISITION = [PHOTOACOUSTIC_IMAGING_DEVICE_REFERENCE, PULSE_ENERGY, ACQUISITION_WAVELENGTHS,
                         TIME_GAIN_COMPENSATION, OVERALL_GAIN, ELEMENT_DEPENDENT_GAIN, TEMPERATURE_CONTROL,
                         ACOUSTIC_COUPLING_AGENT, SCANNING_METHOD, AD_SAMPLING_RATE, FREQUENCY_DOMAIN_FILTER,
                         SPEED_OF_SOUND, MEASUREMENTS_PER_IMAGE, REGIONS_OF_INTEREST, MEASUREMENT_TIMESTAMPS,
-                        MEASUREMENT_SPATIAL_POSES]
+                        MEASUREMENT_SPATIAL_POSES, ULTRASOUND_IMAGE_DATA, ULTRASOUND_IMAGE_TIMESTAMPS]
     TAGS = TAGS_BINARY + TAGS_ACQUISITION + TAGS_CONTAINER

@@ -5,6 +5,7 @@
 
 import h5py
 from pacfish import PAData
+from pacfish.core.Metadata import MetadataAcquisitionTags as Tags
 import numpy as np
 
 
@@ -59,4 +60,35 @@ def load_data(file_path:str):
         pa_data = PAData(binary_data)
         pa_data.meta_data_acquisition = recursively_load_dictionaries(h5file, "/meta_data/")
         pa_data.meta_data_device = recursively_load_dictionaries(h5file, "/meta_data_device/")
+
+        # Check for the file version to ensure backwards compatibility of the data format.
+        if ((Tags.VERSION.tag not in pa_data.meta_data_acquisition) or
+            (pa_data.meta_data_acquisition[Tags.VERSION.tag] == "V1")):
+            print("INFO: Importing IPASC V1 data file.")
+
+            if len(np.shape(pa_data.binary_time_series_data)) < 4:
+                # Even though the data is labelled as being V1, it did only contain one (wavelength/measurement) field.
+                # In this case, we can simply take the data as is and save it into V2.
+                if len(np.shape(pa_data.binary_time_series_data)) == 3:
+                    pa_data.binary_time_series_data = pa_data.binary_time_series_data[:, :, :, np.newaxis]
+                elif len(np.shape(pa_data.binary_time_series_data)) == 2:
+                    pa_data.binary_time_series_data = pa_data.binary_time_series_data[:, :, np.newaxis, np.newaxis]
+                else:
+                    raise AssertionError("The binary time series data was not compatible with the IPASC standard.")
+
+            # we're in version 1, so we ned to reshape the wavelengths and measurements into the same dimension and
+            # expand the wavelengths field to be as long as the number of measurements.
+            (n_detectors, n_timesteps, n_wavelengths, n_measurements) = np.shape(pa_data.binary_time_series_data)
+            pa_data.binary_time_series_data = pa_data.binary_time_series_data.reshape((n_detectors, n_timesteps,
+                                                                                       n_wavelengths * n_measurements))
+
+            if len(pa_data.get_acquisition_wavelengths().shape) == 0:
+                wavelengths = [pa_data.get_acquisition_wavelengths().item()]
+            else:
+                wavelengths = list(pa_data.get_acquisition_wavelengths())
+
+            wavelengths = wavelengths * n_measurements
+
+            pa_data.meta_data_acquisition[Tags.ACQUISITION_WAVELENGTHS.tag] = np.asarray(wavelengths).reshape((-1, ))
+
         return pa_data

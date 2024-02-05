@@ -41,12 +41,33 @@ class ConsistencyChecker:
             The binary data to check
         """
         is_consistent = True
+
+        log_message = ""
+        log_message += "#Consistency report for binary data\n\n"
+
         if not isinstance(binary_data, np.ndarray):
+            log_message += "binary data was not a numpy array\n"
+            is_consistent = False
+
+        if len(np.shape(binary_data)) != 3:
+            log_message += f"binary data shape was not as expected (expected 3 dimensions but was: {len(np.shape(binary_data))})\n"
             is_consistent = False
 
         for number in np.reshape(binary_data, (-1, )):
             if not isinstance(number, numbers.Number):
                 is_consistent = False
+                log_message += "binary data contained elements not classifiable as a number\n"
+                break
+
+        log_message += "\n"
+
+        if self.verbose:
+            print(log_message)
+
+        if self.log_file_path is not None:
+            with open(self.log_file_path + self.save_file_name, "a") as log_file_handle:
+                log_file_handle.writelines(log_message)
+
         return is_consistent
 
     def check_acquisition_meta_data(self, acquisition_meta_data: dict) -> bool:

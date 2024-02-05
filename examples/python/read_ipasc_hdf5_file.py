@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 name = "kwave_2Dsim_random_array_new"
-FILE_PATH = r"..\..\data\ipasc_compatible_V1.hdf5"
+FILE_PATH = r"..\..\data\sample_ipasc_kwave_2Dsim_circular_array.hdf5"
 #FILE_PATH = f"C:/kWave-PACFISH-export/{name}.hdf5"
 # FILE_PATH = "C:/standardised-image-reconstruction/15PPMPX__ZJQLvYSdWe5CxumvueVrizFy_ipasc.hdf5"
 
@@ -21,7 +21,8 @@ pf.visualize_device(pa_data.meta_data_device, only_show_xz=True, title="2D devic
 shape = np.shape(pa_data.binary_time_series_data)
 plt.figure()
 plt.title("Time Series Data")
-plt.imshow(np.squeeze(pa_data.binary_time_series_data[:, :, 0].T))
+plt.imshow(np.squeeze(pa_data.binary_time_series_data[:, :, 0].T), aspect=(pa_data.binary_time_series_data.shape[0]/
+                                                                           pa_data.binary_time_series_data.shape[1]))
 plt.xlabel("Num detector elements")
 plt.ylabel("Num time samples")
 cb = plt.colorbar()
